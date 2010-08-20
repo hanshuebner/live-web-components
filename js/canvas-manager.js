@@ -27,6 +27,10 @@ var CanvasManager = {
         case this.keys.RIGHT:
             this._selectNextCanvas();
             break;
+        default:
+            if (this.focusedCanvas && this.focusedCanvas.onkeydown)
+                this.focusedCanvas.onkeydown(event);
+            break;
         }
     },
 

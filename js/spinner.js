@@ -147,7 +147,7 @@ SpinnerKeyHandler.prototype = {
         this.spinner = spinner;
 
         var scope = this;
-        this.spinner.onkeydown = function(event) { scope._onKeyDownHandler.call(scope, event); }
+        this.spinner.getCanvas().onkeydown = function(event) { scope._onKeyDownHandler.call(scope, event); }
     },
 
     _onKeyDownHandler: function(event) {
