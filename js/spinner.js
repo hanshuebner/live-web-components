@@ -113,6 +113,8 @@ SpinnerMouseHandler.prototype = {
     },
 
     _onMouseDownHandler: function(event) {
+        CanvasManager.focusCanvas(this.spinner.getCanvas());
+
         this.startY = event.screenY;
         this.startFactor = this.spinner.getFactor();
 
@@ -152,10 +154,10 @@ SpinnerKeyHandler.prototype = {
 
     _onKeyDownHandler: function(event) {
         switch (event.keyCode) {
-        case 38: // up arrow
+        case CanvasManager.keys.UP:
             this.spinner.setValue(this.spinner.getValue() + 1);
             break;
-        case 40: // down arrow
+        case CanvasManager.keys.DOWN: // down arrow
             this.spinner.setValue(this.spinner.getValue() - 1);
             break;
         }

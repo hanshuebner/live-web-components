@@ -19,6 +19,14 @@ var CanvasManager = {
         this._selectFirstCanvas();
     },
 
+    focusCanvas: function(canvas) {
+        if (!canvas) return;
+
+        if (this.focusedCanvas && this.focusedCanvas.onblur) this.focusedCanvas.onblur();
+        this.focusedCanvas = canvas;
+        if (this.focusedCanvas && this.focusedCanvas.onfocus) this.focusedCanvas.onfocus();
+    },
+
     _onKeyDownHandler: function(event) {
         switch(event.keyCode) {
         case this.keys.LEFT:
@@ -36,21 +44,21 @@ var CanvasManager = {
 
     _selectFirstCanvas: function() {
         var canvas = document.getElementsByTagName("canvas");
-        if (canvas.length > 0) this._focusCanvas(canvas[0]);
+        if (canvas.length > 0) this.focusCanvas(canvas[0]);
     },
 
     _selectPreviousCanvas: function() {
         var found = this._searchCanvas(function(canvas, index) {
             return (index - 1) >= 0 ? canvas[index - 1] : null;
         });
-        this._focusCanvas(found);
+        this.focusCanvas(found);
     },
 
     _selectNextCanvas: function() {
         var found = this._searchCanvas(function(canvas, index) {
             return (index + 1) < canvas.length ? canvas[index + 1] : null;
         });
-        this._focusCanvas(found);
+        this.focusCanvas(found);
     },
 
     _searchCanvas: function(selectFunction) {
@@ -64,14 +72,6 @@ var CanvasManager = {
             }
         }
         return found;
-    },
-
-    _focusCanvas: function(canvas) {
-        if (canvas) {
-            if (this.focusedCanvas && this.focusedCanvas.onblur) this.focusedCanvas.onblur();
-            this.focusedCanvas = canvas;
-            if (this.focusedCanvas && this.focusedCanvas.onfocus) this.focusedCanvas.onfocus();
-        }
     }
 
 };
