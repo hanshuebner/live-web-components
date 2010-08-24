@@ -17,7 +17,7 @@ var Spinner = class({
     },
 
     initialize: function(id, options) {
-        this.setContainerElement(document.getElementById(id));
+        this.setButtonElement(document.getElementById(id));
 
         this._mouseHandler = new this.MouseHandler(this);
         this._keyHandler = new this.KeyHandler(this);
@@ -43,19 +43,20 @@ var Spinner = class({
         if (options.maximalValue) this.setMaximalValue(options.maximalValue);
     },
 
-    setContainerElement: function(element) {
-        if (element && element.nodeName == "DIV") {
-            this._containerElement = element;
+    setButtonElement: function(element) {
+        if (element && element.nodeName == "BUTTON") {
+            this._buttonElement = element;
+            this._buttonElement.setAttribute("class", "spinner");
+            this._buttonElement.setAttribute("style", "border: 0px; padding: 0px; background: transparent; outline: none;");
 
-            this._createInputElement();
             this._createCanvasElement();
         } else {
-            throw("The given id doesn't belong to a div element!");
+            throw("The given id doesn't belong to a button element!");
         }
     },
 
-    getInputElement: function() {
-        return this._inputElement;
+    getButtonElement: function() {
+        return this._buttonElement;
     },
 
     getCanvasElement: function() {
@@ -64,8 +65,8 @@ var Spinner = class({
 
     setSize: function(value) {
         this._size = value;
-        this._containerElement.setAttribute("height", this._size + "px");
-        this._containerElement.setAttribute("width", this._size + "px");
+        this._buttonElement.setAttribute("height", this._size + "px");
+        this._buttonElement.setAttribute("width", this._size + "px");
         this._canvasElement.height = this._canvasElement.width = this._size;
         this._drawer.calculateFontSize();
         this._drawer.calculateLineWidth();
@@ -129,13 +130,13 @@ var Spinner = class({
     _createInputElement: function() {
         this._inputElement = document.createElement("input");
         this._inputElement.type = "button";
-        this._inputElement.setAttribute("style", "position: absolute; width: 1px; height: 1px; border: 0px;");
+        this._inputElement.setAttribute("style", "position: absolute; width: 0px; height: 0px; border: 0px;");
         this._containerElement.appendChild(this._inputElement);
     },
 
     _createCanvasElement: function() {
         this._canvasElement = document.createElement("canvas");
-        this._containerElement.appendChild(this._canvasElement);
+        this._buttonElement.appendChild(this._canvasElement);
     },
 
     MouseHandler: class({
@@ -143,12 +144,11 @@ var Spinner = class({
         initialize: function(spinner) {
             this._spinner = spinner;
 
-            if (!document.onmousemove)
-                this._spinner.getCanvasElement().onmousedown = this._onMouseDownHandler.bind(this);
+            this._spinner.getButtonElement().onmousedown = this._onMouseDownHandler.bind(this);
         },
 
         _onMouseDownHandler: function(event) {
-            this._spinner.getInputElement().focus();
+            this._spinner.getButtonElement().focus();
 
             this._startY = event.screenY;
             this._startFactor = this._spinner.getFactor();
@@ -184,7 +184,7 @@ var Spinner = class({
         initialize: function(spinner) {
             this._spinner = spinner;
 
-            this._spinner.getInputElement().onkeydown = this._onKeyDownHandler.bind(this);
+            this._spinner.getButtonElement().onkeydown = this._onKeyDownHandler.bind(this);
         },
 
         _onKeyDownHandler: function(event) {
@@ -207,8 +207,8 @@ var Spinner = class({
         initialize: function(spinner) {
             this._spinner = spinner;
 
-            this._spinner.getInputElement().onfocus = this._onFocusHandler.bind(this);
-            this._spinner.getInputElement().onblur = this._onBlurHandler.bind(this);
+            this._spinner.getButtonElement().onfocus = this._onFocusHandler.bind(this);
+            this._spinner.getButtonElement().onblur = this._onBlurHandler.bind(this);
         },
 
         _onFocusHandler: function(event) {

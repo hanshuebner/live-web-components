@@ -1,0 +1,4 @@
+
+button.spinner::-moz-focus-inner {
+    border: none;
+}
