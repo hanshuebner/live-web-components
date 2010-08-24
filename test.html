@@ -1,12 +1,14 @@
 <html>
 <head>
     <title>Live Components</title>
-    <script type="application/javascript" src="js/canvas-manager.js"></script>
+    <script type="application/javascript" src="js/utils.js"></script>
     <script type="application/javascript" src="js/spinner.js"></script>
 </head>
-<body onload="new Spinner('canvas_one'); new Spinner('canvas_two'); new Spinner('canvas_three'); CanvasManager.initialize();">
-    <canvas id="canvas_one"></canvas>
-    <canvas id="canvas_two"></canvas>
-    <canvas id="canvas_three"></canvas>
+<body onload="new Spinner('spinner_one'); new Spinner('spinner_two'); new Spinner('spinner_three');">
+    <input />
+    <div id="spinner_one" style="display: inline;"></div>
+    <div id="spinner_two" style="display: inline;"></div>
+    <div id="spinner_three" style="display: inline;"></div>
+    <input />
 </body>
 </html>

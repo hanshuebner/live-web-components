@@ -1,33 +1,36 @@
 
-var Spinner = function(id, options) {
-    this.initialize(id, options);
-};
-
-Spinner.prototype = {
+var Spinner = class({
 
     initialize: function(id, options) {
-        this.setCanvas(document.getElementById(id));
+        this.setContainerElement(document.getElementById(id));
 
-        this._mouseHandler = new SpinnerMouseHandler(this);
-        this._keyHandler = new SpinnerKeyHandler(this);
-        this._focusHandler = new SpinnerFocusHandler(this);
-        this._drawer = new SpinnerDrawer(this, options);
+        this._mouseHandler = new this.MouseHandler(this);
+        this._keyHandler = new this.KeyHandler(this);
+        this._focusHandler = new this.FocusHandler(this);
+        this._drawer = new this.Drawer(this, options);
 
         this.setOptions(options);
 
         this.setFactor(0.5);
     },
 
-    setCanvas: function(value) {
-        if (value && value.getContext) {
-            this.canvas = value;
+    setContainerElement: function(element) {
+        if (element && element.nodeName == "DIV") {
+            this._containerElement = element;
+
+            this._createInputElement();
+            this._createCanvasElement();
         } else {
-            throw("Given id doesn't belong to a canvas object!");
+            throw("The given id doesn't belong to a div element!");
         }
     },
 
-    getCanvas: function() {
-        return this.canvas;
+    getInputElement: function() {
+        return this._inputElement;
+    },
+
+    getCanvasElement: function() {
+        return this._canvasElement;
     },
 
     setOptions: function(value) {
@@ -36,247 +39,273 @@ Spinner.prototype = {
     },
 
     setSize: function(value) {
-        this.size = value;
-        this.canvas.height = this.canvas.width = this.size;
+        this._size = value;
+        this._containerElement.setAttribute("height", this._size + "px");
+        this._containerElement.setAttribute("width", this._size + "px");
+        this._canvasElement.height = this._canvasElement.width = this._size;
         this._drawer.calculateFontSize();
         this._drawer.calculateLineWidth();
         this._drawer.draw();
     },
 
     getSize: function() {
-        return this.size || 200;
+        return this._size || 200;
     },
 
     focus: function() {
-        this.focused = true;
+        this._focused = true;
         this._drawer.draw();
     },
 
     blur: function() {
-        this.focused = false;
+        this._focused = false;
         this._drawer.draw();
     },
 
     hasFocus: function() {
-        return this.focused || false;
+        return this._focused || false;
     },
 
     setFactor: function(value) {
-        this.factor = Math.max(0.0, Math.min(1.0, value));
-        this.value = this.getMinimalValue() + Math.round(this.factor * (this.getMaximalValue() - this.getMinimalValue()));
+        this._factor = Math.max(0.0, Math.min(1.0, value));
+        this._value = this.getMinimalValue() + Math.round(this._factor * (this.getMaximalValue() - this.getMinimalValue()));
         this._drawer.draw();
     },
 
     getFactor: function(value) {
-        return this.factor || 0.0;
+        return this._factor || 0.0;
     },
 
     setMinimalValue: function(value) {
-        this.minimalValue = value;
+        this._minimalValue = value;
     },
 
     getMinimalValue: function() {
-        return this.minimalValue || -100;
+        return this._minimalValue || -100;
     },
 
     setMaximalValue: function(value) {
-        this.maximalValue = value;
+        this._maximalValue = value;
     },
 
     getMaximalValue: function() {
-        return this.maximalValue || 100;
+        return this._maximalValue || 100;
     },
 
     setValue: function(value) {
-        this.value = Math.max(this.getMinimalValue(), Math.min(this.getMaximalValue(), value));
-        this.factor = (this.value - this.getMinimalValue()) / (this.getMaximalValue() - this.getMinimalValue());
+        this._value = Math.max(this.getMinimalValue(), Math.min(this.getMaximalValue(), value));
+        this._factor = (this._value - this.getMinimalValue()) / (this.getMaximalValue() - this.getMinimalValue());
         this._drawer.draw();
     },
 
     getValue: function() {
-        return this.value || 0;
-    }
-
-};
-
-var SpinnerMouseHandler = function(spinner) {
-    this.initialize(spinner);
-};
-
-SpinnerMouseHandler.prototype = {
-
-    initialize: function(spinner) {
-        this.spinner = spinner;
-
-        var scope = this;
-        this.spinner.getCanvas().onmousedown = function(event) { scope._onMouseDownHandler.call(scope, event); }
+        return this._value || 0;
     },
 
-    _onMouseDownHandler: function(event) {
-        CanvasManager.focusCanvas(this.spinner.getCanvas());
-
-        this.startY = event.screenY;
-        this.startFactor = this.spinner.getFactor();
-
-        var scope = this;
-        document.onmousemove = function(event) { scope._onMouseMoveHandler.call(scope, event); }
-        document.onmouseup = function(event) { scope._onMouseUpHandler.call(scope, event); }
+    _createInputElement: function() {
+        this._inputElement = document.createElement("input");
+        this._inputElement.type = "button";
+        this._inputElement.setAttribute("style", "position: absolute; width: 1px; height: 1px; border: 0px;");
+        this._containerElement.appendChild(this._inputElement);
     },
 
-    _onMouseMoveHandler: function(event) {
-        var difference = event.screenY - this.startY;
-        var sign = difference < 0 ? -1 : 1;
-        var normalizedDifference = Math.min(Math.abs(difference), 500) * sign;
-        var factorDifference = difference / 500.0;
-
-        this.spinner.setFactor(this.startFactor + factorDifference);
+    _createCanvasElement: function() {
+        this._canvasElement = document.createElement("canvas");
+        this._containerElement.appendChild(this._canvasElement);
     },
 
-    _onMouseUpHandler: function(spinner, event) {
-        document.onmousemove = null;
-        document.onmouseup = null;
-    }
+    MouseHandler: class({
 
-};
+        initialize: function(spinner) {
+            this._spinner = spinner;
 
-var SpinnerKeyHandler = function(spinner) {
-    this.initialize(spinner);
-};
+            if (!document.onmousemove)
+                this._spinner.getCanvasElement().onmousedown = this._onMouseDownHandler.bind(this);
+        },
 
-SpinnerKeyHandler.prototype = {
+        _onMouseDownHandler: function(event) {
+            this._spinner.getInputElement().focus();
 
-    initialize: function(spinner) {
-        this.spinner = spinner;
+            this._startY = event.screenY;
+            this._startFactor = this._spinner.getFactor();
 
-        var scope = this;
-        this.spinner.getCanvas().onkeydown = function(event) { scope._onKeyDownHandler.call(scope, event); }
-    },
+            document.onmousemove = this._onMouseMoveHandler.bind(this);
+            document.onmouseup = this._onMouseUpHandler.bind(this);
 
-    _onKeyDownHandler: function(event) {
-        switch (event.keyCode) {
-        case CanvasManager.keys.UP:
-            this.spinner.setValue(this.spinner.getValue() + 1);
-            break;
-        case CanvasManager.keys.DOWN: // down arrow
-            this.spinner.setValue(this.spinner.getValue() - 1);
-            break;
+            return false;
+        },
+
+        _onMouseMoveHandler: function(event) {
+            var difference = event.screenY - this._startY;
+            var sign = difference < 0 ? -1 : 1;
+            var normalizedDifference = Math.min(Math.abs(difference), 500) * sign;
+            var factorDifference = difference / 500.0;
+
+            this._spinner.setFactor(this._startFactor + factorDifference);
+
+            return false;
+        },
+
+        _onMouseUpHandler: function(spinner, event) {
+            document.onmousemove = null;
+            document.onmouseup = null;
+
+            return false;
         }
-    }
 
-};
+    }),
 
-var SpinnerFocusHandler = function(spinner) {
-    this.initialize(spinner);
-}
+    KeyHandler: class({
 
-SpinnerFocusHandler.prototype = {
+        initialize: function(spinner) {
+            this._spinner = spinner;
 
-    initialize: function(spinner) {
-        this.spinner = spinner;
+            this._spinner.getInputElement().onkeydown = this._onKeyDownHandler.bind(this);
+        },
 
-        var scope = this;
-        this.spinner.getCanvas().onfocus = function(event) { scope._onFocusHandler.call(scope, event); }
-        this.spinner.getCanvas().onblur = function(event) { scope._onBlurHandler.call(scope, event); }
-    },
+        _onKeyDownHandler: function(event) {
+            switch (event.keyCode) {
+            case 38: // up arrow
+                this._spinner.setValue(this._spinner.getValue() + 1);
+                return false;
+            case 40: // down arrow
+                this._spinner.setValue(this._spinner.getValue() - 1);
+                return false;
+            default:
+                return true;            
+            }
 
-    _onFocusHandler: function(event) {
-        this.spinner.focus();
-    },
-
-    _onBlurHandler: function(event) {
-        this.spinner.blur();
-    }
-
-};
-
-var SpinnerDrawer = function(spinner, options) {
-    this.initialize(spinner, options);
-};
-
-SpinnerDrawer.prototype = {
-
-    initialize: function(spinner, options) {
-        this.spinner = spinner;
-        this.context = this.spinner.getCanvas().getContext("2d");
-
-        this.setOptions(options);
-    },
-
-    setOptions: function(value) {
-        value = value || { };
-        this.padding = value.padding || Math.round(this.spinner.getSize() / 20);
-    },
-
-    calculateFontSize: function() {
-        if (!this.context) return;
-
-        var fontSize = 0;
-        var textWidth = 0;
-        while (textWidth < (this.spinner.getSize() / 2 - this.padding * 2)) {
-            fontSize++;
-            this.context.font = fontSize + "px sans-serif";
-            textWidth = this.context.measureText("-100").width;
         }
-        this.context.font = (fontSize - 1) + "px sans-serif";
-        this.context.textBaseline = "middle";
-    },
 
-    calculateLineWidth: function() {
-        this.context.lineWidth = Math.round(this.spinner.getSize() / 50);
-        this.context.lineCap = "round";
-    },
+    }),
 
-    draw: function() {
-        if (!this.context) return;
+    FocusHandler: class({
 
-        var size = this.spinner.getSize();
+        initialize: function(spinner) {
+            this._spinner = spinner;
 
-        this.context.fillStyle = "white";
-        this.context.fillRect(0, 0, size, size);
+            this._spinner.getInputElement().onfocus = this._onFocusHandler.bind(this);
+            this._spinner.getInputElement().onblur = this._onBlurHandler.bind(this);
+        },
 
-        var angle = (Math.PI / 2) + (3 * (Math.PI / 2) * this.spinner.getFactor());
+        _onFocusHandler: function(event) {
+            this._spinner.focus();
+            return false;
+        },
 
-        this.context.beginPath();
-        this.context.arc(
-                size / 2,
-                size / 2,
-                size / 2 - this.padding,
-                (Math.PI / 2),
-                angle,
-                false
-        );
-        this.context.lineTo(size / 2, size / 2);
-        this.context.arc(
-                size / 2,
-                size / 2,
-                size / 2 - this.padding,
-                angle,
-                2 * Math.PI,
-                false
-        );
-        this.context.stroke();
-
-        this.context.fillStyle = "black";
-        this.context.fillText(this.spinner.getValue(), size / 2 + this.padding, 3 * size / 4);
-
-        if(this.spinner.hasFocus()) {
-            var length = size / 8;
-            this.context.beginPath();
-            this.context.moveTo(0, 0);
-            this.context.lineTo(length, 0);
-            this.context.moveTo(size - length, 0);
-            this.context.lineTo(size, 0);
-            this.context.lineTo(size, length);
-            this.context.moveTo(size, size - length);
-            this.context.lineTo(size, size);
-            this.context.lineTo(size - length, size);
-            this.context.moveTo(length, size);
-            this.context.lineTo(0, size);
-            this.context.lineTo(0, size - length);
-            this.context.moveTo(0, length);
-            this.context.lineTo(0, 0);
-            this.context.stroke();
+        _onBlurHandler: function(event) {
+            this._spinner.blur();
+            return false;
         }
-    }
 
-};
+    }),
+
+    Drawer: class({
+
+        initialize: function(spinner, options) {
+            this._spinner = spinner;
+            this._context = this._spinner.getCanvasElement().getContext("2d");
+
+            this.setOptions(options);
+        },
+
+        setOptions: function(value) {
+            value = value || { };
+            this._padding = value._padding || Math.round(this._spinner.getSize() / 20);
+        },
+
+        calculateFontSize: function() {
+            if (!this._context) return;
+
+            var fontSize = 0;
+            var textWidth = 0;
+            while (textWidth < (this._spinner.getSize() / 2 - this._padding * 2)) {
+                fontSize++;
+                this._context.font = fontSize + "px sans-serif";
+                textWidth = this._context.measureText("-100").width;
+            }
+            this._context.font = (fontSize - 1) + "px sans-serif";
+            this._context.textBaseline = "middle";
+        },
+
+        calculateLineWidth: function() {
+            this._context.lineWidth = Math.round(this._spinner.getSize() / 50);
+            this._context.lineCap = "round";
+        },
+
+        draw: function() {
+            if (!this._context) return;
+
+            var size = this._spinner.getSize();
+
+            this._clear();
+            this._drawArcs();
+            this._drawValue();
+            this._drawFocus();
+        },
+
+        _clear: function() {
+            var size = this._spinner.getSize();
+
+            this._context.fillStyle = "white";
+            this._context.fillRect(0, 0, size, size);
+        },
+
+        _drawArcs: function() {
+            var size = this._spinner.getSize();
+            var angle = (Math.PI / 2) + (3 * (Math.PI / 2) * this._spinner.getFactor());
+
+            this._context.beginPath();
+            this._context.arc(
+                    size / 2,
+                    size / 2,
+                    size / 2 - this._padding,
+                    (Math.PI / 2),
+                    angle,
+                    false
+            );
+            this._context.lineTo(size / 2, size / 2);
+            this._context.arc(
+                    size / 2,
+                    size / 2,
+                    size / 2 - this._padding,
+                    angle,
+                    2 * Math.PI,
+                    false
+            );
+            this._context.stroke();
+        },
+
+        _drawValue: function() {
+            var size = this._spinner.getSize();
+
+            this._context.fillStyle = "black";
+            this._context.fillText(this._spinner.getValue(), size / 2 + this._padding, 3 * size / 4);
+        },
+
+        _drawFocus: function() {
+            var size = this._spinner.getSize();
+
+            if(this._spinner.hasFocus()) {
+                var length = size / 8;
+                this._context.beginPath();
+                this._context.moveTo(0, 0);
+                this._context.lineTo(length, 0);
+                this._context.moveTo(size - length, 0);
+                this._context.lineTo(size, 0);
+                this._context.lineTo(size, length);
+                this._context.moveTo(size, size - length);
+                this._context.lineTo(size, size);
+                this._context.lineTo(size - length, size);
+                this._context.moveTo(length, size);
+                this._context.lineTo(0, size);
+                this._context.lineTo(0, size - length);
+                this._context.moveTo(0, length);
+                this._context.lineTo(0, 0);
+                this._context.stroke();
+            }
+        }
+
+    })
+
+});
