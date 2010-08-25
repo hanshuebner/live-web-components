@@ -45,6 +45,8 @@ var Spinner = class({
         if (options.minimalValue) this.setMinimalValue(options.minimalValue);
         if (options.maximalValue) this.setMaximalValue(options.maximalValue);
         if (options.initialValue) this.setValue(options.initialValue);
+
+        if (options.onchange) this.onchange = options.onchange;
     },
 
     setButtonElement: function(element) {
@@ -99,9 +101,13 @@ var Spinner = class({
     setFactor: function(value) {
         if (value < 0.0 || value > 1.0) return;
 
+        var changed = this._factor != value;
+
         this._factor = value;
         this._value = this.getMinimalValue() + Math.round(this.getFactor() * (this.getMaximalValue() - this.getMinimalValue()));
         this._drawer.draw();
+
+        if (changed && !this.isEntering()) this._triggerOnChange();
     },
 
     getFactor: function(value) {
@@ -127,9 +133,13 @@ var Spinner = class({
     setValue: function(value) {
         if (value < this.getMinimalValue() || value > this.getMaximalValue()) return;
 
+        var changed = this._value != value;
+
         this._value = value;
         this._factor = (this._value - this.getMinimalValue()) / (this.getMaximalValue() - this.getMinimalValue());
         this._drawer.draw();
+
+        if (changed && !this.isEntering()) this._triggerOnChange();
     },
 
     getValue: function() {
@@ -143,6 +153,7 @@ var Spinner = class({
     stopEntering: function() {
         this._entering = false;
         this._drawer.draw();
+        this._triggerOnChange();
     },
 
     isEntering: function() {
@@ -152,6 +163,10 @@ var Spinner = class({
     _createCanvasElement: function() {
         this._canvasElement = document.createElement("canvas");
         this._buttonElement.appendChild(this._canvasElement);
+    },
+
+    _triggerOnChange: function() {
+        if (this.onchange) this.onchange(this.getValue(), this.getFactor());
     },
 
     MouseHandler: class({
@@ -179,13 +194,14 @@ var Spinner = class({
             var sign = difference < 0 ? -1 : 1;
             var normalizedDifference = Math.min(Math.abs(difference), 500) * sign;
             var factorDifference = difference / 500.0;
+            var factor = Math.max(0.0, Math.min(1.0, this._startFactor + factorDifference))
 
-            this._spinner.setFactor(this._startFactor + factorDifference);
+            this._spinner.setFactor(factor);
 
             return false;
         },
 
-        _onMouseUpHandler: function(spinner, event) {
+        _onMouseUpHandler: function() {
             document.onmousemove = null;
             document.onmouseup = null;
 

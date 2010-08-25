@@ -4,12 +4,42 @@
     <link type="text/css" href="css/reset.css" rel="stylesheet" />
     <script type="application/javascript" src="js/utils.js"></script>
     <script type="application/javascript" src="js/spinner.js"></script>
+    <script type="application/javascript">
+        function printLine(text) {
+            var pElement = document.getElementById("output");
+            pElement.insertBefore(document.createElement("br"), pElement.firstChild);
+            pElement.insertBefore(document.createTextNode(text), pElement.firstChild);
+        }
+
+        function initialize() {
+            new Spinner('spinner_one', {
+                size: 40,
+                onchange: function(newValue, newFactor) {
+                    printLine("Spinner 1: " + newValue + " :: " + newFactor)
+                }
+            });
+            new Spinner('spinner_two', {
+                initialValue: 50,
+                maximalValue: 200,
+                onchange: function(newValue, newFactor) {
+                    printLine("Spinner 2: " + newValue + " :: " + newFactor)
+                }
+            });
+            new Spinner('spinner_three', {
+                radiusDifference: 5,
+                onchange: function(newValue, newFactor) {
+                    printLine("Spinner 3: " + newValue + " :: " + newFactor)
+                }
+            });
+        }
+    </script>
 </head>
-<body onload="new Spinner('spinner_one', { size: 40 }); new Spinner('spinner_two'); new Spinner('spinner_three', { radiusDifference: 5 });">
+<body onload="initialize();">
     <input />
     <button id="spinner_one" style="display: inline;"></button>
     <button id="spinner_two" style="display: inline;"></button>
     <button id="spinner_three" style="display: inline;"></button>
     <input />
+    <p id="output"></p>
 </body>
 </html>
