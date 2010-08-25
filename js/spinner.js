@@ -5,6 +5,7 @@ var Spinner = class({
         size: 100,
         minimalValue: -100,
         maximalValue: 100,
+        initialValue: 0,
 
         // drawer
         radiusDifference: 0,
@@ -12,6 +13,7 @@ var Spinner = class({
         highArcColor: "black",
         valueColor: "black",
         valueFont: "sans-serif",
+        cursorColor: "black",
         focusColor: "blue",
         backgroundColor: "white"
     },
@@ -34,6 +36,7 @@ var Spinner = class({
         this.setSize(this.defaults.size);
         this.setMinimalValue(this.defaults.minimalValue);
         this.setMaximalValue(this.defaults.maximalValue);
+        this.setValue(this.defaults.initialValue);
     },
 
     setOptions: function(options) {
@@ -41,6 +44,7 @@ var Spinner = class({
         if (options.size) this.setSize(options.size);
         if (options.minimalValue) this.setMinimalValue(options.minimalValue);
         if (options.maximalValue) this.setMaximalValue(options.maximalValue);
+        if (options.initialValue) this.setValue(options.initialValue);
     },
 
     setButtonElement: function(element) {
@@ -83,6 +87,7 @@ var Spinner = class({
     },
 
     blur: function() {
+        this.stopEntering();
         this._focused = false;
         this._drawer.draw();
     },
@@ -92,7 +97,9 @@ var Spinner = class({
     },
 
     setFactor: function(value) {
-        this._factor = Math.max(0.0, Math.min(1.0, value));
+        if (value < 0.0 || value > 1.0) return;
+
+        this._factor = value;
         this._value = this.getMinimalValue() + Math.round(this.getFactor() * (this.getMaximalValue() - this.getMinimalValue()));
         this._drawer.draw();
     },
@@ -106,7 +113,7 @@ var Spinner = class({
     },
 
     getMinimalValue: function() {
-        return this._minimalValue || -100;
+        return this._minimalValue;
     },
 
     setMaximalValue: function(value) {
@@ -114,11 +121,13 @@ var Spinner = class({
     },
 
     getMaximalValue: function() {
-        return this._maximalValue || 100;
+        return this._maximalValue;
     },
 
     setValue: function(value) {
-        this._value = Math.max(this.getMinimalValue(), Math.min(this.getMaximalValue(), value));
+        if (value < this.getMinimalValue() || value > this.getMaximalValue()) return;
+
+        this._value = value;
         this._factor = (this._value - this.getMinimalValue()) / (this.getMaximalValue() - this.getMinimalValue());
         this._drawer.draw();
     },
@@ -127,11 +136,17 @@ var Spinner = class({
         return this._value || 0;
     },
 
-    _createInputElement: function() {
-        this._inputElement = document.createElement("input");
-        this._inputElement.type = "button";
-        this._inputElement.setAttribute("style", "position: absolute; width: 0px; height: 0px; border: 0px;");
-        this._containerElement.appendChild(this._inputElement);
+    startEntering: function() {
+        this._entering = true;
+    },
+
+    stopEntering: function() {
+        this._entering = false;
+        this._drawer.draw();
+    },
+
+    isEntering: function() {
+        return this._entering;
     },
 
     _createCanvasElement: function() {
@@ -189,15 +204,58 @@ var Spinner = class({
 
         _onKeyDownHandler: function(event) {
             switch (event.keyCode) {
+            case 8: // backspace
+                this._deleteDigit();
+                return false;
+            case 13: // enter
+                this._enter();
+                return false;
             case 38: // up arrow
                 this._spinner.setValue(this._spinner.getValue() + 1);
                 return false;
             case 40: // down arrow
                 this._spinner.setValue(this._spinner.getValue() - 1);
                 return false;
+            case 48:
+            case 49:
+            case 50:
+            case 51:
+            case 52:
+            case 53:
+            case 54:
+            case 55:
+            case 56:
+            case 57: // digits 0-9
+                this._enterDigit(event.keyCode - 48);
+                return false;
+            case 109: // substract
+            case 189: // "-"
+                this._toggleSign();
+                return false;
             default:
                 return true;
             }
+        },
+
+        _enterDigit: function(digit) {
+            var value = this._spinner.isEntering() ? this._spinner.getValue() : 0;
+            value *= 10;
+            value += digit;
+            this._spinner.startEntering();
+            this._spinner.setValue(value);
+        },
+
+        _deleteDigit: function() {
+            if (!this._spinner.isEntering()) return;
+            this._spinner.setValue(Math.floor(this._spinner.getValue() / 10));
+        },
+
+        _enter: function() {
+            this._spinner.stopEntering();
+        },
+
+        _toggleSign: function() {
+            this._spinner.setValue(this._spinner.getValue() * -1);
         }
 
     }),
@@ -231,6 +289,7 @@ var Spinner = class({
             "highArcColor",
             "valueColor",
             "valueFont",
+            "cursorColor",
             "focusColor",
             "backgroundColor"
         ],
@@ -280,6 +339,7 @@ var Spinner = class({
             this._clear();
             this._drawArcs();
             this._drawValue();
+            this._drawCursor();
             this._drawFocus();
         },
 
@@ -327,28 +387,44 @@ var Spinner = class({
             this._context.fillText(this._spinner.getValue(), size / 2 + this._context.lineWidth, 3 * size / 4);
         },
 
-        _drawFocus: function() {
+        _drawCursor: function() {
+            if (!this._spinner.isEntering()) return;
+
             var size = this._spinner.getSize();
 
-            if (this._spinner.hasFocus()) {
-                var length = size / 8;
-                this._context.strokeStyle = this._focusColor;
-                this._context.beginPath();
-                this._context.moveTo(0, 0);
-                this._context.lineTo(length, 0);
-                this._context.moveTo(size - length, 0);
-                this._context.lineTo(size, 0);
-                this._context.lineTo(size, length);
-                this._context.moveTo(size, size - length);
-                this._context.lineTo(size, size);
-                this._context.lineTo(size - length, size);
-                this._context.moveTo(length, size);
-                this._context.lineTo(0, size);
-                this._context.lineTo(0, size - length);
-                this._context.moveTo(0, length);
-                this._context.lineTo(0, 0);
-                this._context.stroke();
-            }
+            var cursorX = size / 2 +
+                          this._context.lineWidth * 2 +
+                          this._context.measureText(this._spinner.getValue()).width;
+
+            this._context.strokeStyle = this._cursorColor;
+            this._context.beginPath();
+            this._context.moveTo(cursorX, Math.round(size * 0.60));
+            this._context.lineTo(cursorX, Math.round(size * 0.85));
+            this._context.stroke();
+        },
+
+        _drawFocus: function() {
+            if (!this._spinner.hasFocus()) return;
+
+            var size = this._spinner.getSize();
+            var length = size / 8;
+
+            this._context.strokeStyle = this._focusColor;
+            this._context.beginPath();
+            this._context.moveTo(0, 0);
+            this._context.lineTo(length, 0);
+            this._context.moveTo(size - length, 0);
+            this._context.lineTo(size, 0);
+            this._context.lineTo(size, length);
+            this._context.moveTo(size, size - length);
+            this._context.lineTo(size, size);
+            this._context.lineTo(size - length, size);
+            this._context.moveTo(length, size);
+            this._context.lineTo(0, size);
+            this._context.lineTo(0, size - length);
+            this._context.moveTo(0, length);
+            this._context.lineTo(0, 0);
+            this._context.stroke();
         }
 
     })
