@@ -1,11 +1,14 @@
 
 var Spinner = class({
 
+    extends: Control,
+
     defaults: {
         size: 100,
         minimalValue: -100,
         maximalValue: 100,
         initialValue: 0,
+        initialFactor: 0.5,
 
         // drawer
         radiusDifference: 0,
@@ -19,64 +22,36 @@ var Spinner = class({
     },
 
     initialize: function(id, options) {
-        this.setButtonElement(document.getElementById(id));
+        this.initialize.super(id, options);
 
         this._mouseHandler = new this.MouseHandler(this);
         this._keyHandler = new this.KeyHandler(this);
         this._focusHandler = new this.FocusHandler(this);
         this._drawer = new this.Drawer(this, options);
-
-        this.setDefaults();
-        this.setOptions(options);
-
-        this.setFactor(0.5);
-    },
-
-    setDefaults: function() {
-        this.setSize(this.defaults.size);
-        this.setMinimalValue(this.defaults.minimalValue);
-        this.setMaximalValue(this.defaults.maximalValue);
-        this.setValue(this.defaults.initialValue);
     },
 
     setOptions: function(options) {
         options = options || { };
+        this.setOptions.super(options);
+
         if (options.size) this.setSize(options.size);
         if (options.minimalValue) this.setMinimalValue(options.minimalValue);
         if (options.maximalValue) this.setMaximalValue(options.maximalValue);
         if (options.initialValue) this.setValue(options.initialValue);
+        if (options.initialFactor) this.setFactor(options.initialFactor);
 
         if (options.onchange) this.onchange = options.onchange;
     },
 
-    setButtonElement: function(element) {
-        if (element && element.nodeName == "BUTTON") {
-            this._buttonElement = element;
-            this._buttonElement.setAttribute("class", "spinner");
-            this._buttonElement.setAttribute("style", "border: 0px; padding: 0px; background: transparent; outline: none;");
-
-            this._createCanvasElement();
-        } else {
-            throw("The given id doesn't belong to a button element!");
-        }
-    },
-
-    getButtonElement: function() {
-        return this._buttonElement;
-    },
-
-    getCanvasElement: function() {
-        return this._canvasElement;
-    },
-
     setSize: function(value) {
         this._size = value;
-        this._buttonElement.setAttribute("height", this._size + "px");
-        this._buttonElement.setAttribute("width", this._size + "px");
-        this._canvasElement.height = this._canvasElement.width = this._size;
-        this._drawer.calculateFontSize();
-        this._drawer.calculateLineWidth();
-        this._drawer.draw();
+        this.setHeight(this._size);
+        this.setWidth(this._size);
+        if (this._drawer) {
+            this._drawer.calculateFontSize();
+            this._drawer.calculateLineWidth();
+            this.draw();
+        }
     },
 
     getSize: function() {
@@ -85,13 +60,13 @@ var Spinner = class({
 
     focus: function() {
         this._focused = true;
-        this._drawer.draw();
+        this.draw();
     },
 
     blur: function() {
         this.stopEntering();
         this._focused = false;
-        this._drawer.draw();
+        this.draw();
     },
 
     hasFocus: function() {
@@ -105,7 +80,7 @@ var Spinner = class({
 
         this._factor = value;
         this._value = this.getMinimalValue() + Math.round(this.getFactor() * (this.getMaximalValue() - this.getMinimalValue()));
-        this._drawer.draw();
+        this.draw();
 
         if (changed && !this.isEntering()) this._triggerOnChange();
     },
@@ -116,6 +91,7 @@ var Spinner = class({
 
     setMinimalValue: function(value) {
         this._minimalValue = value;
+        this.draw();
     },
 
     getMinimalValue: function() {
@@ -124,6 +100,7 @@ var Spinner = class({
 
     setMaximalValue: function(value) {
         this._maximalValue = value;
+        this.draw();
     },
 
     getMaximalValue: function() {
@@ -137,7 +114,7 @@ var Spinner = class({
 
         this._value = value;
         this._factor = (this._value - this.getMinimalValue()) / (this.getMaximalValue() - this.getMinimalValue());
-        this._drawer.draw();
+        this.draw();
 
         if (changed && !this.isEntering()) this._triggerOnChange();
     },
@@ -152,7 +129,7 @@ var Spinner = class({
 
     stopEntering: function() {
         this._entering = false;
-        this._drawer.draw();
+        this.draw();
         this._triggerOnChange();
     },
 
@@ -160,9 +137,8 @@ var Spinner = class({
         return this._entering;
     },
 
-    _createCanvasElement: function() {
-        this._canvasElement = document.createElement("canvas");
-        this._buttonElement.appendChild(this._canvasElement);
+    draw: function() {
+        if (this._drawer) this._drawer.draw();
     },
 
     _triggerOnChange: function() {

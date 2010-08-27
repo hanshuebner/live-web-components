@@ -3,9 +3,9 @@ var class = function(class) {
     var constructor = function() {
         if (typeof(class.extends) === "function") {
             for (var key in class.extends.prototype) {
-                var parentFunc = class.extends.prototype[key].bind(this);
+                var parentFunc = class.extends.prototype[key];
                 if (typeof(class[key]) === "function") { // override
-                    class[key].super = parentFunc;
+                    class[key].super = parentFunc.bind(this);
                 } else {
                     class[key] = parentFunc;
                 }
@@ -14,7 +14,7 @@ var class = function(class) {
 
         if (this.initialize)
             this.initialize.apply(this, arguments);
-        
+
     };
 
     constructor.prototype = class;
