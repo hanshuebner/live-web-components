@@ -3,7 +3,20 @@ var class = function(class) {
     var constructor = function() {
         if (this.initialize)
             this.initialize.apply(this, arguments);
+
+        if (typeof(class.extends) === "function") {
+            for (var key in class.extends.prototype) {
+                var parentFunc = class.extends.prototype[key].bind(this);
+                if (typeof(class[key]) === "function") { // override
+                    class[key].super = parentFunc;
+                } else {
+                    class[key] = parentFunc;
+                }
+            }
+        }
+
     };
+
     constructor.prototype = class;
     return constructor;
 };

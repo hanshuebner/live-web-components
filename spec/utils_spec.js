@@ -1,11 +1,17 @@
 
 describe("class", function() {
 
-    var Test;
+    var TestParent, Test;
 
     beforeEach(function() {
+        TestParent = class({
+            funcOne: function() { this.one = true; },
+            funcTwo: function() { this.two = true; }
+        });
         Test = class({
-            initialize: function() { }
+            extends: TestParent,
+            initialize: function() { this.one = this.two = this.three = false; },
+            funcTwo: function() { this.funcTwo.super(); this.three = true; }
         });
     });
 
@@ -19,6 +25,23 @@ describe("class", function() {
         var test = new Test();
 
         expect(Test.prototype.initialize).toHaveBeenCalled();
+    });
+
+    it("should inherit functions from the parent", function() {
+        var test = new Test();
+        expect(typeof(test.funcOne)).toBe("function");
+
+        test.funcOne();
+        expect(test.one).toBeTruthy();
+    });
+
+    it("should override parent functions", function() {
+        var test = new Test();
+        expect(typeof(test.funcTwo)).toBe("function");
+
+        test.funcTwo();
+        expect(test.two).toBeTruthy();
+        expect(test.three).toBeTruthy();
     });
 
 });
