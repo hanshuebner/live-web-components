@@ -1,9 +1,6 @@
 
 var class = function(class) {
     var constructor = function() {
-        if (this.initialize)
-            this.initialize.apply(this, arguments);
-
         if (typeof(class.extends) === "function") {
             for (var key in class.extends.prototype) {
                 var parentFunc = class.extends.prototype[key].bind(this);
@@ -15,6 +12,9 @@ var class = function(class) {
             }
         }
 
+        if (this.initialize)
+            this.initialize.apply(this, arguments);
+        
     };
 
     constructor.prototype = class;

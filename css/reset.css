@@ -1,4 +1,4 @@
 
-button.spinner::-moz-focus-inner {
+button.control::-moz-focus-inner {
     border: none;
 }
