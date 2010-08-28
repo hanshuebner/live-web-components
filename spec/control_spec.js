@@ -74,10 +74,40 @@ describe("Control", function() {
 
         it("should invoke a draw", function() {
             spyOn(control, "draw");
-            control.setHeight(444);
+            control.setWidth(444);
             expect(control.draw).toHaveBeenCalled();
         });
-        
+
+    });
+
+    describe("focus", function() {
+
+        it("should set the focus", function() {
+            control.focus();
+            expect(control.hasFocus()).toBeTruthy();
+        });
+
+        it("should invoke a draw", function() {
+            spyOn(control, "draw");
+            control.focus();
+            expect(control.draw).toHaveBeenCalled();
+        });
+
+    });
+
+    describe("blur", function() {
+
+        it("should clear the focus", function() {
+            control.blur();
+            expect(control.hasFocus()).toBeFalsy();
+        });
+
+        it("should invoke a draw", function() {
+            spyOn(control, "draw");
+            control.blur();
+            expect(control.draw).toHaveBeenCalled();
+        });
+
     });
 
 });

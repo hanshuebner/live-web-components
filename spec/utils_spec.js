@@ -1,34 +1,44 @@
 
 describe("class", function() {
 
-    var TestParent, Test;
+    var TestParent, TestOne, TestTwo;
 
     beforeEach(function() {
         TestParent = class({
+            initialize: function() { this.one = this.two = false; },
             funcOne: function() { this.one = true; },
             funcTwo: function() { this.two = true; }
         });
-        Test = class({
+        TestOne = class({
             extends: TestParent,
-            initialize: function() { this.one = this.two = this.three = false; },
+            initialize: function() { this.initialize.super(); this.three = false; },
+            funcTwo: function() { this.funcTwo.super(); this.three = true; }
+        });
+        TestTwo = class({
+            extends: TestParent,
             funcTwo: function() { this.funcTwo.super(); this.three = true; }
         });
     });
 
     it("should return a constructor function", function() {
-        expect(typeof(Test)).toBe("function");
+        expect(typeof(TestOne)).toBe("function");
     });
 
     it("should call initialize on construction", function() {
-        spyOn(Test.prototype, "initialize");
+        spyOn(TestOne.prototype, "initialize");
+        var test = new TestOne();
+        expect(TestOne.prototype.initialize).toHaveBeenCalled();
+    });
 
-        var test = new Test();
-
-        expect(Test.prototype.initialize).toHaveBeenCalled();
+    it("should inherit the constructor from the parent", function() {
+        var test = new TestOne();
+        expect(test.one).toBeFalsy();
+        expect(test.two).toBeFalsy();
+        expect(test.three).toBeFalsy();
     });
 
     it("should inherit functions from the parent", function() {
-        var test = new Test();
+        var test = new TestOne();
         expect(typeof(test.funcOne)).toBe("function");
 
         test.funcOne();
@@ -36,12 +46,24 @@ describe("class", function() {
     });
 
     it("should override parent functions", function() {
-        var test = new Test();
+        var test = new TestOne();
         expect(typeof(test.funcTwo)).toBe("function");
 
         test.funcTwo();
         expect(test.two).toBeTruthy();
         expect(test.three).toBeTruthy();
+    });
+
+    it("should create an independend child class", function() {
+        var testOne = new TestOne();
+        var testTwo = new TestTwo();
+
+        testOne.funcTwo();
+
+        expect(testOne.two).toBeTruthy();
+        expect(testOne.three).toBeTruthy();
+        expect(testTwo.two).toBeFalsy();
+        expect(testTwo.three).toBeFalsy();
     });
 
 });

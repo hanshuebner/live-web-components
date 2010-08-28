@@ -21,12 +21,11 @@ var Spinner = class({
         backgroundColor: "white"
     },
 
-    initialize: function(id, options) {
-        this.initialize.super(id, options);
+    initialize: function(element_or_id, options) {
+        this.initialize.super(element_or_id, options);
 
         this._mouseHandler = new this.MouseHandler(this);
         this._keyHandler = new this.KeyHandler(this);
-        this._focusHandler = new this.FocusHandler(this);
         this._drawer = new this.Drawer(this, options);
     },
 
@@ -58,37 +57,6 @@ var Spinner = class({
         return this._size;
     },
 
-    focus: function() {
-        this._focused = true;
-        this.draw();
-    },
-
-    blur: function() {
-        this.stopEntering();
-        this._focused = false;
-        this.draw();
-    },
-
-    hasFocus: function() {
-        return this._focused || false;
-    },
-
-    setFactor: function(value) {
-        if (value < 0.0 || value > 1.0) return;
-
-        var changed = this._factor != value;
-
-        this._factor = value;
-        this._value = this.getMinimalValue() + Math.round(this.getFactor() * (this.getMaximalValue() - this.getMinimalValue()));
-        this.draw();
-
-        if (changed && !this.isEntering()) this._triggerOnChange();
-    },
-
-    getFactor: function(value) {
-        return this._factor || 0.0;
-    },
-
     setMinimalValue: function(value) {
         this._minimalValue = value;
         this.draw();
@@ -107,6 +75,22 @@ var Spinner = class({
         return this._maximalValue;
     },
 
+    setFactor: function(value) {
+        if (value < 0.0 || value > 1.0) return;
+
+        var changed = this._factor != value;
+
+        this._factor = value;
+        this._value = this.getMinimalValue() + Math.round(this.getFactor() * (this.getMaximalValue() - this.getMinimalValue()));
+        this.draw();
+
+        if (changed && !this.isEntering()) this._triggerOnChange();
+    },
+
+    getFactor: function(value) {
+        return this._factor || 0.0;
+    },
+
     setValue: function(value) {
         if (value < this.getMinimalValue() || value > this.getMaximalValue()) return;
 
@@ -122,6 +106,13 @@ var Spinner = class({
     getValue: function() {
         return this._value || 0;
     },
+
+    /*
+    blur: function() {
+        this.stopEntering();
+        this.blur.super();
+    },
+    */
 
     startEntering: function() {
         this._entering = true;
@@ -252,27 +243,6 @@ var Spinner = class({
 
     }),
 
-    FocusHandler: class({
-
-        initialize: function(spinner) {
-            this._spinner = spinner;
-
-            this._spinner.getButtonElement().onfocus = this._onFocusHandler.bind(this);
-            this._spinner.getButtonElement().onblur = this._onBlurHandler.bind(this);
-        },
-
-        _onFocusHandler: function(event) {
-            this._spinner.focus();
-            return false;
-        },
-
-        _onBlurHandler: function(event) {
-            this._spinner.blur();
-            return false;
-        }
-
-    }),
-
     Drawer: class({
 
         OPTION_KEYS: [
@@ -292,6 +262,7 @@ var Spinner = class({
 
             this.setDefaults();
             this.setOptions(options);
+            this.draw();
         },
 
         setDefaults: function() {

@@ -3,18 +3,19 @@ var class = function(class) {
     var constructor = function() {
         if (typeof(class.extends) === "function") {
             for (var key in class.extends.prototype) {
-                var parentFunc = class.extends.prototype[key];
-                if (typeof(class[key]) === "function") { // override
-                    class[key].super = parentFunc.bind(this);
-                } else {
-                    class[key] = parentFunc;
+                switch (typeof(class[key])) {
+                case "undefined":
+                    class[key] = class.extends.prototype[key];
+                    break;
+                case "function": // override
+                    class[key].super = class.extends.prototype[key].bind(this);
+                    break;
                 }
             }
         }
 
         if (this.initialize)
             this.initialize.apply(this, arguments);
-
     };
 
     constructor.prototype = class;

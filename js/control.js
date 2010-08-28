@@ -9,6 +9,7 @@ var Control = class({
     initialize: function(element_or_id, options) {
         this._initializeButtonElement(
             typeof(element_or_id) === "string" ? document.getElementById(element_or_id) : element_or_id);
+        this._createCanvasElement();
 
         this.setDefaults();
         this.setOptions(options);
@@ -55,8 +56,22 @@ var Control = class({
         return this._width;
     },
 
-    draw: function() {
+    focus: function() {
+        this._focused = true;
+        this.draw();
+    },
 
+    blur: function() {
+        this._focused = false;
+        this.draw();
+    },
+
+    hasFocus: function() {
+        return this._focused || false;
+    },
+
+    draw: function() {
+        // has to be implemented
     },
 
     _initializeButtonElement: function(element) {
@@ -64,8 +79,8 @@ var Control = class({
             this._buttonElement = element;
             this._buttonElement.setAttribute("class", "control");
             this._buttonElement.setAttribute("style", "border: 0px; padding: 0px; background: transparent; outline: none;");
-
-            this._createCanvasElement();
+            this._buttonElement.onfocus = function() { this.focus(); }.bind(this);
+            this._buttonElement.onblur = function() { this.blur(); }.bind(this);
         } else {
             throw("The given id doesn't belong to a button element!");
         }
