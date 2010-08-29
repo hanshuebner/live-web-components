@@ -11,14 +11,16 @@ var Spinner = class({
         initialFactor: 0.5,
 
         // mouse handler
-        mouseStep: 0.5, // a value of 0.5 means, that 0.5 will be added if the mouse moves by one screen pixel
+        mouseStep: 0.5,             // a value of 0.5 means, that 0.5 will be added if the mouse moves by one screen pixel
 
         // drawer
+        lineWidth: null,            // null means, that the line width gonna be calculated
         radiusDifference: 0,
         lowArcColor: "red",
         highArcColor: "black",
         valueColor: "black",
-        valueFont: "sans-serif",
+        font: "sans-serif",
+        fontSize: null,             // null means, that the font size gonna be calculated
         cursorColor: "black",
         focusColor: "blue",
         backgroundColor: "white"
@@ -266,11 +268,13 @@ var Spinner = class({
     Drawer: class({
 
         OPTION_KEYS: [
+            "lineWidth",
             "radiusDifference",
             "lowArcColor",
             "highArcColor",
             "valueColor",
-            "valueFont",
+            "font",
+            "fontSize",
             "cursorColor",
             "focusColor",
             "backgroundColor"
@@ -301,19 +305,23 @@ var Spinner = class({
         calculateFontSize: function() {
             if (!this._context) return;
 
-            var fontSize = 0;
-            var textWidth = 0;
-            while (textWidth < (this._spinner.getSize() / 2 - this._context.lineWidth * 2)) {
-                fontSize++;
-                this._context.font = fontSize + "px " + this._valueFont;
-                textWidth = this._context.measureText("-100").width;
+            if (this._fontSize) {
+                this._context.font = this._fontSize + "px " + this._font;
+            } else {
+                var fontSize = 0;
+                var textWidth = 0;
+                while (textWidth < (this._spinner.getSize() / 2 - this._context.lineWidth * 2)) {
+                    fontSize++;
+                    this._context.font = fontSize + "px " + this._font;
+                    textWidth = this._context.measureText("-100").width;
+                }
+                this._context.font = (fontSize - 1) + "px " + this._font;
             }
-            this._context.font = (fontSize - 1) + "px " + this._valueFont;
             this._context.textBaseline = "middle";
         },
 
         calculateLineWidth: function() {
-            this._context.lineWidth = Math.max(1, Math.round(this._spinner.getSize() / 50));
+            this._context.lineWidth = this._lineWidth || Math.max(1, Math.round(this._spinner.getSize() / 30));
             this._context.lineCap = "round";
         },
 
