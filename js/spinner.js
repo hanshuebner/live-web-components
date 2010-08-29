@@ -13,6 +13,9 @@ var Spinner = class({
         // mouse handler
         mouseStep: 0.5,             // a value of 0.5 means, that 0.5 will be added if the mouse moves by one screen pixel
 
+        // key handler
+        keyStep: 1,                 // a value of 1 means, that 1 will be added by every key stroke
+
         // drawer
         lineWidth: null,            // null means, that the line width gonna be calculated
         radiusDifference: 0,
@@ -30,7 +33,7 @@ var Spinner = class({
         this._super_initialize(element_or_id, options);
 
         this._mouseHandler = new this.MouseHandler(this, options);
-        this._keyHandler = new this.KeyHandler(this);
+        this._keyHandler = new this.KeyHandler(this, options);
         this._drawer = new this.Drawer(this, options);
     },
 
@@ -201,10 +204,27 @@ var Spinner = class({
 
     KeyHandler: class({
 
-        initialize: function(spinner) {
-            this._spinner = spinner;
+        OPTION_KEYS: [
+            "keyStep"
+        ],
 
+        initialize: function(spinner, options) {
+            this._spinner = spinner;
             this._spinner.getButtonElement().onkeydown = this._onKeyDownHandler.bind(this);
+
+            this.setDefaults();
+            this.setOptions(options);
+        },
+
+        setDefaults: function() {
+            this.setOptions(this._spinner.defaults);
+        },
+
+        setOptions: function(options) {
+            options = options || { };
+            this.OPTION_KEYS.each(function(key) {
+                if (options[key]) this["_" + key] = options[key];
+            }, this);
         },
 
         _onKeyDownHandler: function(event) {
@@ -216,10 +236,10 @@ var Spinner = class({
                 this._enter();
                 return false;
             case 38: // up arrow
-                this._spinner.setValue(this._spinner.getValue() + 1);
+                this._setValue(this._spinner.getValue() + (this._keyStep || 1));
                 return false;
             case 40: // down arrow
-                this._spinner.setValue(this._spinner.getValue() - 1);
+                this._setValue(this._spinner.getValue() - (this._keyStep || 1));
                 return false;
             case 48:
             case 49:
@@ -240,6 +260,11 @@ var Spinner = class({
             default:
                 return true;
             }
+        },
+
+        _setValue: function(value) {
+            var newValue = Math.min(this._spinner.getMaximalValue(), Math.max(this._spinner.getMinimalValue(), value));
+            this._spinner.setValue(newValue);
         },
 
         _enterDigit: function(digit) {

@@ -123,7 +123,7 @@ describe("Spinner", function() {
     describe("stopEntering", function() {
 
         beforeEach(function() {
-            spinner.startEntering();            
+            spinner.startEntering();
         });
 
         it("should leave the entering-mode", function() {
@@ -206,6 +206,30 @@ describe("Spinner", function() {
             it("should assign a global mouseup handler", function() {
                 document.onmouseup();
                 expect(document.onmouseup).toBe(null);
+            });
+
+        });
+
+    });
+
+    describe("KeyHandler", function() {
+
+        describe("_onKeyDownHandler", function() {
+
+            beforeEach(function() {
+                spinner._keyHandler.setOptions({ keyStep: 5.0 });
+            });
+
+            it("should add a keyStep if up arrow is pressed", function() {
+                var oldValue = spinner.getValue();
+                spinner.getButtonElement().onkeydown({ keyCode: 38 });
+                expect(spinner.getValue() - oldValue).toBe(5);
+            });
+
+            it("should substract a keyStep if down arrow is pressed", function() {
+                var oldValue = spinner.getValue();
+                spinner.getButtonElement().onkeydown({ keyCode: 40 });
+                expect(spinner.getValue() - oldValue).toBe(-5);
             });
 
         });
