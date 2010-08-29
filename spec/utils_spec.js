@@ -5,18 +5,33 @@ describe("class", function() {
 
     beforeEach(function() {
         TestParent = class({
-            initialize: function() { this.one = this.two = false; },
-            funcOne: function() { this.one = true; },
-            funcTwo: function() { this.two = true; }
+            initialize: function(value) {
+                this.one = this.two = value;
+            },
+            funcOne: function() {
+                this.one = true;
+            },
+            funcTwo: function() {
+                this.two = true;
+            }
         });
         TestOne = class({
             extends: TestParent,
-            initialize: function() { this.initialize.super(); this.three = false; },
-            funcTwo: function() { this.funcTwo.super(); this.three = true; }
+            initialize: function(value) {
+                this._super_initialize(value);
+                this.three = value;
+            },
+            funcTwo: function() {
+                this._super_funcTwo();
+                this.three = true;
+            }
         });
         TestTwo = class({
             extends: TestParent,
-            funcTwo: function() { this.funcTwo.super(); this.three = true; }
+            funcTwo: function() {
+                this._super_funcTwo();
+                this.three = true;
+            }
         });
     });
 
@@ -31,10 +46,10 @@ describe("class", function() {
     });
 
     it("should inherit the constructor from the parent", function() {
-        var test = new TestOne();
-        expect(test.one).toBeFalsy();
-        expect(test.two).toBeFalsy();
-        expect(test.three).toBeFalsy();
+        var test = new TestOne(false);
+        expect(test.one).toBe(false);
+        expect(test.two).toBe(false);
+        expect(test.three).toBe(false);
     });
 
     it("should inherit functions from the parent", function() {

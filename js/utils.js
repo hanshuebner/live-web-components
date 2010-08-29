@@ -8,7 +8,7 @@ var class = function(class) {
                     class[key] = class.extends.prototype[key];
                     break;
                 case "function": // override
-                    class[key].super = class.extends.prototype[key].bind(this);
+                    class["_super_" + key] = class.extends.prototype[key];
                     break;
                 }
             }

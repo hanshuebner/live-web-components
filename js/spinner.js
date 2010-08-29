@@ -22,7 +22,7 @@ var Spinner = class({
     },
 
     initialize: function(element_or_id, options) {
-        this.initialize.super(element_or_id, options);
+        this._super_initialize(element_or_id, options);
 
         this._mouseHandler = new this.MouseHandler(this);
         this._keyHandler = new this.KeyHandler(this);
@@ -31,7 +31,7 @@ var Spinner = class({
 
     setOptions: function(options) {
         options = options || { };
-        this.setOptions.super(options);
+        this._super_setOptions(options);
 
         if (options.size) this.setSize(options.size);
         if (options.minimalValue) this.setMinimalValue(options.minimalValue);
@@ -46,11 +46,6 @@ var Spinner = class({
         this._size = value;
         this.setHeight(this._size);
         this.setWidth(this._size);
-        if (this._drawer) {
-            this._drawer.calculateFontSize();
-            this._drawer.calculateLineWidth();
-            this.draw();
-        }
     },
 
     getSize: function() {
@@ -107,12 +102,10 @@ var Spinner = class({
         return this._value || 0;
     },
 
-    /*
     blur: function() {
         this.stopEntering();
-        this.blur.super();
+        this._super_blur();
     },
-    */
 
     startEntering: function() {
         this._entering = true;
@@ -262,6 +255,8 @@ var Spinner = class({
 
             this.setDefaults();
             this.setOptions(options);
+            this.calculateFontSize();
+            this.calculateLineWidth();
             this.draw();
         },
 

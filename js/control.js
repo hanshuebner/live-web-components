@@ -7,8 +7,7 @@ var Control = class({
     },
 
     initialize: function(element_or_id, options) {
-        this._initializeButtonElement(
-            typeof(element_or_id) === "string" ? document.getElementById(element_or_id) : element_or_id);
+        this._initializeButtonElement(element_or_id);
         this._createCanvasElement();
 
         this.setDefaults();
@@ -59,11 +58,13 @@ var Control = class({
     focus: function() {
         this._focused = true;
         this.draw();
+        // printLine("focus " + this._buttonElement.id);
     },
 
     blur: function() {
         this._focused = false;
         this.draw();
+        // printLine("blur " + this._buttonElement.id);
     },
 
     hasFocus: function() {
@@ -74,7 +75,8 @@ var Control = class({
         // has to be implemented
     },
 
-    _initializeButtonElement: function(element) {
+    _initializeButtonElement: function(element_or_id) {
+        element = typeof(element_or_id) === "string" ? document.getElementById(element_or_id) : element_or_id;
         if (element && element.nodeName == "BUTTON") {
             this._buttonElement = element;
             this._buttonElement.setAttribute("class", "control");
