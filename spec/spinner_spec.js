@@ -141,4 +141,71 @@ describe("Spinner", function() {
 
     });
 
+    describe("MouseHandler", function() {
+
+        describe("_onMouseDownHandler", function() {
+
+            it("should move the focus to the current control", function() {
+                spyOn(spinner.getButtonElement(), "focus");
+                spinner.getButtonElement().onmousedown({ });
+                expect(spinner.getButtonElement().focus).toHaveBeenCalled();
+            });
+
+            it("should assign a global mousemove handler", function() {
+                spinner.getButtonElement().onmousedown({ });
+                expect(typeof(document.onmousemove)).toBe("function");
+            });
+
+            it("should assign a global mouseup handler", function() {
+                spinner.getButtonElement().onmousedown({ });
+                expect(typeof(document.onmouseup)).toBe("function");
+            });
+
+        });
+
+        describe("_onMouseMoveHandler", function() {
+
+            beforeEach(function() {
+                spinner._mouseHandler._getScreenHeight = function() { return 1000.0; };
+                spinner.setFactor(0.5);
+                spinner.getButtonElement().onmousedown({ screenY: 0 });
+            });
+
+            it("should calculate the new factor", function() {
+                document.onmousemove({ screenY: 100 });
+                expect(spinner.getFactor()).toBe(0.75);
+
+                document.onmousemove({ screenY: -100 });
+                expect(spinner.getFactor()).toBe(0.25);
+            });
+
+            it("should calculate the new factor based on the mouseStep", function() {
+                spinner._mouseHandler.setOptions({ mouseStep: 1.0 });
+
+                document.onmousemove({ screenY: 100 });
+                expect(spinner.getFactor()).toBe(1.0);
+            });
+
+        });
+
+        describe("_onMouseUpHandler", function() {
+
+            beforeEach(function() {
+                spinner.getButtonElement().onmousedown({ });
+            });
+
+            it("should unassign the global mousemove handler", function() {
+                document.onmouseup();
+                expect(document.onmousemove).toBe(null);
+            });
+
+            it("should assign a global mouseup handler", function() {
+                document.onmouseup();
+                expect(document.onmouseup).toBe(null);
+            });
+
+        });
+
+    });
+
 });

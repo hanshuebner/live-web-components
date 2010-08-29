@@ -10,6 +10,9 @@ var Spinner = class({
         initialValue: 0,
         initialFactor: 0.5,
 
+        // mouse handler
+        mouseStep: 0.5, // a value of 0.5 means, that 0.5 will be added if the mouse moves by one screen pixel
+
         // drawer
         radiusDifference: 0,
         lowArcColor: "red",
@@ -24,7 +27,7 @@ var Spinner = class({
     initialize: function(element_or_id, options) {
         this._super_initialize(element_or_id, options);
 
-        this._mouseHandler = new this.MouseHandler(this);
+        this._mouseHandler = new this.MouseHandler(this, options);
         this._keyHandler = new this.KeyHandler(this);
         this._drawer = new this.Drawer(this, options);
     },
@@ -131,10 +134,31 @@ var Spinner = class({
 
     MouseHandler: class({
 
-        initialize: function(spinner) {
-            this._spinner = spinner;
+        OPTION_KEYS: [
+            "mouseStep"
+        ],
 
+        initialize: function(spinner, options) {
+            this._spinner = spinner;
             this._spinner.getButtonElement().onmousedown = this._onMouseDownHandler.bind(this);
+
+            this.setDefaults();
+            this.setOptions(options);
+        },
+
+        setDefaults: function() {
+            this.setOptions(this._spinner.defaults);
+        },
+
+        setOptions: function(options) {
+            options = options || { };
+            this.OPTION_KEYS.each(function(key) {
+                if (options[key]) this["_" + key] = options[key];
+            }, this);
+        },
+
+        _getScreenHeight: function() {
+            return screen.availHeight;
         },
 
         _onMouseDownHandler: function(event) {
@@ -150,10 +174,11 @@ var Spinner = class({
         },
 
         _onMouseMoveHandler: function(event) {
+            var range = Math.abs(this._spinner.getMaximalValue() - this._spinner.getMinimalValue()) / this._mouseStep;
             var difference = event.screenY - this._startY;
             var sign = difference < 0 ? -1 : 1;
-            var normalizedDifference = Math.min(Math.abs(difference), 500) * sign;
-            var factorDifference = difference / 500.0;
+            var normalizedDifference = Math.min(Math.abs(difference), range) * sign;
+            var factorDifference = difference / range;
             var factor = Math.max(0.0, Math.min(1.0, this._startFactor + factorDifference))
 
             this._spinner.setFactor(factor);
@@ -261,15 +286,13 @@ var Spinner = class({
         },
 
         setDefaults: function() {
-            this.OPTION_KEYS.each(function(attribute) {
-                this["_" + attribute] = this._spinner.defaults[attribute];
-            }, this);
+            this.setOptions(this._spinner.defaults);
         },
 
         setOptions: function(options) {
             options = options || { };
-            this.OPTION_KEYS.each(function(attribute) {
-                if (options[attribute]) this["_" + attribute] = options[attribute];
+            this.OPTION_KEYS.each(function(key) {
+                if (options[key]) this["_" + key] = options[key];
             }, this);
         },
 
@@ -317,7 +340,7 @@ var Spinner = class({
             this._context.arc(
                     size / 2,
                     size / 2,
-                    size / 2 - this._context.lineWidth - this._radiusDifference,
+                    size / 2 - this._context.lineWidth - (this._radiusDifference || 0),
                     (Math.PI / 2),
                     angle,
                     false
