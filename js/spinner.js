@@ -115,9 +115,11 @@ var Spinner = class({
     },
 
     stopEntering: function() {
-        this._entering = false;
-        this.draw();
-        this._triggerOnChange();
+        if (this.isEntering()) {
+            this._entering = false;
+            this.draw();
+            this._triggerOnChange();
+        }
     },
 
     isEntering: function() {

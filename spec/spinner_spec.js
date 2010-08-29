@@ -122,6 +122,10 @@ describe("Spinner", function() {
 
     describe("stopEntering", function() {
 
+        beforeEach(function() {
+            spinner.startEntering();            
+        });
+
         it("should leave the entering-mode", function() {
             spinner.stopEntering();
             expect(spinner.isEntering()).toBeFalsy();
