@@ -42,9 +42,9 @@ describe("Spinner", function() {
     describe("blur", function() {
 
         it("should end value entering", function() {
-            spyOn(spinner, "stopEntering");
+            spyOn(spinner, "abortEntering");
             spinner.blur();
-            expect(spinner.stopEntering).toHaveBeenCalled();
+            expect(spinner.abortEntering).toHaveBeenCalled();
         });
 
     });
@@ -106,40 +106,6 @@ describe("Spinner", function() {
         it("should trigger a onchange event", function() {
             spyOn(spinner, "onchange");
             spinner.setValue(60);
-            expect(spinner.onchange).toHaveBeenCalled();
-        });
-
-    });
-
-    describe("startEntering", function() {
-
-        it("should enter the entering-mode", function() {
-            spinner.startEntering();
-            expect(spinner.isEntering()).toBeTruthy();
-        });
-
-    });
-
-    describe("stopEntering", function() {
-
-        beforeEach(function() {
-            spinner.startEntering();
-        });
-
-        it("should leave the entering-mode", function() {
-            spinner.stopEntering();
-            expect(spinner.isEntering()).toBeFalsy();
-        });
-
-        it("should invoke a draw", function() {
-            spyOn(spinner, "draw");
-            spinner.stopEntering();
-            expect(spinner.draw).toHaveBeenCalled();
-        });
-
-        it("should trigger a onchange event", function() {
-            spyOn(spinner, "onchange");
-            spinner.stopEntering();
             expect(spinner.onchange).toHaveBeenCalled();
         });
 
@@ -230,6 +196,26 @@ describe("Spinner", function() {
                 var oldValue = spinner.getValue();
                 spinner.getButtonElement().onkeydown({ keyCode: 40 });
                 expect(spinner.getValue() - oldValue).toBe(-5);
+            });
+
+            it("should go into the entering-mode if a digit is pressed", function() {
+                spinner.getButtonElement().onkeydown({ keyCode: 49 });
+                expect(spinner.isEntering()).toBeTruthy();
+            });
+
+            it("should leave the entering-mode and commit the new value if enter is pressed", function() {
+                spinner.getButtonElement().onkeydown({ keyCode: 49 });
+                spinner.getButtonElement().onkeydown({ keyCode: 13 });
+                expect(spinner.isEntering()).toBeFalsy();
+                expect(spinner.getValue()).toBe(1);
+            });
+
+            it("should accept negative values", function() {
+                spinner.getButtonElement().onkeydown({ keyCode: 189 });
+                spinner.getButtonElement().onkeydown({ keyCode: 49 });
+                spinner.getButtonElement().onkeydown({ keyCode: 13 });
+                expect(spinner.isEntering()).toBeFalsy();
+                expect(spinner.getValue()).toBe(-1);
             });
 
         });

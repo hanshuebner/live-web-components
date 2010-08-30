@@ -86,7 +86,8 @@ var Spinner = class({
         this._value = this.getMinimalValue() + Math.round(this.getFactor() * (this.getMaximalValue() - this.getMinimalValue()));
         this.draw();
 
-        if (changed && !this.isEntering()) this._triggerOnChange();
+        this.abortEntering();
+        if (changed) this._triggerOnChange();
     },
 
     getFactor: function(value) {
@@ -102,7 +103,8 @@ var Spinner = class({
         this._factor = (this._value - this.getMinimalValue()) / (this.getMaximalValue() - this.getMinimalValue());
         this.draw();
 
-        if (changed && !this.isEntering()) this._triggerOnChange();
+        this.abortEntering();
+        if (changed) this._triggerOnChange();
     },
 
     getValue: function() {
@@ -110,24 +112,20 @@ var Spinner = class({
     },
 
     blur: function() {
-        this.stopEntering();
+        this.abortEntering();
         this._super_blur();
     },
 
-    startEntering: function() {
-        this._entering = true;
+    getEnteredText: function() {
+        return this._keyHandler.getEnteredText();
     },
 
-    stopEntering: function() {
-        if (this.isEntering()) {
-            this._entering = false;
-            this.draw();
-            this._triggerOnChange();
-        }
+    abortEntering: function() {
+        if (this.isEntering()) this._keyHandler.abortEntering();
     },
 
     isEntering: function() {
-        return this._entering;
+        return this._keyHandler && this._keyHandler.isEntering();
     },
 
     draw: function() {
@@ -205,19 +203,36 @@ var Spinner = class({
             this._spinner.getButtonElement().onkeydown = this._onKeyDownHandler.bind(this);
 
             this._super_initialize(this._spinner.defaults, options);
+
+            this._enteredText = null;
+        },
+
+        getEnteredText: function() {
+            return this._enteredText;
+        },
+
+        abortEntering: function() {
+            this._enteredText = null;
+            this._spinner.draw();
+        },
+
+        isEntering: function() {
+            return !!this._enteredText;
         },
 
         _onKeyDownHandler: function(event) {
             switch (event.keyCode) {
             case 8: // backspace
-                this._deleteDigit();
+                this._deleteCharacter();
                 return false;
             case 13: // enter
                 this._enter();
                 return false;
+            case 37: // left arrow
             case 38: // up arrow
                 this._setValue(this._spinner.getValue() + (this._keyStep || 1));
                 return false;
+            case 39: // right arrow
             case 40: // down arrow
                 this._setValue(this._spinner.getValue() - (this._keyStep || 1));
                 return false;
@@ -231,11 +246,14 @@ var Spinner = class({
             case 55:
             case 56:
             case 57: // digits 0-9
-                this._enterDigit(event.keyCode - 48);
+                this._enterCharacter(event.keyCode - 48);
                 return false;
             case 109: // substract
             case 189: // "-"
-                this._toggleSign();
+                this._enterCharacter("-");
+                return false;
+            case 190: // "."
+                this._enterCharacter(".");
                 return false;
             default:
                 return true;
@@ -247,25 +265,20 @@ var Spinner = class({
             this._spinner.setValue(newValue);
         },
 
-        _enterDigit: function(digit) {
-            var value = this._spinner.isEntering() ? this._spinner.getValue() : 0;
-            value *= 10;
-            value += digit;
-            this._spinner.startEntering();
-            this._spinner.setValue(value);
+        _enterCharacter: function(character) {
+            if (!this.isEntering()) this._enteredText = "";
+            this._enteredText += character;
+            this._spinner.draw();
         },
 
-        _deleteDigit: function() {
+        _deleteCharacter: function() {
             if (!this._control.isEntering()) return;
             this._spinner.setValue(Math.floor(this._spinner.getValue() / 10));
         },
 
         _enter: function() {
-            this._spinner.stopEntering();
-        },
-
-        _toggleSign: function() {
-            this._spinner.setValue(this._spinner.getValue() * -1);
+            this._setValue(parseFloat(this._enteredText));
+            this._enteredText = null;
         }
 
     }),
@@ -357,7 +370,11 @@ var Spinner = class({
             var size = this._spinner.getSize();
 
             this._context.fillStyle = this._valueColor;
-            this._context.fillText(this._spinner.getValue(), size / 2 + this._context.lineWidth, 3 * size / 4);
+            this._context.fillText(
+                this._getDisplayText(),
+                size / 2 + this._context.lineWidth,
+                3 * size / 4
+            );
         },
 
         _drawCursor: function() {
@@ -367,13 +384,17 @@ var Spinner = class({
 
             var cursorX = size / 2 +
                           this._context.lineWidth * 2 +
-                          this._context.measureText(this._spinner.getValue()).width;
+                          this._context.measureText(this._getDisplayText()).width;
 
             this._context.strokeStyle = this._cursorColor;
             this._context.beginPath();
             this._context.moveTo(cursorX, Math.round(size * 0.60));
             this._context.lineTo(cursorX, Math.round(size * 0.85));
             this._context.stroke();
+        },
+
+        _getDisplayText: function() {
+            return this._spinner.isEntering() ? this._spinner.getEnteredText() : this._spinner.getValue();
         }
 
     })

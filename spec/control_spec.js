@@ -20,10 +20,6 @@ describe("Control", function() {
             expect(control.getCanvasElement().nodeName).toBe("CANVAS");
         });
 
-        it("should set the defaults", function() {
-            expect(control.getHeight()).toBe(100);
-        });
-
         it("should set the options", function() {
             expect(control.getWidth()).toBe(200);
         });
