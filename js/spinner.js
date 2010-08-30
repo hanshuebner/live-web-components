@@ -316,14 +316,20 @@ var Spinner = class({
             } else {
                 var fontSize = 0;
                 var textWidth = 0;
-                while (textWidth < (this._spinner.getSize() / 2 - this._context.lineWidth * 2)) {
+                while (textWidth < (this._spinner.getSize() / 2 - this._lineWidth * 2)) {
                     fontSize++;
-                    this._context.font = fontSize + "px " + this._font;
-                    textWidth = this._context.measureText("-100").width;
+                    textWidth = this._measureFontSize(fontSize);
                 }
                 this._context.font = (fontSize - 1) + "px " + this._font;
             }
             this._context.textBaseline = "middle";
+        },
+
+        _measureFontSize: function(fontSize) {
+            this._context.font = fontSize + "px " + this._font;
+            var minimalValueWidth = this._context.measureText(this._spinner.getMinimalValue()).width;
+            var maximalValueWidth = this._context.measureText(this._spinner.getMaximalValue()).width;
+            return Math.max(minimalValueWidth, maximalValueWidth);
         },
 
         draw: function() {
@@ -345,7 +351,7 @@ var Spinner = class({
             this._context.arc(
                     size / 2,
                     size / 2,
-                    size / 2 - this._context.lineWidth - (this._radiusDifference || 0),
+                    size / 2 - this._lineWidth - (this._radiusDifference || 0),
                     (Math.PI / 2),
                     angle,
                     false
@@ -358,7 +364,7 @@ var Spinner = class({
             this._context.arc(
                     size / 2,
                     size / 2,
-                    size / 2 - this._context.lineWidth,
+                    size / 2 - this._lineWidth,
                     angle,
                     2 * Math.PI,
                     false
@@ -372,7 +378,7 @@ var Spinner = class({
             this._context.fillStyle = this._valueColor;
             this._context.fillText(
                 this._getDisplayText(),
-                size / 2 + this._context.lineWidth,
+                size / 2 + this._lineWidth,
                 3 * size / 4
             );
         },
@@ -383,7 +389,7 @@ var Spinner = class({
             var size = this._spinner.getSize();
 
             var cursorX = size / 2 +
-                          this._context.lineWidth * 2 +
+                          this._lineWidth * 2 +
                           this._context.measureText(this._getDisplayText()).width;
 
             this._context.strokeStyle = this._cursorColor;
