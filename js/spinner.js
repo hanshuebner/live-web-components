@@ -17,7 +17,7 @@ var Spinner = class({
         keyStep: 1,                 // a value of 1 means, that 1 will be added by every key stroke
 
         // drawer
-        lineWidth: null,            // null means, that the line width gonna be calculated
+        lineWidth: 1,
         radiusDifference: 0,
         lowArcColor: "red",
         highArcColor: "black",
@@ -132,6 +132,7 @@ var Spinner = class({
     },
 
     draw: function() {
+        this._super_draw();
         if (this._drawer) this._drawer.draw();
     },
 
@@ -256,7 +257,7 @@ var Spinner = class({
         },
 
         _deleteDigit: function() {
-            if (!this._spinner.isEntering()) return;
+            if (!this._control.isEntering()) return;
             this._spinner.setValue(Math.floor(this._spinner.getValue() / 10));
         },
 
@@ -282,9 +283,7 @@ var Spinner = class({
             "valueColor",
             "font",
             "fontSize",
-            "cursorColor",
-            "focusColor",
-            "backgroundColor"
+            "cursorColor"
         ],
 
         initialize: function(spinner, options) {
@@ -294,7 +293,6 @@ var Spinner = class({
             this._super_initialize(this._spinner.defaults, options);
 
             this.calculateFontSize();
-            this.calculateLineWidth();
             this.draw();
         },
 
@@ -316,30 +314,19 @@ var Spinner = class({
             this._context.textBaseline = "middle";
         },
 
-        calculateLineWidth: function() {
-            this._context.lineWidth = this._lineWidth || Math.max(1, Math.round(this._spinner.getSize() / 30));
-            this._context.lineCap = "round";
-        },
-
         draw: function() {
             if (!this._context) return;
-            this._clear();
             this._drawArcs();
             this._drawValue();
             this._drawCursor();
-            this._drawFocus();
-        },
-
-        _clear: function() {
-            var size = this._spinner.getSize();
-
-            this._context.fillStyle = this._backgroundColor;
-            this._context.fillRect(0, 0, size, size);
         },
 
         _drawArcs: function() {
             var size = this._spinner.getSize();
             var angle = (Math.PI / 2) + (3 * (Math.PI / 2) * this._spinner.getFactor());
+
+            this._context.lineWidth = (this._lineWidth || 1);
+            this._context.lineCap = "round";
 
             this._context.strokeStyle = this._lowArcColor;
             this._context.beginPath();
@@ -387,30 +374,6 @@ var Spinner = class({
             this._context.beginPath();
             this._context.moveTo(cursorX, Math.round(size * 0.60));
             this._context.lineTo(cursorX, Math.round(size * 0.85));
-            this._context.stroke();
-        },
-
-        _drawFocus: function() {
-            if (!this._spinner.hasFocus()) return;
-
-            var size = this._spinner.getSize();
-            var length = size / 8;
-
-            this._context.strokeStyle = this._focusColor;
-            this._context.beginPath();
-            this._context.moveTo(0, 0);
-            this._context.lineTo(length, 0);
-            this._context.moveTo(size - length, 0);
-            this._context.lineTo(size, 0);
-            this._context.lineTo(size, length);
-            this._context.moveTo(size, size - length);
-            this._context.lineTo(size, size);
-            this._context.lineTo(size - length, size);
-            this._context.moveTo(length, size);
-            this._context.lineTo(0, size);
-            this._context.lineTo(0, size - length);
-            this._context.moveTo(0, length);
-            this._context.lineTo(0, 0);
             this._context.stroke();
         }
 

@@ -1,14 +1,13 @@
 
 var Control = class({
 
-    defaults: {
-        height: 100,
-        width: 100
-    },
+    defaults: { },
 
     initialize: function(element_or_id, options) {
         this._initializeButtonElement(element_or_id);
         this._createCanvasElement();
+
+        this._controlDrawer = new this.ControlDrawer(this, options);
 
         this.setDefaults();
         this.setOptions(options);
@@ -72,7 +71,7 @@ var Control = class({
     },
 
     draw: function() {
-        // has to be implemented
+        if (this._controlDrawer) this._controlDrawer.draw();
     },
 
     _initializeButtonElement: function(element_or_id) {
@@ -91,6 +90,66 @@ var Control = class({
     _createCanvasElement: function() {
         this._canvasElement = document.createElement("canvas");
         this._buttonElement.appendChild(this._canvasElement);
-    }
+    },
+
+    ControlDrawer: class({
+
+        extends: Optionable,
+
+        OPTION_KEYS: [
+            "focusColor",
+            "backgroundColor"
+        ],
+
+        initialize: function(control, options) {
+            this._control = control;
+            this._context = this._control.getCanvasElement().getContext("2d");
+
+            this._super_initialize(this._control.defaults, options);
+
+            this.draw();
+        },
+
+        draw: function() {
+            if (!this._context) return;
+            this._clear();
+            this._drawFocus();
+        },
+
+        _clear: function() {
+            this._context.fillStyle = this._backgroundColor;
+            this._context.fillRect(0, 0, this._control.getWidth(), this._control.getHeight());
+        },
+        
+        _drawFocus: function() {
+            if (!this._control.hasFocus()) return;
+
+            var width = this._control.getWidth();
+            var height = this._control.getHeight();
+
+            var widthLength = width / 8;
+            var heightLength = height / 8;
+
+            this._context.lineWidth = 1;
+            this._context.lineCap = "round";
+            this._context.strokeStyle = this._focusColor;
+            this._context.beginPath();
+            this._context.moveTo(0, 0);
+            this._context.lineTo(widthLength, 0);
+            this._context.moveTo(width - widthLength, 0);
+            this._context.lineTo(width, 0);
+            this._context.lineTo(width, heightLength);
+            this._context.moveTo(width, height - heightLength);
+            this._context.lineTo(width, height);
+            this._context.lineTo(width - widthLength, height);
+            this._context.moveTo(widthLength, height);
+            this._context.lineTo(0, height);
+            this._context.lineTo(0, height - heightLength);
+            this._context.moveTo(0, heightLength);
+            this._context.lineTo(0, 0);
+            this._context.stroke();
+        }
+
+    })
 
 });
