@@ -120,6 +120,10 @@ var Spinner = class({
         return this._keyHandler.getEnteredText();
     },
 
+    getMaximalInputLength: function() {
+        return Math.max(("" + this.getMinimalValue()).length, ("" + this.getMaximalValue()).length);
+    },
+
     abortEntering: function() {
         if (this.isEntering()) this._keyHandler.abortEntering();
     },
@@ -204,6 +208,7 @@ var Spinner = class({
 
             this._super_initialize(this._spinner.defaults, options);
 
+            this._entering = false;
             this._enteredText = null;
         },
 
@@ -212,12 +217,13 @@ var Spinner = class({
         },
 
         abortEntering: function() {
+            this._entering = false;
             this._enteredText = null;
             this._spinner.draw();
         },
 
         isEntering: function() {
-            return !!this._enteredText;
+            return !!this._entering;
         },
 
         _onKeyDownHandler: function(event) {
@@ -267,17 +273,23 @@ var Spinner = class({
 
         _enterCharacter: function(character) {
             if (!this.isEntering()) this._enteredText = "";
+            if (this._spinner.getMaximalInputLength() == this._enteredText.length) return;
+
+            this._entering = true;
             this._enteredText += character;
+
             this._spinner.draw();
         },
 
         _deleteCharacter: function() {
-            if (!this._control.isEntering()) return;
-            this._spinner.setValue(Math.floor(this._spinner.getValue() / 10));
+            if (!this.isEntering()) return;
+            this._enteredText = this._enteredText.substring(0, Math.max(0, this._enteredText.length - 1));
+            this._spinner.draw();
         },
 
         _enter: function() {
             this._setValue(parseFloat(this._enteredText));
+            this._entering = false;
             this._enteredText = null;
         }
 
