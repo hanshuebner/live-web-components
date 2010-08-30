@@ -141,6 +141,8 @@ var Spinner = class({
 
     MouseHandler: class({
 
+        extends: Optionable,
+
         OPTION_KEYS: [
             "mouseStep"
         ],
@@ -149,19 +151,7 @@ var Spinner = class({
             this._spinner = spinner;
             this._spinner.getButtonElement().onmousedown = this._onMouseDownHandler.bind(this);
 
-            this.setDefaults();
-            this.setOptions(options);
-        },
-
-        setDefaults: function() {
-            this.setOptions(this._spinner.defaults);
-        },
-
-        setOptions: function(options) {
-            options = options || { };
-            this.OPTION_KEYS.each(function(key) {
-                if (options[key]) this["_" + key] = options[key];
-            }, this);
+            this._super_initialize(this._spinner.defaults, options);
         },
 
         _getScreenHeight: function() {
@@ -204,6 +194,8 @@ var Spinner = class({
 
     KeyHandler: class({
 
+        extends: Optionable,
+
         OPTION_KEYS: [
             "keyStep"
         ],
@@ -212,19 +204,7 @@ var Spinner = class({
             this._spinner = spinner;
             this._spinner.getButtonElement().onkeydown = this._onKeyDownHandler.bind(this);
 
-            this.setDefaults();
-            this.setOptions(options);
-        },
-
-        setDefaults: function() {
-            this.setOptions(this._spinner.defaults);
-        },
-
-        setOptions: function(options) {
-            options = options || { };
-            this.OPTION_KEYS.each(function(key) {
-                if (options[key]) this["_" + key] = options[key];
-            }, this);
+            this._super_initialize(this._spinner.defaults, options);
         },
 
         _onKeyDownHandler: function(event) {
@@ -292,6 +272,8 @@ var Spinner = class({
 
     Drawer: class({
 
+        extends: Optionable,
+
         OPTION_KEYS: [
             "lineWidth",
             "radiusDifference",
@@ -309,22 +291,11 @@ var Spinner = class({
             this._spinner = spinner;
             this._context = this._spinner.getCanvasElement().getContext("2d");
 
-            this.setDefaults();
-            this.setOptions(options);
+            this._super_initialize(this._spinner.defaults, options);
+
             this.calculateFontSize();
             this.calculateLineWidth();
             this.draw();
-        },
-
-        setDefaults: function() {
-            this.setOptions(this._spinner.defaults);
-        },
-
-        setOptions: function(options) {
-            options = options || { };
-            this.OPTION_KEYS.each(function(key) {
-                if (options[key]) this["_" + key] = options[key];
-            }, this);
         },
 
         calculateFontSize: function() {
