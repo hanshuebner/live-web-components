@@ -11,13 +11,14 @@ var Spinner = class({
         initialFactor: 0.5,
 
         // mouse handler
-        mouseStep: 0.5,             // a value of 0.5 means, that 0.5 will be added if the mouse moves by one screen pixel
+        mouseScale: 1,              // a value of 1 means, that the spinner has turned completly around
+                                    // if the mouse has been moved 1 time the distance of "size".
 
         // key handler
         keyStep: 1,                 // a value of 1 means, that 1 will be added by every key stroke
 
         // drawer
-        lineWidth: 1,
+        lineWidth: 3,
         radiusDifference: 0,
         lowArcColor: "red",
         highArcColor: "black",
@@ -120,10 +121,6 @@ var Spinner = class({
         return this._keyHandler.getEnteredText();
     },
 
-    getMaximalInputLength: function() {
-        return Math.max(("" + this.getMinimalValue()).length, ("" + this.getMaximalValue()).length);
-    },
-
     abortEntering: function() {
         if (this.isEntering()) this._keyHandler.abortEntering();
     },
@@ -146,7 +143,7 @@ var Spinner = class({
         extends: Optionable,
 
         OPTION_KEYS: [
-            "mouseStep"
+            "mouseScale"
         ],
 
         initialize: function(spinner, options) {
@@ -173,7 +170,7 @@ var Spinner = class({
         },
 
         _onMouseMoveHandler: function(event) {
-            var range = Math.abs(this._spinner.getMaximalValue() - this._spinner.getMinimalValue()) / this._mouseStep;
+            var range = this._spinner.getSize() * this._mouseScale;
             var difference = event.screenY - this._startY;
             var sign = difference < 0 ? -1 : 1;
             var normalizedDifference = Math.min(Math.abs(difference), range) * sign;
@@ -236,11 +233,11 @@ var Spinner = class({
                 return false;
             case 37: // left arrow
             case 38: // up arrow
-                this._setValue(this._spinner.getValue() + (this._keyStep || 1));
+                this._setValue(Math.round(this._spinner.getValue() + (this._keyStep || 1)));
                 return false;
             case 39: // right arrow
             case 40: // down arrow
-                this._setValue(this._spinner.getValue() - (this._keyStep || 1));
+                this._setValue(Math.round(this._spinner.getValue() - (this._keyStep || 1)));
                 return false;
             case 48:
             case 49:
@@ -273,8 +270,6 @@ var Spinner = class({
 
         _enterCharacter: function(character) {
             if (!this.isEntering()) this._enteredText = "";
-            if (this._spinner.getMaximalInputLength() == this._enteredText.length) return;
-
             this._entering = true;
             this._enteredText += character;
 
@@ -387,10 +382,13 @@ var Spinner = class({
         _drawValue: function() {
             var size = this._spinner.getSize();
 
+            var x = this._spinner.isEntering() ? size / 2 + this._lineWidth : size - this._lineWidth;
+
             this._context.fillStyle = this._valueColor;
+            this._context.textAlign = this._spinner.isEntering() ? "left" : "right";
             this._context.fillText(
                 this._getDisplayText(),
-                size / 2 + this._lineWidth,
+                x,
                 3 * size / 4
             );
         },
