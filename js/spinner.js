@@ -25,8 +25,7 @@ var Spinner = class({
         font: "sans-serif",
         fontSize: null,             // null means, that the font size gonna be calculated
         cursorColor: "black",
-        focusColor: "blue",
-        backgroundColor: "white"
+        focusColor: "blue"
     },
 
     initialize: function(element_or_id, options) {

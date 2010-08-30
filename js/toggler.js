@@ -19,8 +19,7 @@ var Toggler = class({
         fontSize: null,             // null means, that the font size gonna be calculated
 
         // control drawer
-        focusColor: "blue",
-        backgroundColor: "white"
+        focusColor: "blue"
     },
 
     initialize: function(element_or_id, options) {

@@ -97,8 +97,7 @@ var Control = class({
         extends: Optionable,
 
         OPTION_KEYS: [
-            "focusColor",
-            "backgroundColor"
+            "focusColor"
         ],
 
         initialize: function(control, options) {
@@ -117,10 +116,9 @@ var Control = class({
         },
 
         _clear: function() {
-            this._context.fillStyle = this._backgroundColor;
-            this._context.fillRect(0, 0, this._control.getWidth(), this._control.getHeight());
+            this._context.clearRect(0, 0, this._control.getWidth(), this._control.getHeight());
         },
-        
+
         _drawFocus: function() {
             if (!this._control.hasFocus()) return;
 
