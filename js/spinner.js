@@ -153,10 +153,6 @@ var Spinner = class({
             this._super_initialize(this._spinner.defaults, options);
         },
 
-        _getScreenHeight: function() {
-            return screen.availHeight;
-        },
-
         _onMouseDownHandler: function(event) {
             this._spinner.getButtonElement().focus();
 

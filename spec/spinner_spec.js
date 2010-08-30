@@ -1,11 +1,13 @@
 
 describe("Spinner", function() {
 
-    var spinner;
+    var spinner, spinnerDriver;
 
     beforeEach(function() {
         spinner = new Spinner(buttonElement);
         spinner.onchange = function() { };
+
+        spinnerDriver = new SpinnerDriver(spinner);
     });
 
     it("should extend Control", function() {
@@ -117,17 +119,18 @@ describe("Spinner", function() {
 
             it("should move the focus to the current control", function() {
                 spyOn(spinner.getButtonElement(), "focus");
-                spinner.getButtonElement().onmousedown({ });
+                spinnerDriver.mouseDown();
                 expect(spinner.getButtonElement().focus).toHaveBeenCalled();
             });
 
             it("should assign a global mousemove handler", function() {
-                spinner.getButtonElement().onmousedown({ });
+                spinnerDriver.mouseDown();
+                expect(typeof(document.onmousemove)).toBe("function");
                 expect(typeof(document.onmousemove)).toBe("function");
             });
 
             it("should assign a global mouseup handler", function() {
-                spinner.getButtonElement().onmousedown({ });
+                spinnerDriver.mouseDown();
                 expect(typeof(document.onmouseup)).toBe("function");
             });
 
@@ -136,24 +139,23 @@ describe("Spinner", function() {
         describe("_onMouseMoveHandler", function() {
 
             beforeEach(function() {
-                spinner._mouseHandler._getScreenHeight = function() { return 1000.0; };
                 spinner.setFactor(0.5);
-                spinner.getButtonElement().onmousedown({ screenY: 0 });
+                spinnerDriver.mouseDown(0);
             });
 
             it("should calculate the new factor", function() {
-                document.onmousemove({ screenY: 100 });
+                spinnerDriver.mouseMove(25);
                 expect(spinner.getFactor()).toBe(0.75);
 
-                document.onmousemove({ screenY: -100 });
+                spinnerDriver.mouseMove(-25);
                 expect(spinner.getFactor()).toBe(0.25);
             });
 
-            it("should calculate the new factor based on the mouseStep", function() {
-                spinner._mouseHandler.setOptions({ mouseStep: 1.0 });
+            it("should calculate the new factor based on the mouseScale", function() {
+                spinner._mouseHandler.setOptions({ mouseScale: 2 });
 
-                document.onmousemove({ screenY: 100 });
-                expect(spinner.getFactor()).toBe(1.0);
+                spinnerDriver.mouseMove(50);
+                expect(spinner.getFactor()).toBe(0.75);
             });
 
         });
@@ -161,16 +163,16 @@ describe("Spinner", function() {
         describe("_onMouseUpHandler", function() {
 
             beforeEach(function() {
-                spinner.getButtonElement().onmousedown({ });
+                spinnerDriver.mouseDown();
             });
 
             it("should unassign the global mousemove handler", function() {
-                document.onmouseup();
+                spinnerDriver.mouseUp();
                 expect(document.onmousemove).toBe(null);
             });
 
             it("should assign a global mouseup handler", function() {
-                document.onmouseup();
+                spinnerDriver.mouseUp();
                 expect(document.onmouseup).toBe(null);
             });
 
@@ -188,32 +190,32 @@ describe("Spinner", function() {
 
             it("should add a keyStep if up arrow is pressed", function() {
                 var oldValue = spinner.getValue();
-                spinner.getButtonElement().onkeydown({ keyCode: 38 });
+                spinnerDriver.enterKey(38); // up arrow
                 expect(spinner.getValue() - oldValue).toBe(5);
             });
 
             it("should substract a keyStep if down arrow is pressed", function() {
                 var oldValue = spinner.getValue();
-                spinner.getButtonElement().onkeydown({ keyCode: 40 });
+                spinnerDriver.enterKey(40); // down arrow
                 expect(spinner.getValue() - oldValue).toBe(-5);
             });
 
             it("should go into the entering-mode if a digit is pressed", function() {
-                spinner.getButtonElement().onkeydown({ keyCode: 49 });
+                spinnerDriver.enterKey(49); // "1"
                 expect(spinner.isEntering()).toBeTruthy();
             });
 
             it("should leave the entering-mode and commit the new value if enter is pressed", function() {
-                spinner.getButtonElement().onkeydown({ keyCode: 49 });
-                spinner.getButtonElement().onkeydown({ keyCode: 13 });
+                spinnerDriver.enterKey(49); // "1"
+                spinnerDriver.enterKey(13); // enter
                 expect(spinner.isEntering()).toBeFalsy();
                 expect(spinner.getValue()).toBe(1);
             });
 
             it("should accept negative values", function() {
-                spinner.getButtonElement().onkeydown({ keyCode: 189 });
-                spinner.getButtonElement().onkeydown({ keyCode: 49 });
-                spinner.getButtonElement().onkeydown({ keyCode: 13 });
+                spinnerDriver.enterKey(189); // "-"
+                spinnerDriver.enterKey(49);  // "1"
+                spinnerDriver.enterKey(13);  // enter
                 expect(spinner.isEntering()).toBeFalsy();
                 expect(spinner.getValue()).toBe(-1);
             });
