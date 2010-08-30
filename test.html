@@ -16,6 +16,7 @@
 
         function initialize() {
             new Spinner('spinner_one', {
+                title: "Small",
                 size: 40,
                 onchange: function(newValue, newFactor) {
                     printLine("Spinner 1: " + newValue + " :: " + newFactor)
@@ -31,6 +32,7 @@
                 }
             });
             new Spinner('spinner_three', {
+                title: "Spinner",
                 radiusDifference: 5,
                 maximalValue: 200,
                 onchange: function(newValue, newFactor) {

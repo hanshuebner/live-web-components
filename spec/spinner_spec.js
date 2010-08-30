@@ -14,6 +14,21 @@ describe("Spinner", function() {
         expect(Spinner.prototype.extends).toBe(Control);
     });
 
+    describe("setTitle", function() {
+
+        it("should set the title", function() {
+            spinner.setTitle("test");
+            expect(spinner.getTitle()).toBe("test");
+        });
+
+        it("should invoke a draw", function() {
+            spyOn(spinner, "draw");
+            spinner.setTitle("test");
+            expect(spinner.draw).toHaveBeenCalled();
+        });
+
+    });
+    
     describe("setSize", function() {
 
         it("should set the size", function() {

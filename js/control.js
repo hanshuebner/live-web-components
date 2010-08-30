@@ -57,13 +57,11 @@ var Control = class({
     focus: function() {
         this._focused = true;
         this.draw();
-        // printLine("focus " + this._buttonElement.id);
     },
 
     blur: function() {
         this._focused = false;
         this.draw();
-        // printLine("blur " + this._buttonElement.id);
     },
 
     hasFocus: function() {
