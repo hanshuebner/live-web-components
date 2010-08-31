@@ -5,13 +5,10 @@ var Spinner = class({
 
     defaults: {
         size: 100,
-        minimalValue: -100,
-        maximalValue: 100,
-        initialValue: 0,
-        initialFactor: 0.5,
+        factor: 0.5,
 
         externalMapping: {
-            fromFactor: function(factor) { return factor * 200.0 - 100.0; },
+            fromFactor: function(factor) { return Math.round(factor * 200.0 - 100.0); },
             toFactor: function(value) { return (value + 100.0) / 200.0; }
         },
         internalMapping: {
@@ -53,10 +50,7 @@ var Spinner = class({
 
         if (options.title) this.setTitle(options.title);
         if (options.size) this.setSize(options.size);
-        if (options.minimalValue) this.setMinimalValue(options.minimalValue);
-        if (options.maximalValue) this.setMaximalValue(options.maximalValue);
-        if (options.initialValue) this.setValue(options.initialValue);
-        if (options.initialFactor) this.setFactor(options.initialFactor);
+        if (options.factor) this.setFactor(options.factor);
         if (options.externalMapping) this.setExternalMapping(options.externalMapping);
         if (options.internalMapping) this.setInternalMapping(options.internalMapping);
 
@@ -116,33 +110,11 @@ var Spinner = class({
         return this._internalMapping.fromFactor(this.getFactor());
     },
 
-    setMinimalValue: function(value) {
-        this._minimalValue = value;
-        this._calculateFactorBasedOnValue();
-        this.draw();
-    },
-
-    getMinimalValue: function() {
-        return this._minimalValue;
-    },
-
-    setMaximalValue: function(value) {
-        this._maximalValue = value;
-        this._calculateFactorBasedOnValue();
-        this.draw();
-    },
-
-    getMaximalValue: function() {
-        return this._maximalValue;
-    },
-
     setFactor: function(value) {
         value = Math.max(0.0, Math.min(1.0, value));
 
         var changed = this._factor != value;
-
         this._factor = value;
-        this._calculateValueBasedOnFactor();
         this.draw();
 
         this.abortEntering();
@@ -151,22 +123,6 @@ var Spinner = class({
 
     getFactor: function(value) {
         return this._factor || 0.0;
-    },
-
-    setValue: function(value) {
-        if (value < this.getMinimalValue() || value > this.getMaximalValue()) return;
-
-        var changed = this._value != value;
-        this._value = value;
-        this._calculateFactorBasedOnValue();
-        this.draw();
-
-        this.abortEntering();
-        if (changed) this._triggerOnChange();
-    },
-
-    getValue: function() {
-        return this._value || 0;
     },
 
     blur: function() {
@@ -197,16 +153,8 @@ var Spinner = class({
         }
     },
 
-    _calculateFactorBasedOnValue: function() {
-        this._factor = (this._value - this.getMinimalValue()) / (this.getMaximalValue() - this.getMinimalValue());
-    },
-
-    _calculateValueBasedOnFactor: function() {
-        this._value = this.getMinimalValue() + Math.round(this.getFactor() * (this.getMaximalValue() - this.getMinimalValue()));
-    },
-
     _triggerOnChange: function() {
-        if (this.onchange) this.onchange(this.getValue(), this.getFactor());
+        if (this.onchange) this.onchange(this.getInternalValue(), this.getExternalValue(), this.getFactor());
     },
 
     MouseHandler: class({
@@ -420,9 +368,13 @@ var Spinner = class({
 
         _measureFontSize: function(fontSize) {
             this._context.font = fontSize + "px " + this._font;
-            var minimalValueWidth = this._context.measureText(this._spinner.getMinimalValue()).width;
-            var maximalValueWidth = this._context.measureText(this._spinner.getMaximalValue()).width;
+            var minimalValueWidth = this._context.measureText(this._getExternalValueFor(0.0)).width;
+            var maximalValueWidth = this._context.measureText(this._getExternalValueFor(1.0)).width;
             return Math.max(minimalValueWidth, maximalValueWidth);
+        },
+
+        _getExternalValueFor: function(value) {
+            return this._spinner.getExternalMapping().fromFactor(value);
         },
 
         _adjustSpinnerHeight: function() {
@@ -509,7 +461,7 @@ var Spinner = class({
         },
 
         _getDisplayText: function() {
-            return this._spinner.isEntering() ? this._spinner.getEnteredText() : this._spinner.getValue();
+            return this._spinner.isEntering() ? this._spinner.getEnteredText() : this._spinner.getExternalValue();
         }
 
     })

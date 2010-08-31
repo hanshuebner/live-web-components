@@ -146,20 +146,6 @@ describe("Spinner", function() {
 
     });
 
-    describe("setMaximalValue", function() {
-
-        it("should set the maximal value", function() {
-            spinner.setMaximalValue(300);
-            expect(spinner.getMaximalValue()).toBe(300);
-        });
-
-        it("should re-calculate the factor", function() {
-            spinner.setMaximalValue(300);
-            expect(spinner.getFactor()).toBe(0.25);
-        });
-
-    });
-
     describe("setFactor", function() {
 
         it("should cut-off out-of-range-values", function() {
@@ -172,11 +158,6 @@ describe("Spinner", function() {
             expect(spinner.getFactor()).toBe(0.8);
         });
 
-        it("should calculate the value", function() {
-            spinner.setFactor(0.8);
-            expect(spinner.getValue()).toBe(60);
-        });
-
         it("should invoke a draw", function() {
             spyOn(spinner, "draw");
             spinner.setFactor(0.8);
@@ -186,37 +167,6 @@ describe("Spinner", function() {
         it("should trigger a onchange event", function() {
             spyOn(spinner, "onchange");
             spinner.setFactor(0.8);
-            expect(spinner.onchange).toHaveBeenCalled();
-        });
-
-    });
-
-    describe("setValue", function() {
-
-        it("should not accept out-of-range-values", function() {
-            spinner.setValue(200);
-            expect(spinner.getValue()).not.toBe(200);
-        });
-
-        it("should set the value", function() {
-            spinner.setValue(60);
-            expect(spinner.getValue()).toBe(60);
-        });
-
-        it("should calculate the factor", function() {
-            spinner.setValue(60);
-            expect(spinner.getFactor()).toBe(0.8);
-        });
-
-        it("should invoke a draw", function() {
-            spyOn(spinner, "draw");
-            spinner.setValue(60);
-            expect(spinner.draw).toHaveBeenCalled();
-        });
-
-        it("should trigger a onchange event", function() {
-            spyOn(spinner, "onchange");
-            spinner.setValue(60);
             expect(spinner.onchange).toHaveBeenCalled();
         });
 
