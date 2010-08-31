@@ -10,10 +10,11 @@ var Toggler = class({
         text: null,
 
         // drawer
+        padding: 5,
         borderColor: "black",
         borderWidth: 2,
         onColor: "green",
-        offColor: "blue",
+        offColor: "white",
         font: "sans-serif",
         fontColor: "black",
         fontSize: null,             // null means, that the font size gonna be calculated
@@ -108,6 +109,7 @@ var Toggler = class({
         extends: Optionable,
 
         OPTION_KEYS: [
+            "padding",
             "borderColor",
             "borderWidth",
             "onColor",
@@ -123,30 +125,40 @@ var Toggler = class({
 
             this._super_initialize(this._toggler.defaults, options);
 
+            this._calculateFontSize();
             this.draw();
         },
 
         draw: function() {
             if (!this._context) return;
 
+            this._calculateButtonSize();
             this._drawButton();
+            this._drawBorder();
             this._drawText();
         },
 
+        _calculateButtonSize: function() {
+            this._buttonX = this._padding;
+            this._buttonY = this._padding;
+            this._buttonWidth = this._toggler.getWidth() - this._padding * 2;
+            this._buttonHeight = this._toggler.getHeight() - this._padding * 2;
+        },
+
+        _calculateFontSize: function() {
+            if (this._fontSize) return;
+            this._fontSize = this._toggler.getHeight() - this._padding * 2 - this._borderWidth * 2;
+        },
+
         _drawButton: function() {
-            var padding = 5;
-
-            var x = padding;
-            var y = padding;
-            var width = this._toggler.getWidth() - padding * 2;
-            var height = this._toggler.getHeight() - padding * 2;
-
             this._context.fillStyle = this._toggler.isOn() ? this._onColor : this._offColor;
-            this._context.fillRect(x, y, width, height);
+            this._context.fillRect(this._buttonX, this._buttonY, this._buttonWidth, this._buttonHeight);
+        },
 
+        _drawBorder: function() {
             this._context.strokeStyle = this._borderColor;
             this._context.lineWidth = this._borderWidth;
-            this._context.strokeRect(x, y, width, height);
+            this._context.strokeRect(this._buttonX, this._buttonY, this._buttonWidth, this._buttonHeight);
         },
 
         _drawText: function() {

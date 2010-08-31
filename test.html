@@ -41,10 +41,19 @@
             });
 
             new Toggler("toggler_one", {
-                text: "Test",
-                fontSize: 16,
+                text: "Large",
                 onchange: function(on) {
                     printLine("Toggler 1: " + on)
+                }
+            });
+            new Toggler("toggler_two", {
+                width: 60,
+                height: 24,
+                borderWidth: 1,
+                initialValue: true,
+                text: "Small",
+                onchange: function(on) {
+                    printLine("Toggler 2: " + on)
                 }
             });
         }
@@ -56,6 +65,7 @@
     <button id="spinner_two" style="display: inline;"></button>
     <button id="spinner_three" style="display: inline;"></button>
     <button id="toggler_one" style="display: inline;"></button>
+    <button id="toggler_two" style="display: inline;"></button>
     <input />
     <p id="output"></p>
 </body>
