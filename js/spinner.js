@@ -68,8 +68,13 @@ var Spinner = class({
 
     setSize: function(value) {
         this._size = value;
-        this.setHeight(this._size + (this._drawer ? this._drawer.getTitleHeight() : 0));
-        this.setWidth(this._size);
+        if (this._drawer) {
+            this.setHeight(this._size + this._drawer.getTitleHeight());
+            this.setWidth(this._size / 2 + this._drawer.getTitleHeight());
+        } else {
+            this.setHeight(this._size);
+            this.setWidth(this._size);
+        }
     },
 
     getSize: function() {
@@ -335,11 +340,31 @@ var Spinner = class({
 
             this._calculateFontSize();
             this._adjustSpinnerHeight();
+            this._adjustSpinnerWidth();
             this.draw();
+        },
+
+        getTitleWidth: function() {
+            if (!this._spinner.getTitle()) return 0;
+            this._context.font = this._fontSize + "px " + this._font;
+            return this._context.measureText(this._spinner.getTitle()).width + this._lineWidth * 2;
         },
 
         getTitleHeight: function() {
             return this._spinner.getTitle() ? this._fontSize + this._lineWidth : 0;
+        },
+
+        getSpinnerWidth: function() {
+            return this._spinner.getSize() / 2 + this.getMaximalValueWidth();
+        },
+
+        getMaximalValueWidth: function() {
+            this._context.font = this._fontSize + "px " + this._font;
+            var minimalValueWidth = this._context.measureText(this._getExternalValueFor(0.0)).width;
+            var maximalValueWidth = this._context.measureText(this._getExternalValueFor(1.0)).width;
+            var width = Math.max(minimalValueWidth, maximalValueWidth);
+            width += this._lineWidth * 2;
+            return Math.max(width, this._spinner.getSize() / 2);
         },
 
         draw: function() {
@@ -351,26 +376,7 @@ var Spinner = class({
         },
 
         _calculateFontSize: function() {
-            if (!this._context) return;
-
-            if (this._fontSize) {
-                this._context.font = this._fontSize + "px " + this._font;
-            } else {
-                var fontSize = 0;
-                var textWidth = 0;
-                while (textWidth < (this._spinner.getSize() / 2 - this._lineWidth * 2)) {
-                    fontSize++;
-                    textWidth = this._measureFontSize(fontSize);
-                }
-                this._fontSize = fontSize - 1;
-            }
-        },
-
-        _measureFontSize: function(fontSize) {
-            this._context.font = fontSize + "px " + this._font;
-            var minimalValueWidth = this._context.measureText(this._getExternalValueFor(0.0)).width;
-            var maximalValueWidth = this._context.measureText(this._getExternalValueFor(1.0)).width;
-            return Math.max(minimalValueWidth, maximalValueWidth);
+            this._fontSize = this._spinner.getSize() / 2 - this._lineWidth * 2;
         },
 
         _getExternalValueFor: function(value) {
@@ -381,23 +387,23 @@ var Spinner = class({
             this._spinner.setHeight(this._spinner.getSize() + this.getTitleHeight());
         },
 
+        _adjustSpinnerWidth: function() {
+            this._spinner.setWidth(Math.max(this.getSpinnerWidth(), this.getTitleWidth()));
+        },
+
         _drawTitle: function() {
             if (!this._spinner.getTitle()) return;
-
-            var offsetY = this.getTitleHeight();
-            var size = this._spinner.getSize();
-
-            var x = this._spinner.isEntering() ? size / 2 + this._lineWidth : size - this._lineWidth;
 
             this._context.font = this._fontSize + "px " + this._font;
             this._context.textBaseline = "middle";
             this._context.fillStyle = this._fontColor;
             this._context.textAlign = "center";
-            this._context.fillText(this._spinner.getTitle(), size / 2, this._lineWidth + this._fontSize / 2);
+            this._context.fillText(this._spinner.getTitle(), this._spinner.getWidth() / 2, this._lineWidth + this._fontSize / 2);
         },
 
         _drawArcs: function() {
-            var offsetY = this.getTitleHeight();
+            var offsetX = this._getSpinnerOffsetX();
+            var offsetY = this._getSpinnerOffsetY();
             var size = this._spinner.getSize();
             var angle = (Math.PI / 2) + (3 * (Math.PI / 2) * this._spinner.getFactor());
 
@@ -407,7 +413,7 @@ var Spinner = class({
             this._context.strokeStyle = this._lowArcColor;
             this._context.beginPath();
             this._context.arc(
-                    size / 2,
+                    offsetX + size / 2,
                     offsetY + size / 2,
                     size / 2 - this._lineWidth - (this._radiusDifference || 0),
                     (Math.PI / 2),
@@ -418,9 +424,9 @@ var Spinner = class({
 
             this._context.strokeStyle = this._highArcColor;
             this._context.beginPath();
-            this._context.lineTo(size / 2, offsetY + size / 2);
+            this._context.lineTo(offsetX + size / 2, offsetY + size / 2);
             this._context.arc(
-                    size / 2,
+                    offsetX + size / 2,
                     offsetY + size / 2,
                     size / 2 - this._lineWidth,
                     angle,
@@ -431,22 +437,24 @@ var Spinner = class({
         },
 
         _drawValue: function() {
-            var offsetY = this.getTitleHeight();
+            var offsetX = this._getSpinnerOffsetX();
+            var offsetY = this._getSpinnerOffsetY();
             var size = this._spinner.getSize();
 
-            var x = this._spinner.isEntering() ? size / 2 + this._lineWidth : size - this._lineWidth;
+            var x = size / 2 + this._lineWidth;
 
             this._context.font = this._fontSize + "px " + this._font;
             this._context.textBaseline = "middle";
             this._context.fillStyle = this._fontColor;
-            this._context.textAlign = this._spinner.isEntering() ? "left" : "right";
-            this._context.fillText(this._getDisplayText(), x, offsetY + size * 0.75);
+            this._context.textAlign = "left";
+            this._context.fillText(this._getDisplayText(), offsetX + x, offsetY + size * 0.75);
         },
 
         _drawCursor: function() {
             if (!this._spinner.isEntering()) return;
 
-            var offsetY = this.getTitleHeight();
+            var offsetX = this._getSpinnerOffsetX();
+            var offsetY = this._getSpinnerOffsetY();
             var size = this._spinner.getSize();
 
             var cursorX = size / 2 +
@@ -455,9 +463,17 @@ var Spinner = class({
 
             this._context.strokeStyle = this._cursorColor;
             this._context.beginPath();
-            this._context.moveTo(cursorX, offsetY + Math.round(size * 0.75 - this._fontSize / 2));
-            this._context.lineTo(cursorX, offsetY + Math.round(size * 0.75 + this._fontSize / 2));
+            this._context.moveTo(offsetX + cursorX, offsetY + Math.round(size * 0.75 - this._fontSize / 2));
+            this._context.lineTo(offsetX + cursorX, offsetY + Math.round(size * 0.75 + this._fontSize / 2));
             this._context.stroke();
+        },
+
+        _getSpinnerOffsetX: function() {
+            return Math.max(0, this.getTitleWidth() / 2 - this.getSpinnerWidth() / 2);
+        },
+
+        _getSpinnerOffsetY: function() {
+            return this.getTitleHeight();
         },
 
         _getDisplayText: function() {

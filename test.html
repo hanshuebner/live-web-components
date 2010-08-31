@@ -16,7 +16,7 @@
 
         function initialize() {
             new Spinner('spinner_one', {
-                title: "Small",
+                title: "Small with long title",
                 size: 40,
                 onchange: function(internalValue, externalValue, factor) {
                     printLine("Spinner 1: internal = " + internalValue + " / external = " + externalValue + " / factor = " + factor);
@@ -30,7 +30,7 @@
                 }
             });
             new Spinner('spinner_three', {
-                title: "Spinner",
+                title: "Long title",
                 factor: 0.8,
                 radiusDifference: 5,
                 externalMapping: {

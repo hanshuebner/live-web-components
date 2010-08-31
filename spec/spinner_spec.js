@@ -45,7 +45,7 @@ describe("Spinner", function() {
         it("should set the width", function() {
             spyOn(spinner, "setWidth");
             spinner.setSize(333);
-            expect(spinner.setWidth).toHaveBeenCalledWith(333);
+            expect(spinner.setWidth).toHaveBeenCalledWith(166.5);
         });
 
         it("should invoke a draw", function() {
