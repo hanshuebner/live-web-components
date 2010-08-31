@@ -98,8 +98,15 @@ var Toggler = class({
             this._toggler.getButtonElement().onkeydown = this._onKeyDownHandler.bind(this);
         },
 
-        _onKeyDownHandler: function() {
-            this._toggler.toggleOn();
+        _onKeyDownHandler: function(event) {
+            switch (event.keyCode) {
+            case 13: // enter
+            case 32: // space
+                this._toggler.toggleOn();
+                return false;
+            default:
+                return true;
+            }
         }
 
     }),

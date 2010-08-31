@@ -91,6 +91,11 @@ describe("Toggler", function() {
                 expect(toggler.isOn()).toBeFalsy();
             });
 
+            it("should not toggle the state on tab key", function() {
+                togglerDriver.enterKey(9); // tab
+                expect(toggler.isOn()).toBeFalsy();
+            });
+
         });
 
     });
