@@ -6,15 +6,25 @@ beforeEach(function() {
     buttonElement.setAttribute("id", "test");
 });
 
-var SpinnerDriver = class({
+var ControlDriver = class({
 
-    initialize: function(spinner) {
-        this._spinner = spinner;
+    initialize: function(control) {
+        this._control = control;
     },
 
     mouseDown: function(screenY) {
-        this._spinner.getButtonElement().onmousedown({ screenY: screenY });
+        this._control.getButtonElement().onmousedown({ screenY: screenY });
     },
+
+    enterKey: function(keyCode) {
+        this._control.getButtonElement().onkeydown({ keyCode: keyCode });
+    }
+
+});
+
+var SpinnerDriver = class({
+
+    extends: ControlDriver,
 
     mouseMove: function(screenY) {
         document.onmousemove({ screenY: screenY });
@@ -22,10 +32,6 @@ var SpinnerDriver = class({
 
     mouseUp: function() {
         document.onmouseup({ });
-    },
-
-    enterKey: function(keyCode) {
-        this._spinner.getButtonElement().onkeydown({ keyCode: keyCode });
     }
 
 });

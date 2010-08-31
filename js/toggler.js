@@ -26,6 +26,7 @@ var Toggler = class({
         this._super_initialize(element_or_id, options);
 
         this._mouseHandler = new this.MouseHandler(this);
+        this._keyHandler = new this.KeyHandler(this);
         this._drawer = new this.Drawer(this, options);
     },
 
@@ -77,13 +78,26 @@ var Toggler = class({
 
     MouseHandler: class({
 
-        initialize: function(toggler, options) {
+        initialize: function(toggler) {
             this._toggler = toggler;
             this._toggler.getButtonElement().onmousedown = this._onMouseDownHandler.bind(this);
         },
 
-        _onMouseDownHandler: function(event) {
+        _onMouseDownHandler: function() {
             this._toggler.getButtonElement().focus();
+            this._toggler.toggleOn();
+        }
+
+    }),
+
+    KeyHandler: class({
+
+        initialize: function(toggler) {
+            this._toggler = toggler;
+            this._toggler.getButtonElement().onkeydown = this._onKeyDownHandler.bind(this);
+        },
+
+        _onKeyDownHandler: function() {
             this._toggler.toggleOn();
         }
 
