@@ -10,12 +10,22 @@ var Spinner = class({
         initialValue: 0,
         initialFactor: 0.5,
 
+        externalMapping: {
+            fromFactor: function(factor) { return factor * 200.0 - 100.0; },
+            toFactor: function(value) { return (value + 100.0) / 200.0; }
+        },
+        internalMapping: {
+            fromFactor: function(factor) { return Math.round(factor * 255); },
+            toFactor: function(value) { return value / 255.0; }
+        },
+
         // mouse handler
         mouseScale: 1,              // a value of 1 means, that the spinner has turned completly around
                                     // if the mouse has been moved 1 time the distance of "size".
 
         // key handler
-        keyStep: 1,                 // a value of 1 means, that 1 will be added by every key stroke
+        keyScale: 1,                // a value of 1 means, that the spinenr has turned completly around
+                                    // if the up/down-key has been hit size-times.
 
         // drawer
         lineWidth: 3,
@@ -47,6 +57,8 @@ var Spinner = class({
         if (options.maximalValue) this.setMaximalValue(options.maximalValue);
         if (options.initialValue) this.setValue(options.initialValue);
         if (options.initialFactor) this.setFactor(options.initialFactor);
+        if (options.externalMapping) this.setExternalMapping(options.externalMapping);
+        if (options.internalMapping) this.setInternalMapping(options.internalMapping);
 
         if (options.onchange) this.onchange = options.onchange;
     },
@@ -70,6 +82,40 @@ var Spinner = class({
         return this._size;
     },
 
+    setExternalMapping: function(mapping) {
+        this._checkMappingFormat(mapping);
+        this._externalMapping = mapping;
+    },
+
+    getExternalMapping: function() {
+        return this._externalMapping;
+    },
+
+    setInternalMapping: function(mapping) {
+        this._checkMappingFormat(mapping);
+        this._internalMapping = mapping;
+    },
+
+    getInternalMapping: function() {
+        return this._internalMapping;
+    },
+
+    setExternalValue: function(value) {
+        this.setFactor(this._externalMapping.toFactor(value));
+    },
+
+    getExternalValue: function() {
+        return this._externalMapping.fromFactor(this.getFactor());
+    },
+
+    setInternalValue: function(value) {
+        this.setFactor(this._internalMapping.toFactor(value));
+    },
+
+    getInternalValue: function() {
+        return this._internalMapping.fromFactor(this.getFactor());
+    },
+
     setMinimalValue: function(value) {
         this._minimalValue = value;
         this._calculateFactorBasedOnValue();
@@ -91,7 +137,7 @@ var Spinner = class({
     },
 
     setFactor: function(value) {
-        if (value < 0.0 || value > 1.0) return;
+        value = Math.max(0.0, Math.min(1.0, value));
 
         var changed = this._factor != value;
 
@@ -143,6 +189,12 @@ var Spinner = class({
     draw: function() {
         this._super_draw();
         if (this._drawer) this._drawer.draw();
+    },
+
+    _checkMappingFormat: function(mapping) {
+        if (!(mapping && typeof(mapping.fromFactor) === "function" && typeof(mapping.toFactor) === "function")) {
+            throw("The given mapping has an incorrect format");
+        }
     },
 
     _calculateFactorBasedOnValue: function() {
@@ -211,7 +263,7 @@ var Spinner = class({
         extends: Optionable,
 
         OPTION_KEYS: [
-            "keyStep"
+            "keyScale"
         ],
 
         initialize: function(spinner, options) {
@@ -248,11 +300,11 @@ var Spinner = class({
                 return false;
             case 37: // left arrow
             case 38: // up arrow
-                this._setValue(Math.round(this._spinner.getValue() + (this._keyStep || 1)));
+                this._stepUp();
                 return false;
             case 39: // right arrow
             case 40: // down arrow
-                this._setValue(Math.round(this._spinner.getValue() - (this._keyStep || 1)));
+                this._stepDown();
                 return false;
             case 48:
             case 49:
@@ -278,9 +330,16 @@ var Spinner = class({
             }
         },
 
-        _setValue: function(value) {
-            var newValue = Math.min(this._spinner.getMaximalValue(), Math.max(this._spinner.getMinimalValue(), value));
-            this._spinner.setValue(newValue);
+        _stepUp: function() {
+            this._spinner.setFactor(this._spinner.getFactor() + this._getKeyStep());
+        },
+
+        _stepDown: function() {
+            this._spinner.setFactor(this._spinner.getFactor() - this._getKeyStep());
+        },
+
+        _getKeyStep: function() {
+            return this._keyScale / this._spinner.getSize();
         },
 
         _enterCharacter: function(character) {
@@ -298,7 +357,7 @@ var Spinner = class({
         },
 
         _enter: function() {
-            this._setValue(parseFloat(this._enteredText));
+            this._spinner.setExternalValue(parseFloat(this._enteredText));
             this._entering = false;
             this._enteredText = null;
         }
