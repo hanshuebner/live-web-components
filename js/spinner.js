@@ -424,15 +424,19 @@ var Spinner = class({
 
             this._context.strokeStyle = this._highArcColor;
             this._context.beginPath();
+            if (angle == 2 * Math.PI) {
+                this._context.moveTo(offsetX + size - this._lineWidth, offsetY + size / 2);
+            } else {
+                 this._context.arc(
+                        offsetX + size / 2,
+                        offsetY + size / 2,
+                        size / 2 - this._lineWidth,
+                        2 * Math.PI,
+                        angle,
+                        true
+                );
+            }
             this._context.lineTo(offsetX + size / 2, offsetY + size / 2);
-            this._context.arc(
-                    offsetX + size / 2,
-                    offsetY + size / 2,
-                    size / 2 - this._lineWidth,
-                    angle,
-                    2 * Math.PI,
-                    false
-            );
             this._context.stroke();
         },
 

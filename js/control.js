@@ -40,7 +40,7 @@ var Control = class({
     },
 
     getHeight: function() {
-        return this._height;
+        return this._height || 0;
     },
 
     setWidth: function(value) {
@@ -51,7 +51,7 @@ var Control = class({
     },
 
     getWidth: function() {
-        return this._width;
+        return this._width || 0;
     },
 
     focus: function() {
