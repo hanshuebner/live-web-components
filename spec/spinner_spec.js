@@ -28,7 +28,7 @@ describe("Spinner", function() {
         });
 
     });
-    
+
     describe("setSize", function() {
 
         it("should set the size", function() {
@@ -62,6 +62,34 @@ describe("Spinner", function() {
             spyOn(spinner, "abortEntering");
             spinner.blur();
             expect(spinner.abortEntering).toHaveBeenCalled();
+        });
+
+    });
+
+    describe("setMinimalValue", function() {
+
+        it("should set the minimal value", function() {
+            spinner.setMinimalValue(-300);
+            expect(spinner.getMinimalValue()).toBe(-300);
+        });
+
+        it("should re-calculate the factor", function() {
+            spinner.setMinimalValue(-300);
+            expect(spinner.getFactor()).toBe(0.75);
+        });
+
+    });
+
+    describe("setMaximalValue", function() {
+
+        it("should set the maximal value", function() {
+            spinner.setMaximalValue(300);
+            expect(spinner.getMaximalValue()).toBe(300);
+        });
+
+        it("should re-calculate the factor", function() {
+            spinner.setMaximalValue(300);
+            expect(spinner.getFactor()).toBe(0.25);
         });
 
     });

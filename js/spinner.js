@@ -35,8 +35,6 @@ var Spinner = class({
         this._mouseHandler = new this.MouseHandler(this, options);
         this._keyHandler = new this.KeyHandler(this, options);
         this._drawer = new this.Drawer(this, options);
-
-        this.setSize(this.getSize());
     },
 
     setOptions: function(options) {
@@ -74,6 +72,7 @@ var Spinner = class({
 
     setMinimalValue: function(value) {
         this._minimalValue = value;
+        this._calculateFactorBasedOnValue();
         this.draw();
     },
 
@@ -83,6 +82,7 @@ var Spinner = class({
 
     setMaximalValue: function(value) {
         this._maximalValue = value;
+        this._calculateFactorBasedOnValue();
         this.draw();
     },
 
@@ -96,7 +96,7 @@ var Spinner = class({
         var changed = this._factor != value;
 
         this._factor = value;
-        this._value = this.getMinimalValue() + Math.round(this.getFactor() * (this.getMaximalValue() - this.getMinimalValue()));
+        this._calculateValueBasedOnFactor();
         this.draw();
 
         this.abortEntering();
@@ -111,9 +111,8 @@ var Spinner = class({
         if (value < this.getMinimalValue() || value > this.getMaximalValue()) return;
 
         var changed = this._value != value;
-
         this._value = value;
-        this._factor = (this._value - this.getMinimalValue()) / (this.getMaximalValue() - this.getMinimalValue());
+        this._calculateFactorBasedOnValue();
         this.draw();
 
         this.abortEntering();
@@ -144,6 +143,14 @@ var Spinner = class({
     draw: function() {
         this._super_draw();
         if (this._drawer) this._drawer.draw();
+    },
+
+    _calculateFactorBasedOnValue: function() {
+        this._factor = (this._value - this.getMinimalValue()) / (this.getMaximalValue() - this.getMinimalValue());
+    },
+
+    _calculateValueBasedOnFactor: function() {
+        this._value = this.getMinimalValue() + Math.round(this.getFactor() * (this.getMaximalValue() - this.getMinimalValue()));
     },
 
     _triggerOnChange: function() {
@@ -320,6 +327,7 @@ var Spinner = class({
             this._super_initialize(this._spinner.defaults, options);
 
             this._calculateFontSize();
+            this._adjustSpinnerHeight();
             this.draw();
         },
 
@@ -356,6 +364,10 @@ var Spinner = class({
             var minimalValueWidth = this._context.measureText(this._spinner.getMinimalValue()).width;
             var maximalValueWidth = this._context.measureText(this._spinner.getMaximalValue()).width;
             return Math.max(minimalValueWidth, maximalValueWidth);
+        },
+
+        _adjustSpinnerHeight: function() {
+            this._spinner.setHeight(this._spinner.getSize() + this.getTitleHeight());
         },
 
         _drawTitle: function() {
