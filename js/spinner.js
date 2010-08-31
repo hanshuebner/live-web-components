@@ -445,12 +445,12 @@ var Spinner = class({
             var offsetY = this._getSpinnerOffsetY();
             var size = this._spinner.getSize();
 
-            var x = size / 2 + this._lineWidth;
+            var x = size / 2 + (this._spinner.isEntering() ? this._lineWidth : this.getMaximalValueWidth());
 
             this._context.font = this._fontSize + "px " + this._font;
             this._context.textBaseline = "middle";
             this._context.fillStyle = this._fontColor;
-            this._context.textAlign = "left";
+            this._context.textAlign = this._spinner.isEntering() ? "left" : "right";
             this._context.fillText(this._getDisplayText(), offsetX + x, offsetY + size * 0.75);
         },
 
