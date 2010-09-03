@@ -69,7 +69,9 @@ describe("Spinner", function() {
     describe("setExternalMapping", function() {
 
         it("should throw an error if mapping is incorrect", function() {
-            expect(spinner.setExternalMapping.bind(spinner)).toThrow("The given mapping has an incorrect format");
+            expect(function() {
+                spinner.setExternalMapping({ })
+            }).toThrow("The given mapping has an incorrect format");
         });
 
         it("should set the external mapping", function() {
@@ -86,7 +88,9 @@ describe("Spinner", function() {
     describe("setInternalMapping", function() {
 
         it("should throw an error if mapping is incorrect", function() {
-            expect(spinner.setInternalMapping.bind(spinner)).toThrow("The given mapping has an incorrect format");
+            expect(function() {
+                spinner.setInternalMapping({ })
+            }).toThrow("The given mapping has an incorrect format");
         });
 
         it("should set the internal mapping", function() {
