@@ -35,3 +35,15 @@ var SpinnerDriver = class({
     }
 
 });
+
+var MenuDriver = class({
+
+    initialize: function(menu) {
+        this._menu = menu;
+    },
+
+    mouseDown: function(offsetY) {
+        this._menu.getCanvasElement().onmousedown({ offsetY: offsetY });
+    }
+
+});

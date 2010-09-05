@@ -18,12 +18,12 @@ var Selector = class({
     initialize: function(element_or_id, options) {
         this._super_initialize(element_or_id, options);
 
+        this._mouseHandler = new this.MouseHandler(this);
         this._dimensioner = new this.Dimensioner(this, options);
         this._drawer = new this.Drawer(this, this._dimensioner, options);
         this._menu = new this.Menu(this, this._dimensioner);
 
         this._adjustWidth();
-        this.showMenu();
     },
 
     setOptions: function(options) {
@@ -42,12 +42,17 @@ var Selector = class({
         return this._items;
     },
 
-    getSelectedText: function() {
-        return this._items[0];
+    getSelectedItem: function() {
+        return this._items[ this.getSelectedIndex() ];
+    },
+
+    setSelectedIndex: function(value) {
+        this._selectedIndex = value;
+        this.draw();
     },
 
     getSelectedIndex: function() {
-        return 0;
+        return this._selectedIndex || 0;
     },
 
     showMenu: function() {
@@ -58,6 +63,18 @@ var Selector = class({
         this._menu.hide();
     },
 
+    toggleMenu: function() {
+        if (this.visibleMenu()) {
+            this.hideMenu();
+        } else {
+            this.showMenu();
+        }
+    },
+
+    visibleMenu: function() {
+        return this._menu.isVisible();
+    },
+
     draw: function() {
         this._super_draw();
         if (this._drawer) this._drawer.draw();
@@ -66,6 +83,20 @@ var Selector = class({
     _adjustWidth: function() {
         this.setWidth(Math.max(this.getWidth(), this._dimensioner.getMinimalWidth()));
     },
+
+    MouseHandler: class({
+
+        initialize: function(selector) {
+            this._selector = selector;
+            this._selector.getButtonElement().onmousedown = this._onMouseDownHandler.bind(this);
+        },
+
+        _onMouseDownHandler: function() {
+            this._selector.getButtonElement().focus();
+            this._selector.toggleMenu();
+        }
+
+    }),
 
     Dimensioner: class({
 
@@ -133,7 +164,7 @@ var Selector = class({
             };
         },
 
-        getItem: function() {
+        getItem: function(index) {
             var arrow = this.getArrow();
             return {
                 width: this.getMaximalTextWidth() + arrow.width + this._borderSize * 2,
@@ -205,7 +236,7 @@ var Selector = class({
             this._context.font = this._dimensioner.getFontSize() + "px " + this._font;
             this._context.textAlign = "center";
             this._context.textBaseline = "middle";
-            this._context.fillText(this._selector.getSelectedText(), selectedItem.x, selectedItem.y);
+            this._context.fillText(this._selector.getSelectedItem(), selectedItem.x, selectedItem.y);
         },
 
         _drawBorder: function() {
@@ -227,6 +258,7 @@ var Selector = class({
             this._super_initialize(options);
 
             this._createCanvasElement();
+            this._mouseHandler = new this.MouseHandler(this._selector, this, this._dimensioner);
             this._drawer = new this.Drawer(this._selector, this, this._dimensioner, options);
 
             this.hide();
@@ -243,6 +275,10 @@ var Selector = class({
             this._setCanvasElementStyle();
         },
 
+        isVisible: function() {
+            return this._visible;
+        },
+
         getCanvasElement: function() {
             return this._canvasElement;
         },
@@ -255,7 +291,8 @@ var Selector = class({
                 "position: absolute;" +
                 " top: " + menu.top + "px;" +
                 " left: " + menu.left + "px;" +
-                " visibility: " + (this._visible ? "visible" : "hidden") + ";");
+                " visibility: " + (this._visible ? "visible" : "hidden") + ";" +
+                " display: " + (this._visible ? "block" : "none") + ";");
         },
 
         _createCanvasElement: function() {
@@ -263,6 +300,24 @@ var Selector = class({
             this._selector.getButtonElement().appendChild(this._canvasElement);
             this._context = this._canvasElement.getContext("2d");
         },
+
+        MouseHandler: class({
+
+            initialize: function(selector, menu, dimensioner) {
+                this._selector = selector;
+                this._menu = menu;
+                this._dimensioner = dimensioner;
+                this._menu.getCanvasElement().onmousedown = this._onMouseDownHandler.bind(this);
+            },
+
+            _onMouseDownHandler: function(event) {
+                var item = this._dimensioner.getItem();
+                var index = Math.floor(event.offsetY / item.height);
+                this._selector.setSelectedIndex(index);
+                // this._menu.hide();
+            }
+
+        }),
 
         Drawer: class({
 
