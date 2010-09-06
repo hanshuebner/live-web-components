@@ -66,8 +66,8 @@
 
             new Selector("selector_one", {
                 items: [ "one", "two", "three" ],
-                onchange: function(on) {
-                    printLine("Toggler 1: " + on)
+                onchange: function(index, item) {
+                    printLine("Selector 1: index = " + index + " / item = " + item);
                 }
             });
         }

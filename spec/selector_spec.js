@@ -32,6 +32,26 @@ describe("Selector", function() {
 
     });
 
+    describe("setSelectedIndex", function() {
+
+        beforeEach(function() {
+            selector.setSelectedIndex(0);
+        });
+
+        it("should trigger a change event on changing index", function() {
+            spyOn(selector, "onchange");
+            selector.setSelectedIndex(1);
+            expect(selector.onchange).toHaveBeenCalledWith(1, "two");
+        });
+
+        it("should not trigger a change event on not-changing index", function() {
+            spyOn(selector, "onchange");
+            selector.setSelectedIndex(0);
+            expect(selector.onchange).not.toHaveBeenCalled();
+        });
+
+    });
+
     describe("MouseHandler", function() {
 
         it("should set the focus on the control", function() {

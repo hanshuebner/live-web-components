@@ -35,6 +35,7 @@ var Selector = class({
         this._super_setOptions(options);
 
         if (options.items) this.setItems(options.items);
+        if (options.onchange) this.onchange = options.onchange;
     },
 
     setItems: function(value) {
@@ -51,8 +52,10 @@ var Selector = class({
     },
 
     setSelectedIndex: function(value) {
+        var changed = this._selectedIndex != value;
         this._selectedIndex = value;
         this.draw();
+        if (changed) this._triggerOnChange();
     },
 
     getSelectedIndex: function() {
@@ -91,6 +94,10 @@ var Selector = class({
 
     _adjustWidth: function() {
         this.setWidth(Math.max(this.getWidth(), this._dimensioner.getMinimalWidth()));
+    },
+
+    _triggerOnChange: function() {
+        if (this.onchange) this.onchange(this.getSelectedIndex(), this.getSelectedItem());
     },
 
     MouseHandler: class({
