@@ -19,11 +19,13 @@ var Selector = class({
     initialize: function(element_or_id, options) {
         this._super_initialize(element_or_id, options);
 
-        this._mouseHandler = new this.MouseHandler(this);
         this._dimensioner = new this.Dimensioner(this, options);
         this._positioner = new this.Positioner(this, this._dimensioner, options);
         this._drawer = new this.Drawer(this, this._dimensioner, this._positioner, options);
         this._menu = new this.Menu(this, this._dimensioner, this._positioner);
+
+        this._mouseHandler = new this.MouseHandler(this);
+        this._keyHandler = new this.KeyHandler(this, this._menu);
 
         this._adjustWidth();
     },
@@ -77,6 +79,11 @@ var Selector = class({
         return this._menu.isVisible();
     },
 
+    blur: function() {
+        if (this.visibleMenu()) this.hideMenu();
+        this._super_blur();
+    },
+
     draw: function() {
         this._super_draw();
         if (this._drawer) this._drawer.draw();
@@ -96,6 +103,54 @@ var Selector = class({
         _onMouseDownHandler: function() {
             this._selector.getButtonElement().focus();
             this._selector.toggleMenu();
+        }
+
+    }),
+
+    KeyHandler: class({
+
+        initialize: function(selector, menu) {
+            this._selector = selector;
+            this._menu = menu;
+            this._selector.getButtonElement().onkeydown = this._onKeyDownHandler.bind(this);
+        },
+
+        _onKeyDownHandler: function(event) {
+            return this._menu.isVisible() ? this._handleMenuKey(event.keyCode) : this._handleSelectorKey(event.keyCode);
+        },
+
+        _handleSelectorKey: function(keyCode) {
+            switch(keyCode) {
+            case 13: // enter
+            case 32: // space
+            case 38: // up arrow
+            case 40: // down arrow
+                this._menu.setHighlightIndex(this._selector.getSelectedIndex());
+                this._menu.show();
+                return false;
+            default:
+                return true;
+            }
+        },
+
+        _handleMenuKey: function(keyCode) {
+            switch(keyCode) {
+            case 13: // enter
+                this._selector.setSelectedIndex(this._menu.getHighlightIndex());
+                this._menu.hide();
+                return false;
+            case 38: // up arrow
+                if (this._menu.getHighlightIndex() > 0)
+                    this._menu.setHighlightIndex(this._menu.getHighlightIndex() - 1);
+                return false;
+            case 40: // down arrow
+                if (this._menu.getHighlightIndex() < (this._selector.getItems().length - 1))
+                    this._menu.setHighlightIndex(this._menu.getHighlightIndex() + 1);
+                return false;
+            default:
+                return true;
+            }
+
         }
 
     }),

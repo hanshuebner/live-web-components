@@ -47,6 +47,72 @@ describe("Selector", function() {
 
     });
 
+    describe("KeyHandler", function() {
+
+        describe("_onKeyDownHandler", function() {
+
+            var menu;
+
+            beforeEach(function() {
+                menu = selector._menu;
+            });
+
+            describe("with a hidden menu", function() {
+
+                beforeEach(function() {
+                    menu.hide();
+                });
+
+                it("should set the highlight index to the selected index", function() {
+                    selectorDriver.enterKey(38); // up arrow
+                    expect(menu.getHighlightIndex()).toBe(selector.getSelectedIndex());
+
+                });
+
+                it("should show the menu if up/down arrow is pressed", function() {
+                    selectorDriver.enterKey(38); // up arrow
+                    expect(menu.isVisible()).toBeTruthy();
+
+                    menu.hide();
+
+                    selectorDriver.enterKey(40); // down arrow
+                    expect(menu.isVisible()).toBeTruthy();
+                });
+
+            });
+
+            describe("with a visible menu", function() {
+
+                beforeEach(function() {
+                    selector.setSelectedIndex(1);
+                    selectorDriver.enterKey(13); // enter
+                });
+
+                it("should increase/decrease the highlight index if up/down arrow is pressed", function() {
+                    selectorDriver.enterKey(40); // down arrow
+                    expect(menu.getHighlightIndex()).toBe(2);
+
+                    selectorDriver.enterKey(38); // up arrow
+                    expect(menu.getHighlightIndex()).toBe(1);
+                });
+
+                it("should set the selected index if enter is pressed", function() {
+                    selectorDriver.enterKey(40); // down arrow
+                    selectorDriver.enterKey(13); // enter
+                    expect(selector.getSelectedIndex()).toBe(2);
+                });
+
+                it("should hide the menu if enter is pressed", function() {
+                    selectorDriver.enterKey(13); // enter
+                    expect(menu.isVisible()).toBeFalsy();
+                });
+
+            });
+
+        });
+
+    });
+
     describe("Dimensioner", function() {
 
         var dimensioner;
@@ -278,7 +344,7 @@ describe("Selector", function() {
             describe("_onMouseOutHandler", function() {
 
                 beforeEach(function() {
-                    menuDriver.mouseMove(25);                    
+                    menuDriver.mouseMove(25);
                 });
 
                 it("should clear the highlight index", function() {
