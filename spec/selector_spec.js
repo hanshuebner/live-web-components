@@ -126,9 +126,9 @@ describe("Selector", function() {
         describe("getMinimalWidth", function() {
 
             it("should calculate the minimal width", function() {
-                expect(dimensioner.getMinimalWidth()).toBe(132);
+                expect(dimensioner.getMinimalWidth()).toBe(136);
                 selector.setItems([ "one", "two", "three", "long long entry" ]);
-                expect(dimensioner.getMinimalWidth()).toBe(193);
+                expect(dimensioner.getMinimalWidth()).toBe(197);
             });
 
         });
@@ -136,11 +136,11 @@ describe("Selector", function() {
         describe("getMenu", function() {
 
             it("should calculate the menu dimensions", function() {
-                expect(dimensioner.getMenu().width).toBe(107);
+                expect(dimensioner.getMenu().width).toBe(120);
                 expect(dimensioner.getMenu().height).toBe(60);
 
                 selector.setItems([ "one", "two", "three", "long long entry" ]);
-                expect(dimensioner.getMenu().width).toBe(168);
+                expect(dimensioner.getMenu().width).toBe(181);
                 expect(dimensioner.getMenu().height).toBe(120);
             });
 
@@ -149,7 +149,7 @@ describe("Selector", function() {
         describe("getBorder", function() {
 
             it("should calculate the border dimensions", function() {
-                expect(dimensioner.getBorder().width).toBe(116);
+                expect(dimensioner.getBorder().width).toBe(120);
                 expect(dimensioner.getBorder().height).toBe(30);
             });
 
@@ -174,7 +174,7 @@ describe("Selector", function() {
         describe("getItem", function() {
 
             it("should return the item dimensions", function() {
-                expect(dimensioner.getItem().width).toBe(103);
+                expect(dimensioner.getItem().width).toBe(107);
                 expect(dimensioner.getItem().height).toBe(30);
             });
 
@@ -248,7 +248,7 @@ describe("Selector", function() {
         describe("getArrow", function() {
 
             it("should return the arrow position", function() {
-                expect(positioner.getArrow().x).toBe(64);
+                expect(positioner.getArrow().x).toBe(68);
                 expect(positioner.getArrow().y).toBe(13);
             });
 
@@ -257,7 +257,7 @@ describe("Selector", function() {
         describe("getSelectedItem", function() {
 
             it("should return the selected item position", function() {
-                expect(positioner.getSelectedItem().x).toBe(34);
+                expect(positioner.getSelectedItem().x).toBe(36);
                 expect(positioner.getSelectedItem().y).toBe(20);
             });
 

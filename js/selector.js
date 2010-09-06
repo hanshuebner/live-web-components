@@ -179,19 +179,20 @@ var Selector = class({
         },
 
         getMenu: function() {
-            var item = this.getItem();
+            var borderDimension = this.getBorder();
+            var itemDimension = this.getItem();
             return {
-                width: item.width + this._borderSize * 2,
-                height: item.height * this._selector.getItems().length
+                width: borderDimension.width,
+                height: itemDimension.height * this._selector.getItems().length
             };
         },
 
         getBorder: function() {
-            var item = this.getItem();
-            var arrow = this.getArrow();
+            var itemDimension = this.getItem();
+            var arrowDimension = this.getArrow();
             return {
-                width: Math.max(item.width + arrow.width, this._selector.getWidth() - this._padding * 2),
-                height: Math.max(Math.max(item.height,  arrow.height), this._selector.getHeight() - this._padding * 2)
+                width: Math.max(itemDimension.width + arrowDimension.width, this._selector.getWidth() - this._padding * 2),
+                height: Math.max(Math.max(itemDimension.height,  arrowDimension.height), this._selector.getHeight() - this._padding * 2)
             };
         },
 
@@ -204,7 +205,7 @@ var Selector = class({
 
         getItem: function(index) {
             return {
-                width: this.getMaximalTextWidth() + this._borderSize * 2,
+                width: this.getMaximalTextWidth() + this._borderSize * 4,
                 height: this.getFontSize() + this._borderSize * 2
             };
         },
