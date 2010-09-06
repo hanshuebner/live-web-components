@@ -110,6 +110,7 @@ var Selector = class({
         _onMouseDownHandler: function() {
             this._selector.getButtonElement().focus();
             this._selector.toggleMenu();
+            return false;
         }
 
     }),
@@ -448,14 +449,17 @@ var Selector = class({
 
             _onMouseDownHandler: function(event) {
                 this._selector.setSelectedIndex(this._getIndexOfMouseEvent(event));
+                return false;
             },
 
             _onMouseMoveHandler: function(event) {
                 this._menu.setHighlightIndex(this._getIndexOfMouseEvent(event));
+                return false;
             },
 
             _onMouseOutHandler: function() {
                 this._menu.clearHighlight();
+                return false;                
             },
 
             _getIndexOfMouseEvent: function(event) {
