@@ -210,6 +210,38 @@ describe("Selector", function() {
             menuDriver = new MenuDriver(menu);
         });
 
+        describe("clearHighlight", function() {
+
+            it("should set the highlight index to undefined", function() {
+                menu.clearHighlight();
+                expect(menu.getHighlightIndex()).toBe(undefined);
+                expect(menu.hasHighlight()).toBeFalsy();
+            });
+
+            it("should invoke a draw", function() {
+                spyOn(menu, "draw");
+                menu.setHighlightIndex(1);
+                expect(menu.draw).toHaveBeenCalled();
+            });
+
+        });
+
+        describe("setHighlightIndex", function() {
+
+            it("should set the highlight index", function() {
+                menu.setHighlightIndex(1);
+                expect(menu.getHighlightIndex()).toBe(1);
+                expect(menu.hasHighlight()).toBeTruthy();
+            });
+
+            it("should invoke a draw", function() {
+                spyOn(menu, "draw");
+                menu.setHighlightIndex(1);
+                expect(menu.draw).toHaveBeenCalled();
+            });
+
+        });
+
         describe("MouseHandler", function() {
 
             describe("_onMouseDownHandler", function() {
@@ -221,6 +253,37 @@ describe("Selector", function() {
                     expect(selector.getSelectedItem()).toBe("two");
                     menuDriver.mouseDown(75);
                     expect(selector.getSelectedItem()).toBe("three");
+                });
+
+            });
+
+            describe("_onMouseMoveHandler", function() {
+
+                it("should set a highlight", function() {
+                    menuDriver.mouseMove(25);
+                    expect(menu.hasHighlight()).toBeTruthy();
+                });
+
+                it("should update the highlight index", function() {
+                    menuDriver.mouseMove(25);
+                    expect(menu.getHighlightIndex()).toBe(0);
+                    menuDriver.mouseMove(50);
+                    expect(menu.getHighlightIndex()).toBe(1);
+                    menuDriver.mouseMove(75);
+                    expect(menu.getHighlightIndex()).toBe(2);
+                });
+
+            });
+
+            describe("_onMouseOutHandler", function() {
+
+                beforeEach(function() {
+                    menuDriver.mouseMove(25);                    
+                });
+
+                it("should clear the highlight index", function() {
+                    menuDriver.mouseOut();
+                    expect(menu.hasHighlight()).toBeFalsy();
                 });
 
             });

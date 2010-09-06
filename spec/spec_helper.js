@@ -44,6 +44,14 @@ var MenuDriver = class({
 
     mouseDown: function(offsetY) {
         this._menu.getCanvasElement().onmousedown({ offsetY: offsetY });
+    },
+
+    mouseMove: function(offsetY) {
+        this._menu.getCanvasElement().onmousemove({ offsetY: offsetY });
+    },
+
+    mouseOut: function() {
+        this._menu.getCanvasElement().onmouseout();
     }
 
 });

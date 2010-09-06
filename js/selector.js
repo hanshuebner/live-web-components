@@ -12,6 +12,7 @@ var Selector = class({
         fontColor: "black",
         borderColor: "black",
         borderSize: 2,
+        highlightColor: "green",
         backgroundColor: "white"
     },
 
@@ -313,7 +314,7 @@ var Selector = class({
         show: function() {
             this._visible = true;
             this._setCanvasElementStyle();
-            this._drawer.draw();
+            this.draw();
         },
 
         hide: function() {
@@ -325,8 +326,30 @@ var Selector = class({
             return this._visible;
         },
 
+        clearHighlight: function() {
+            this._highlightIndex = undefined;
+            this.draw();
+        },
+
+        setHighlightIndex: function(value) {
+            this._highlightIndex = value;
+            this.draw();
+        },
+
+        getHighlightIndex: function() {
+            return this._highlightIndex;
+        },
+
+        hasHighlight: function() {
+            return this._highlightIndex !== undefined;
+        },
+
         getCanvasElement: function() {
             return this._canvasElement;
+        },
+
+        draw: function() {
+            this._drawer.draw();
         },
 
         _setCanvasElementStyle: function() {
@@ -354,13 +377,27 @@ var Selector = class({
                 this._selector = selector;
                 this._menu = menu;
                 this._dimensioner = dimensioner;
+
                 this._menu.getCanvasElement().onmousedown = this._onMouseDownHandler.bind(this);
+                this._menu.getCanvasElement().onmousemove = this._onMouseMoveHandler.bind(this);
+                this._menu.getCanvasElement().onmouseout = this._onMouseOutHandler.bind(this);
             },
 
             _onMouseDownHandler: function(event) {
+                this._selector.setSelectedIndex(this._getIndexOfMouseEvent(event));
+            },
+
+            _onMouseMoveHandler: function(event) {
+                this._menu.setHighlightIndex(this._getIndexOfMouseEvent(event));
+            },
+
+            _onMouseOutHandler: function() {
+                this._menu.clearHighlight();
+            },
+
+            _getIndexOfMouseEvent: function(event) {
                 var item = this._dimensioner.getItem();
-                var index = Math.floor(event.offsetY / item.height);
-                this._selector.setSelectedIndex(index);
+                return Math.floor(event.offsetY / item.height);
             }
 
         }),
@@ -374,6 +411,7 @@ var Selector = class({
                 "fontColor",
                 "borderColor",
                 "borderSize",
+                "highlightColor",
                 "backgroundColor"
             ],
 
@@ -389,6 +427,7 @@ var Selector = class({
 
             draw: function() {
                 this._drawBackground();
+                this._drawHighlight();
                 this._drawBorder();
                 this._drawItems();
             },
@@ -397,6 +436,17 @@ var Selector = class({
                 var menuDimension = this._dimensioner.getMenu();
                 this._context.fillStyle = this._backgroundColor;
                 this._context.fillRect(0, 0, menuDimension.width, menuDimension.height);
+            },
+
+            _drawHighlight: function() {
+                if (!this._menu.hasHighlight()) return;
+
+                var menuDimension = this._dimensioner.getMenu();
+                var itemDimension = this._dimensioner.getItem();
+                var y = this._menu.getHighlightIndex() * itemDimension.height;
+
+                this._context.fillStyle = this._highlightColor;
+                this._context.fillRect(0, y, menuDimension.width, itemDimension.height);
             },
 
             _drawBorder: function() {
