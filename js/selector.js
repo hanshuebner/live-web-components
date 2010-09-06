@@ -20,8 +20,9 @@ var Selector = class({
 
         this._mouseHandler = new this.MouseHandler(this);
         this._dimensioner = new this.Dimensioner(this, options);
-        this._drawer = new this.Drawer(this, this._dimensioner, options);
-        this._menu = new this.Menu(this, this._dimensioner);
+        this._positioner = new this.Positioner(this, this._dimensioner, options);
+        this._drawer = new this.Drawer(this, this._dimensioner, this._positioner, options);
+        this._menu = new this.Menu(this, this._dimensioner, this._positioner);
 
         this._adjustWidth();
     },
@@ -117,11 +118,39 @@ var Selector = class({
 
         getMinimalWidth: function() {
             var item = this.getItem();
-            return item.width + this._borderSize * 2 + this._padding * 2;
+            var arrow = this.getArrow();
+            return item.width + arrow.width + this._borderSize * 3 + this._padding * 2;
         },
 
-        getFontSize: function() {
-            return this._fontSize || (this._selector.getHeight() - this._padding * 2);
+        getMenu: function() {
+            var item = this.getItem();
+            return {
+                width: item.width + this._borderSize * 2,
+                height: item.height * this._selector.getItems().length
+            };
+        },
+
+        getBorder: function() {
+            var item = this.getItem();
+            var arrow = this.getArrow();
+            return {
+                width: Math.max(item.width + arrow.width, this._selector.getWidth() - this._padding * 2),
+                height: Math.max(Math.max(item.height,  arrow.height), this._selector.getHeight() - this._padding * 2)
+            };
+        },
+
+        getArrow: function() {
+            return {
+                width: Math.round(this.getFontSize() / 2),
+                height: Math.round(this.getFontSize() / 2)
+            };
+        },
+
+        getItem: function(index) {
+            return {
+                width: this.getMaximalTextWidth() + this._borderSize * 2,
+                height: this.getFontSize() + this._borderSize * 2
+            };
         },
 
         getMaximalTextWidth: function() {
@@ -137,48 +166,60 @@ var Selector = class({
             return this._context.measureText(text).width;
         },
 
-        getSelectedItem: function() {
-            var border = this.getBorder();
+        getFontSize: function() {
+            return this._fontSize || (this._selector.getHeight() - this._borderSize * 2 - this._padding * 2);
+        }
+
+    }),
+
+    Positioner: class({
+
+        extends: Optionable,
+
+        OPTION_KEYS: [
+            "padding",
+            "borderSize"
+        ],
+
+        initialize: function(selector, dimensioner, options) {
+            this._selector = selector;
+            this._dimensioner = dimensioner;
+
+            this._super_initialize(this._selector.defaults, options);
+        },
+
+        getMenu: function() {
+            var borderDimension = this._dimensioner.getBorder();
+            var borderPosition = this.getBorder();
             return {
-                x: border.x + this._borderSize + this.getMaximalTextWidth() / 2,
-                y: border.y + this.getFontSize() / 2
+                top: this._selector.getButtonElement().offsetTop + borderPosition.y + borderDimension.height,
+                left: this._selector.getButtonElement().offsetLeft + borderPosition.x
             };
         },
 
         getBorder: function() {
             return {
                 x: this._padding,
-                y: this._padding,
-                width: this._selector.getWidth() - this._padding * 2,
-                height: this._selector.getHeight() - this._padding * 2
-            };
-        },
-
-        getMenu: function() {
-            var item = this.getItem();
-            return {
-                top: this._selector.getButtonElement().offsetTop + item.height,
-                left: this._selector.getButtonElement().offsetLeft + this._padding,
-                width: item.width + this._borderSize * 2,
-                height: item.height * this._selector.getItems().length
-            };
-        },
-
-        getItem: function(index) {
-            var arrow = this.getArrow();
-            return {
-                width: this.getMaximalTextWidth() + arrow.width + this._borderSize * 2,
-                height: this.getFontSize() + this._borderSize * 2
+                y: this._padding
             };
         },
 
         getArrow: function() {
-            var border = this.getBorder();
+            var borderPosition = this.getBorder();
+            var borderDimension = this._dimensioner.getBorder();
+            var arrowDimension = this._dimensioner.getArrow();
             return {
-                x: border.x + border.width - this.getFontSize(),
-                y: border.y + this._borderSize * 2,
-                width: this.getFontSize() - this._borderSize * 2,
-                height: this.getFontSize() - this._borderSize * 4
+                x: borderPosition.x + borderDimension.width - this._borderSize * 2 - arrowDimension.width,
+                y: borderPosition.y + Math.round(borderDimension.height / 2) - Math.round(arrowDimension.height / 2)
+            };
+        },
+
+        getSelectedItem: function() {
+            var borderPosition = this.getBorder();
+            var itemDimension = this._dimensioner.getItem();
+            return {
+                x: borderPosition.x + Math.round(itemDimension.width / 2),
+                y: borderPosition.y + Math.round(itemDimension.height / 2)
             };
         }
 
@@ -196,9 +237,10 @@ var Selector = class({
             "backgroundColor"
         ],
 
-        initialize: function(selector, dimensioner, options) {
+        initialize: function(selector, dimensioner, positioner, options) {
             this._selector = selector;
             this._dimensioner = dimensioner;
+            this._positioner = positioner;
             this._context = this._selector.getCanvasElement().getContext("2d");
 
             this._super_initialize(this._selector.defaults, options);
@@ -214,36 +256,39 @@ var Selector = class({
         },
 
         _drawBackground: function() {
-            var border = this._dimensioner.getBorder();
+            var borderDimensioner = this._dimensioner.getBorder();
+            var borderPosition = this._positioner.getBorder();
             this._context.fillStyle = this._backgroundColor;
-            this._context.fillRect(border.x, border.y, border.width, border.height)
+            this._context.fillRect(borderPosition.x, borderPosition.y, borderDimensioner.width, borderDimensioner.height);
         },
 
         _drawArrow: function() {
-            var arrow = this._dimensioner.getArrow();
+            var arrowDimension = this._dimensioner.getArrow();
+            var arrowPosition = this._positioner.getArrow();
             this._context.strokeStyle = this._borderColor;
             this._context.beginPath();
-            this._context.moveTo(arrow.x, arrow.y);
-            this._context.lineTo(arrow.x + arrow.width, arrow.y);
-            this._context.lineTo(arrow.x + arrow.width / 2, arrow.y + arrow.height);
-            this._context.lineTo(arrow.x, arrow.y);
+            this._context.moveTo(arrowPosition.x, arrowPosition.y);
+            this._context.lineTo(arrowPosition.x + arrowDimension.width, arrowPosition.y);
+            this._context.lineTo(arrowPosition.x + arrowDimension.width / 2, arrowPosition.y + arrowDimension.height);
+            this._context.lineTo(arrowPosition.x, arrowPosition.y);
             this._context.stroke();
         },
 
         _drawSelectedItem: function() {
-            var selectedItem = this._dimensioner.getSelectedItem();
+            var selectedItemPosition = this._positioner.getSelectedItem();
             this._context.fillStyle = this._fontColor;
             this._context.font = this._dimensioner.getFontSize() + "px " + this._font;
             this._context.textAlign = "center";
             this._context.textBaseline = "middle";
-            this._context.fillText(this._selector.getSelectedItem(), selectedItem.x, selectedItem.y);
+            this._context.fillText(this._selector.getSelectedItem(), selectedItemPosition.x, selectedItemPosition.y);
         },
 
         _drawBorder: function() {
-            var border = this._dimensioner.getBorder();
+            var borderDimensioner = this._dimensioner.getBorder();
+            var borderPosition = this._positioner.getBorder();
             this._context.strokeStyle = this._borderColor;
             this._context.lineWidth = this._borderSize;
-            this._context.strokeRect(border.x, border.y, border.width, border.height)
+            this._context.strokeRect(borderPosition.x, borderPosition.y, borderDimensioner.width, borderDimensioner.height);
         }
 
     }),
@@ -252,9 +297,10 @@ var Selector = class({
 
         extends: Optionable,
 
-        initialize: function(selector, dimensioner, options) {
+        initialize: function(selector, dimensioner, positioner, options) {
             this._selector = selector;
             this._dimensioner = dimensioner;
+            this._positioner = positioner;
             this._super_initialize(options);
 
             this._createCanvasElement();
@@ -284,13 +330,14 @@ var Selector = class({
         },
 
         _setCanvasElementStyle: function() {
-            var menu = this._dimensioner.getMenu();
-            this._canvasElement.setAttribute("width", menu.width);
-            this._canvasElement.setAttribute("height", menu.height);
+            var menuDimension = this._dimensioner.getMenu();
+            var menuPosition = this._positioner.getMenu();
+            this._canvasElement.setAttribute("width", menuDimension.width);
+            this._canvasElement.setAttribute("height", menuDimension.height);
             this._canvasElement.setAttribute("style",
                 "position: absolute;" +
-                " top: " + menu.top + "px;" +
-                " left: " + menu.left + "px;" +
+                " top: " + menuPosition.top + "px;" +
+                " left: " + menuPosition.left + "px;" +
                 " visibility: " + (this._visible ? "visible" : "hidden") + ";" +
                 " display: " + (this._visible ? "block" : "none") + ";");
         },
@@ -314,7 +361,6 @@ var Selector = class({
                 var item = this._dimensioner.getItem();
                 var index = Math.floor(event.offsetY / item.height);
                 this._selector.setSelectedIndex(index);
-                // this._menu.hide();
             }
 
         }),
@@ -348,33 +394,33 @@ var Selector = class({
             },
 
             _drawBackground: function() {
-                var menu = this._dimensioner.getMenu();
+                var menuDimension = this._dimensioner.getMenu();
                 this._context.fillStyle = this._backgroundColor;
-                this._context.fillRect(0, 0, menu.width, menu.height);
+                this._context.fillRect(0, 0, menuDimension.width, menuDimension.height);
             },
 
             _drawBorder: function() {
-                var menu = this._dimensioner.getMenu();
+                var menuDimension = this._dimensioner.getMenu();
                 this._context.strokeStyle = this._borderColor;
                 this._context.lineWidth = this._borderSize;
-                this._context.strokeRect(0, 0, menu.width, menu.height);
+                this._context.strokeRect(0, 0, menuDimension.width, menuDimension.height);
             },
 
             _drawItems: function() {
-                var menu = this._dimensioner.getMenu();
-                var item = this._dimensioner.getItem();
+                var menuDimension = this._dimensioner.getMenu();
+                var itemDimension = this._dimensioner.getItem();
 
                 this._context.fillStyle = this._fontColor;
                 this._context.font = this._dimensioner.getFontSize() + "px " + this._font;
                 this._context.textAlign = "center";
                 this._context.textBaseline = "middle";
 
-                var x = menu.width / 2;
-                var y = item.height / 2;
+                var x = menuDimension.width / 2;
+                var y = itemDimension.height / 2;
 
                 this._selector.getItems().each(function(itemText) {
                     this._context.fillText(itemText, x, y);
-                    y += item.height;
+                    y += itemDimension.height;
                 }, this);
             }
 
