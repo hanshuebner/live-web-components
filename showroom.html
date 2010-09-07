@@ -8,6 +8,7 @@
     <script type="application/javascript" src="js/spinner.js"></script>
     <script type="application/javascript" src="js/toggler.js"></script>
     <script type="application/javascript" src="js/selector.js"></script>
+    <script type="application/javascript" src="js/slider.js"></script>
     <script type="application/javascript">
         function printLine(text) {
             var pElement = document.getElementById("output");
@@ -78,6 +79,12 @@
                     printLine("Selector 1: internal = " + internalValue + " / external = " + externalValue + " / state = " + state);
                 }
             });
+
+            new Slider("slider_one", {
+                onchange: function(internalValue, externalValue, state) {
+                    printLine("Slider 1: internal = " + internalValue + " / external = " + externalValue + " / state = " + state);
+                }
+            });
         }
     </script>
 </head>
@@ -89,6 +96,7 @@
     <button id="toggler_one" style="display: inline;"></button>
     <button id="toggler_two" style="display: inline;"></button><br/>
     <button id="selector_one" style="display: inline;"></button>
+    <button id="slider_one" style="display: inline;"></button>
     <input />
     <p id="output"></p>
 </body>
