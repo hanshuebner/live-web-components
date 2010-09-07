@@ -35,11 +35,11 @@
                 factor: 0.8,
                 radiusDifference: 5,
                 externalMapping: {
-                    fromState: function(state) {
-                        return Math.round(state * 400.0 - 200.0);
+                    toDisplay: function(state) {
+                        return Math.round(state / 100.0 * 400.0 - 200.0);
                     },
-                    toState: function(value) {
-                        return (value + 200.0) / 400.0;
+                    fromDisplay: function(value) {
+                        return (value * 100.0 + 200.0) / 400.0;
                     }
                 },
                 onchange: function(internalValue, externalValue, state) {
