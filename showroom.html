@@ -25,14 +25,14 @@
             });
             new Spinner('spinner_two', {
                 mouseScale: 2,
-                keyScale: 0.5,
+                keyStep: 2,
                 onchange: function(internalValue, externalValue, state) {
                     printLine("Spinner 2: internal = " + internalValue + " / external = " + externalValue + " / state = " + state);
                 }
             });
             new Spinner('spinner_three', {
                 title: "Long title",
-                factor: 0.8,
+                state: 80,
                 radiusDifference: 5,
                 externalMapping: {
                     toDisplay: function(state) {
@@ -57,7 +57,7 @@
                 width: 60,
                 height: 24,
                 borderWidth: 1,
-                initialValue: true,
+                state: true,
                 text: "Small",
                 onchange: function(on) {
                     printLine("Toggler 2: " + on)
