@@ -19,15 +19,15 @@
             new Spinner('spinner_one', {
                 title: "Small with long title",
                 size: 40,
-                onchange: function(internalValue, externalValue, factor) {
-                    printLine("Spinner 1: internal = " + internalValue + " / external = " + externalValue + " / factor = " + factor);
+                onchange: function(internalValue, externalValue, state) {
+                    printLine("Spinner 1: internal = " + internalValue + " / external = " + externalValue + " / state = " + state);
                 }
             });
             new Spinner('spinner_two', {
                 mouseScale: 2,
                 keyScale: 0.5,
-                onchange: function(internalValue, externalValue, factor) {
-                    printLine("Spinner 2: internal = " + internalValue + " / external = " + externalValue + " / factor = " + factor);
+                onchange: function(internalValue, externalValue, state) {
+                    printLine("Spinner 2: internal = " + internalValue + " / external = " + externalValue + " / state = " + state);
                 }
             });
             new Spinner('spinner_three', {
@@ -35,15 +35,15 @@
                 factor: 0.8,
                 radiusDifference: 5,
                 externalMapping: {
-                    fromFactor: function(factor) {
-                        return Math.round(factor * 400.0 - 200.0);
+                    fromState: function(state) {
+                        return Math.round(state * 400.0 - 200.0);
                     },
-                    toFactor: function(value) {
+                    toState: function(value) {
                         return (value + 200.0) / 400.0;
                     }
                 },
-                onchange: function(internalValue, externalValue, factor) {
-                    printLine("Spinner 3: internal = " + internalValue + " / external = " + externalValue + " / factor = " + factor);
+                onchange: function(internalValue, externalValue, state) {
+                    printLine("Spinner 3: internal = " + internalValue + " / external = " + externalValue + " / state = " + state);
                 }
             });
 

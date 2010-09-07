@@ -5,15 +5,16 @@ var Spinner = class({
 
     defaults: {
         size: 100,
-        factor: 0.5,
+        state: 50,
+        stateCount: 101,
 
         externalMapping: {
-            fromFactor: function(factor) { return Math.round(factor * 200.0 - 100.0); },
-            toFactor: function(value) { return (value + 100.0) / 200.0; }
+            fromState: function(state) { return Math.round(state * 200.0 - 100.0); },
+            toState: function(value) { return (value + 100.0) / 200.0; }
         },
         internalMapping: {
-            fromFactor: function(factor) { return Math.round(factor * 255); },
-            toFactor: function(value) { return value / 255.0; }
+            fromState: function(state) { return Math.round(state * 255); },
+            toState: function(value) { return value / 255.0; }
         },
 
         // mouse handler
@@ -21,8 +22,8 @@ var Spinner = class({
                                     // if the mouse has been moved 1 time the distance of "size".
 
         // key handler
-        keyScale: 1,                // a value of 1 means, that the spinenr has turned completly around
-                                    // if the up/down-key has been hit size-times.
+        keyStep: 1,                 // a value of 1 means, that the spinner increases step index by one
+                                    // on each key stroke
 
         // drawer
         lineWidth: 3,
@@ -50,11 +51,7 @@ var Spinner = class({
 
         if (options.title) this.setTitle(options.title);
         if (options.size) this.setSize(options.size);
-        if (options.factor) this.setFactor(options.factor);
-        if (options.externalMapping) this.setExternalMapping(options.externalMapping);
-        if (options.internalMapping) this.setInternalMapping(options.internalMapping);
-
-        if (options.onchange) this.onchange = options.onchange;
+        if (options.stateCount) this.setStateCount(options.stateCount);
     },
 
     setTitle: function(value) {
@@ -81,53 +78,17 @@ var Spinner = class({
         return this._size;
     },
 
-    setExternalMapping: function(mapping) {
-        this._checkMappingFormat(mapping);
-        this._externalMapping = mapping;
-    },
-
-    getExternalMapping: function() {
-        return this._externalMapping;
-    },
-
-    setInternalMapping: function(mapping) {
-        this._checkMappingFormat(mapping);
-        this._internalMapping = mapping;
-    },
-
-    getInternalMapping: function() {
-        return this._internalMapping;
-    },
-
-    setExternalValue: function(value) {
-        this.setFactor(this._externalMapping.toFactor(value));
-    },
-
-    getExternalValue: function() {
-        return this._externalMapping.fromFactor(this.getFactor());
-    },
-
-    setInternalValue: function(value) {
-        this.setFactor(this._internalMapping.toFactor(value));
-    },
-
-    getInternalValue: function() {
-        return this._internalMapping.fromFactor(this.getFactor());
-    },
-
-    setFactor: function(value) {
-        value = Math.max(0.0, Math.min(1.0, value));
-
-        var changed = this._factor != value;
-        this._factor = value;
-        this.draw();
-
+    setState: function(value) {
+        this._super_setState(value);
         this.abortEntering();
-        if (changed) this._triggerOnChange();
     },
 
-    getFactor: function(value) {
-        return this._factor || 0.0;
+    setStateCount: function(value) {
+        this._stateCount = value;
+    },
+
+    getStateCount: function() {
+        return this._stateCount;
     },
 
     blur: function() {
@@ -152,16 +113,6 @@ var Spinner = class({
         if (this._drawer) this._drawer.draw();
     },
 
-    _checkMappingFormat: function(mapping) {
-        if (!(mapping && typeof(mapping.fromFactor) === "function" && typeof(mapping.toFactor) === "function")) {
-            throw("The given mapping has an incorrect format");
-        }
-    },
-
-    _triggerOnChange: function() {
-        if (this.onchange) this.onchange(this.getInternalValue(), this.getExternalValue(), this.getFactor());
-    },
-
     MouseHandler: class({
 
         extends: Optionable,
@@ -181,7 +132,7 @@ var Spinner = class({
             this._spinner.getButtonElement().focus();
 
             this._startY = event.screenY;
-            this._startFactor = this._spinner.getFactor();
+            this._startState = this._spinner.getState();
 
             document.onmousemove = this._onMouseMoveHandler.bind(this);
             document.onmouseup = this._onMouseUpHandler.bind(this);
@@ -192,12 +143,9 @@ var Spinner = class({
         _onMouseMoveHandler: function(event) {
             var range = this._spinner.getSize() * this._mouseScale;
             var difference = event.screenY - this._startY;
-            var sign = difference < 0 ? -1 : 1;
-            var normalizedDifference = Math.min(Math.abs(difference), range) * sign;
-            var factorDifference = difference / range;
-            var factor = Math.max(0.0, Math.min(1.0, this._startFactor + factorDifference))
+            var stateDifference = Math.round((difference / range) * this._spinner.getStateCount());
 
-            this._spinner.setFactor(factor);
+            this._spinner.setState(this._startState + stateDifference);
 
             return false;
         },
@@ -216,7 +164,7 @@ var Spinner = class({
         extends: Optionable,
 
         OPTION_KEYS: [
-            "keyScale"
+            "keyStep"
         ],
 
         initialize: function(spinner, options) {
@@ -284,15 +232,11 @@ var Spinner = class({
         },
 
         _stepUp: function() {
-            this._spinner.setFactor(this._spinner.getFactor() + this._getKeyStep());
+            this._spinner.setState(this._spinner.getState() + this._keyStep);
         },
 
         _stepDown: function() {
-            this._spinner.setFactor(this._spinner.getFactor() - this._getKeyStep());
-        },
-
-        _getKeyStep: function() {
-            return this._keyScale / this._spinner.getSize();
+            this._spinner.setState(this._spinner.getState() - this._keyStep);
         },
 
         _enterCharacter: function(character) {
@@ -313,6 +257,21 @@ var Spinner = class({
             this._spinner.setExternalValue(parseFloat(this._enteredText));
             this._entering = false;
             this._enteredText = null;
+        }
+
+    }),
+
+    Dimensioner: class({
+
+        extends: Optionable,
+
+        OPTION_KEYS: [
+
+        ],
+
+        initialize: function(spinner, options) {
+            this._spinner = spinner;
+            this._super_initialize(this._spinner.defaults, options);
         }
 
     }),
@@ -360,8 +319,8 @@ var Spinner = class({
 
         getMaximalValueWidth: function() {
             this._context.font = this._fontSize + "px " + this._font;
-            var minimalValueWidth = this._context.measureText(this._getExternalValueFor(0.0)).width;
-            var maximalValueWidth = this._context.measureText(this._getExternalValueFor(1.0)).width;
+            var minimalValueWidth = this._context.measureText(this._spinner.getExternalValueFor(0)).width;
+            var maximalValueWidth = this._context.measureText(this._spinner.getExternalValueFor(this._spinner.getStateCount() - 1)).width;
             var width = Math.max(minimalValueWidth, maximalValueWidth);
             width += this._lineWidth * 2;
             return Math.max(width, this._spinner.getSize() / 2);
@@ -377,10 +336,6 @@ var Spinner = class({
 
         _calculateFontSize: function() {
             this._fontSize = this._spinner.getSize() / 2 - this._lineWidth * 2;
-        },
-
-        _getExternalValueFor: function(value) {
-            return this._spinner.getExternalMapping().fromFactor(value);
         },
 
         _adjustSpinnerHeight: function() {
@@ -405,7 +360,7 @@ var Spinner = class({
             var offsetX = this._getSpinnerOffsetX();
             var offsetY = this._getSpinnerOffsetY();
             var size = this._spinner.getSize();
-            var angle = (Math.PI / 2) + (3 * (Math.PI / 2) * this._spinner.getFactor());
+            var angle = (Math.PI / 2) + (3 * (Math.PI / 2) * (this._spinner.getState() / (this._spinner.getStateCount() - 1)));
 
             this._context.lineWidth = (this._lineWidth || 1);
             this._context.lineCap = "round";

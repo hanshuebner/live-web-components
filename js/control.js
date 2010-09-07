@@ -30,6 +30,12 @@ var Control = class({
 
         if (options.height) this.setHeight(options.height);
         if (options.width) this.setWidth(options.width);
+
+        if (options.state) this.setState(options.state);
+        if (options.externalMapping) this.setExternalMapping(options.externalMapping);
+        if (options.internalMapping) this.setInternalMapping(options.internalMapping);
+
+        if (options.onchange) this.onchange = options.onchange;
     },
 
     setHeight: function(value) {
@@ -52,6 +58,67 @@ var Control = class({
 
     getWidth: function() {
         return this._width || 0;
+    },
+
+    setExternalMapping: function(mapping) {
+        this._externalMapping = mapping;
+    },
+
+    getExternalMapping: function() {
+        return this._externalMapping;
+    },
+
+    setInternalMapping: function(mapping) {
+        this._internalMapping = mapping;
+    },
+
+    getInternalMapping: function() {
+        return this._internalMapping;
+    },
+
+    setExternalValue: function(value) {
+        this.setState(
+            this._externalMapping && this._externalMapping.fromDisplay ?
+            this._externalMapping.fromDisplay(value) :
+            value);
+    },
+
+    getExternalValue: function() {
+        return this.getExternalValueFor(this.getState());
+    },
+
+    getExternalValueFor: function(state) {
+        return this._externalMapping && this._externalMapping.toDisplay ?
+               this._externalMapping.toDisplay(state) :
+               state;
+    },
+
+    setInternalValue: function(value) {
+        this.setState(this._internalMapping && this._internalMapping.fromValue ?
+                      this._internalMapping.fromValue(value) :
+                      value);
+    },
+
+    getInternalValue: function() {
+        return this._internalMapping && this._internalMapping.toValue ?
+               this._internalMapping.toValue(this.getState()) :
+               this.getState();
+    },
+
+    setState: function(value) {
+        value = Math.max(0, Math.min(this.getStateCount() - 1, value));
+        var changed = this._state != value;
+        this._state = value;
+        this.draw();
+        if (changed) this._triggerOnChange();
+    },
+
+    getState: function() {
+        return this._state || 0.0;
+    },
+
+    getStateCount: function() {
+        return 0;
     },
 
     focus: function() {
@@ -88,6 +155,10 @@ var Control = class({
     _createCanvasElement: function() {
         this._canvasElement = document.createElement("canvas");
         this._buttonElement.appendChild(this._canvasElement);
+    },
+
+    _triggerOnChange: function() {
+        if (this.onchange) this.onchange(this.getInternalValue(), this.getExternalValue(), this.getState());
     },
 
     ControlDrawer: class({
