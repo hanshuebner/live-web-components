@@ -35,31 +35,22 @@ var Selector = class({
         this._super_setOptions(options);
 
         if (options.items) this.setItems(options.items);
-        if (options.onchange) this.onchange = options.onchange;
     },
 
     setItems: function(value) {
-        this._items = value;
+        this.setStateCount(value.length);
+        this.setExternalMapping({
+            toDisplay: function(state) { return value[state]; }
+        });
         this.draw();
     },
 
-    getItems: function() {
-        return this._items;
+    setStateCount: function(value) {
+        this._stateCount = value;
     },
 
-    getSelectedItem: function() {
-        return this._items[ this.getSelectedIndex() ];
-    },
-
-    setSelectedIndex: function(value) {
-        var changed = this._selectedIndex != value;
-        this._selectedIndex = value;
-        this.draw();
-        if (changed) this._triggerOnChange();
-    },
-
-    getSelectedIndex: function() {
-        return this._selectedIndex || 0;
+    getStateCount: function() {
+        return this._stateCount || 0;
     },
 
     showMenu: function() {
@@ -96,10 +87,6 @@ var Selector = class({
         this.setWidth(Math.max(this.getWidth(), this._dimensioner.getMinimalWidth()));
     },
 
-    _triggerOnChange: function() {
-        if (this.onchange) this.onchange(this.getSelectedIndex(), this.getSelectedItem());
-    },
-
     MouseHandler: class({
 
         initialize: function(selector) {
@@ -133,7 +120,7 @@ var Selector = class({
             case 32: // space
             case 38: // up arrow
             case 40: // down arrow
-                this._menu.setHighlightIndex(this._selector.getSelectedIndex());
+                this._menu.setHighlightState(this._selector.getState());
                 this._menu.show();
                 return false;
             default:
@@ -144,16 +131,16 @@ var Selector = class({
         _handleMenuKey: function(keyCode) {
             switch(keyCode) {
             case 13: // enter
-                this._selector.setSelectedIndex(this._menu.getHighlightIndex());
+                this._selector.setState(this._menu.getHighlightState());
                 this._menu.hide();
                 return false;
             case 38: // up arrow
-                if (this._menu.getHighlightIndex() > 0)
-                    this._menu.setHighlightIndex(this._menu.getHighlightIndex() - 1);
+                if (this._menu.getHighlightState() > 0)
+                    this._menu.setHighlightState(this._menu.getHighlightState() - 1);
                 return false;
             case 40: // down arrow
-                if (this._menu.getHighlightIndex() < (this._selector.getItems().length - 1))
-                    this._menu.setHighlightIndex(this._menu.getHighlightIndex() + 1);
+                if (this._menu.getHighlightState() < (this._selector.getStateCount() - 1))
+                    this._menu.setHighlightState(this._menu.getHighlightState() + 1);
                 return false;
             default:
                 return true;
@@ -191,7 +178,7 @@ var Selector = class({
             var itemDimension = this.getItem();
             return {
                 width: borderDimension.width,
-                height: itemDimension.height * this._selector.getItems().length
+                height: itemDimension.height * this._selector.getStateCount()
             };
         },
 
@@ -220,9 +207,9 @@ var Selector = class({
 
         getMaximalTextWidth: function() {
             var width = 0;
-            this._selector.getItems().each(function(item) {
-                width = Math.max(width, this.getTextWidth(item));
-            }, this);
+            for (var index = 0; index < this._selector.getStateCount(); index++) {
+                width = Math.max(width, this.getTextWidth(this._selector.getExternalValueFor(index)));
+            }
             return width;
         },
 
@@ -279,7 +266,7 @@ var Selector = class({
             };
         },
 
-        getSelectedItem: function() {
+        getState: function() {
             var borderPosition = this.getBorder();
             var itemDimension = this._dimensioner.getItem();
             return {
@@ -316,7 +303,7 @@ var Selector = class({
         draw: function() {
             this._drawBackground();
             this._drawArrow();
-            this._drawSelectedItem();
+            this._drawState();
             this._drawBorder();
         },
 
@@ -339,13 +326,13 @@ var Selector = class({
             this._context.stroke();
         },
 
-        _drawSelectedItem: function() {
-            var selectedItemPosition = this._positioner.getSelectedItem();
+        _drawState: function() {
+            var statePosition = this._positioner.getState();
             this._context.fillStyle = this._fontColor;
             this._context.font = this._dimensioner.getFontSize() + "px " + this._font;
             this._context.textAlign = "center";
             this._context.textBaseline = "middle";
-            this._context.fillText(this._selector.getSelectedItem(), selectedItemPosition.x, selectedItemPosition.y);
+            this._context.fillText(this._selector.getExternalValue(), statePosition.x, statePosition.y);
         },
 
         _drawBorder: function() {
@@ -390,22 +377,22 @@ var Selector = class({
             return this._visible;
         },
 
-        clearHighlight: function() {
-            this._highlightIndex = undefined;
+        clearHighlightState: function() {
+            this._highlightState = undefined;
             this.draw();
         },
 
-        setHighlightIndex: function(value) {
-            this._highlightIndex = value;
+        setHighlightState: function(value) {
+            this._highlightState = value;
             this.draw();
         },
 
-        getHighlightIndex: function() {
-            return this._highlightIndex;
+        getHighlightState: function() {
+            return this._highlightState;
         },
 
         hasHighlight: function() {
-            return this._highlightIndex !== undefined;
+            return this._highlightState !== undefined;
         },
 
         getCanvasElement: function() {
@@ -448,21 +435,21 @@ var Selector = class({
             },
 
             _onMouseDownHandler: function(event) {
-                this._selector.setSelectedIndex(this._getIndexOfMouseEvent(event));
+                this._selector.setState(this._getStateForMouseEvent(event));
                 return false;
             },
 
             _onMouseMoveHandler: function(event) {
-                this._menu.setHighlightIndex(this._getIndexOfMouseEvent(event));
+                this._menu.setHighlightState(this._getStateForMouseEvent(event));
                 return false;
             },
 
             _onMouseOutHandler: function() {
-                this._menu.clearHighlight();
-                return false;                
+                this._menu.clearHighlightState();
+                return false;
             },
 
-            _getIndexOfMouseEvent: function(event) {
+            _getStateForMouseEvent: function(event) {
                 var item = this._dimensioner.getItem();
                 return Math.floor(event.offsetY / item.height);
             }
@@ -510,7 +497,7 @@ var Selector = class({
 
                 var menuDimension = this._dimensioner.getMenu();
                 var itemDimension = this._dimensioner.getItem();
-                var y = this._menu.getHighlightIndex() * itemDimension.height;
+                var y = this._menu.getHighlightState() * itemDimension.height;
 
                 this._context.fillStyle = this._highlightColor;
                 this._context.fillRect(0, y, menuDimension.width, itemDimension.height);
@@ -535,10 +522,10 @@ var Selector = class({
                 var x = menuDimension.width / 2;
                 var y = itemDimension.height / 2;
 
-                this._selector.getItems().each(function(itemText) {
-                    this._context.fillText(itemText, x, y);
+                for (var index = 0; index < this._selector.getStateCount(); index++) {
+                    this._context.fillText(this._selector.getExternalValueFor(index), x, y);
                     y += itemDimension.height;
-                }, this);
+                }
             }
 
         })

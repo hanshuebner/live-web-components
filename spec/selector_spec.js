@@ -18,36 +18,27 @@ describe("Selector", function() {
 
     describe("setItems", function() {
 
-        it("should set the items", function() {
-            var items = [ "one", "two" ];
+        var items;
+
+        beforeEach(function() {
+            items = [ "one", "two" ];
+        });
+
+        it("should set the state count", function() {
             selector.setItems(items);
-            expect(selector.getItems()).toBe(items);
+            expect(selector.getStateCount()).toBe(2);
+        });
+
+        it("should install a external mapping function", function() {
+            selector.setItems(items);
+            selector.setState(1);
+            expect(selector.getExternalValue()).toBe("two")
         });
 
         it("should invoke a draw", function() {
             spyOn(selector, "draw");
-            selector.setItems([ "one", "two" ]);
+            selector.setItems(items);
             expect(selector.draw).toHaveBeenCalled();
-        });
-
-    });
-
-    describe("setSelectedIndex", function() {
-
-        beforeEach(function() {
-            selector.setSelectedIndex(0);
-        });
-
-        it("should trigger a change event on changing index", function() {
-            spyOn(selector, "onchange");
-            selector.setSelectedIndex(1);
-            expect(selector.onchange).toHaveBeenCalledWith(1, "two");
-        });
-
-        it("should not trigger a change event on not-changing index", function() {
-            spyOn(selector, "onchange");
-            selector.setSelectedIndex(0);
-            expect(selector.onchange).not.toHaveBeenCalled();
         });
 
     });
@@ -85,7 +76,7 @@ describe("Selector", function() {
 
                 it("should set the highlight index to the selected index", function() {
                     selectorDriver.enterKey(38); // up arrow
-                    expect(menu.getHighlightIndex()).toBe(selector.getSelectedIndex());
+                    expect(menu.getHighlightState()).toBe(selector.getState());
 
                 });
 
@@ -104,22 +95,22 @@ describe("Selector", function() {
             describe("with a visible menu", function() {
 
                 beforeEach(function() {
-                    selector.setSelectedIndex(1);
+                    selector.setState(1);
                     selectorDriver.enterKey(13); // enter
                 });
 
                 it("should increase/decrease the highlight index if up/down arrow is pressed", function() {
                     selectorDriver.enterKey(40); // down arrow
-                    expect(menu.getHighlightIndex()).toBe(2);
+                    expect(menu.getHighlightState()).toBe(2);
 
                     selectorDriver.enterKey(38); // up arrow
-                    expect(menu.getHighlightIndex()).toBe(1);
+                    expect(menu.getHighlightState()).toBe(1);
                 });
 
                 it("should set the selected index if enter is pressed", function() {
                     selectorDriver.enterKey(40); // down arrow
                     selectorDriver.enterKey(13); // enter
-                    expect(selector.getSelectedIndex()).toBe(2);
+                    expect(selector.getState()).toBe(2);
                 });
 
                 it("should hide the menu if enter is pressed", function() {
@@ -274,11 +265,11 @@ describe("Selector", function() {
 
         });
 
-        describe("getSelectedItem", function() {
+        describe("getState", function() {
 
             it("should return the selected item position", function() {
-                expect(positioner.getSelectedItem().x).toBe(36);
-                expect(positioner.getSelectedItem().y).toBe(20);
+                expect(positioner.getState().x).toBe(36);
+                expect(positioner.getState().y).toBe(20);
             });
 
         });
@@ -298,15 +289,15 @@ describe("Selector", function() {
 
         describe("clearHighlight", function() {
 
-            it("should set the highlight index to undefined", function() {
-                menu.clearHighlight();
-                expect(menu.getHighlightIndex()).toBe(undefined);
+            it("should set the highlight state to undefined", function() {
+                menu.clearHighlightState();
+                expect(menu.getHighlightState()).toBe(undefined);
                 expect(menu.hasHighlight()).toBeFalsy();
             });
 
             it("should invoke a draw", function() {
                 spyOn(menu, "draw");
-                menu.setHighlightIndex(1);
+                menu.setHighlightState(1);
                 expect(menu.draw).toHaveBeenCalled();
             });
 
@@ -315,14 +306,14 @@ describe("Selector", function() {
         describe("setHighlightIndex", function() {
 
             it("should set the highlight index", function() {
-                menu.setHighlightIndex(1);
-                expect(menu.getHighlightIndex()).toBe(1);
+                menu.setHighlightState(1);
+                expect(menu.getHighlightState()).toBe(1);
                 expect(menu.hasHighlight()).toBeTruthy();
             });
 
             it("should invoke a draw", function() {
                 spyOn(menu, "draw");
-                menu.setHighlightIndex(1);
+                menu.setHighlightState(1);
                 expect(menu.draw).toHaveBeenCalled();
             });
 
@@ -334,11 +325,11 @@ describe("Selector", function() {
 
                 it("should select the correct item", function() {
                     menuDriver.mouseDown(25);
-                    expect(selector.getSelectedItem()).toBe("one");
+                    expect(selector.getExternalValue()).toBe("one");
                     menuDriver.mouseDown(50);
-                    expect(selector.getSelectedItem()).toBe("two");
+                    expect(selector.getExternalValue()).toBe("two");
                     menuDriver.mouseDown(75);
-                    expect(selector.getSelectedItem()).toBe("three");
+                    expect(selector.getExternalValue()).toBe("three");
                 });
 
             });
@@ -352,11 +343,11 @@ describe("Selector", function() {
 
                 it("should update the highlight index", function() {
                     menuDriver.mouseMove(25);
-                    expect(menu.getHighlightIndex()).toBe(0);
+                    expect(menu.getHighlightState()).toBe(0);
                     menuDriver.mouseMove(50);
-                    expect(menu.getHighlightIndex()).toBe(1);
+                    expect(menu.getHighlightState()).toBe(1);
                     menuDriver.mouseMove(75);
-                    expect(menu.getHighlightIndex()).toBe(2);
+                    expect(menu.getHighlightState()).toBe(2);
                 });
 
             });
