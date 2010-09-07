@@ -31,50 +31,17 @@ var Toggler = class({
         this._drawer = new this.Drawer(this, options);
     },
 
-    setOptions: function(options) {
-        options = options || { };
-        this._super_setOptions(options);
-
-        if (options.initialValue) this.setOn(options.initialValue);
-        if (options.text) this.setText(options.text);
-        if (options.onchange) this.onchange = options.onchange;
+    getStateCount: function() {
+        return 2;
     },
 
-    setOn: function(value) {
-        var changed = this._on != value;
-
-        this._on = value;
-
-        if (changed) {
-            this.draw();
-            this._triggerOnChange();
-        }
-    },
-
-    toggleOn: function() {
-        this.setOn(this.isOn() ? false : true);
-    },
-
-    isOn: function() {
-        return this._on;
-    },
-
-    setText: function(value) {
-        this._text = value;
-        this.draw();
-    },
-
-    getText: function() {
-        return this._text || "";
+    toggleState: function() {
+        this.setState(this.getState() ? 0 : 1);
     },
 
     draw: function() {
         this._super_draw();
         if (this._drawer) this._drawer.draw();
-    },
-
-    _triggerOnChange: function() {
-        if (this.onchange) this.onchange(this.isOn());
     },
 
     MouseHandler: class({
@@ -86,7 +53,7 @@ var Toggler = class({
 
         _onMouseDownHandler: function() {
             this._toggler.getButtonElement().focus();
-            this._toggler.toggleOn();
+            this._toggler.toggleState();
         }
 
     }),
@@ -102,7 +69,7 @@ var Toggler = class({
             switch (event.keyCode) {
             case 13: // enter
             case 32: // space
-                this._toggler.toggleOn();
+                this._toggler.toggleState();
                 return false;
             default:
                 return true;
@@ -158,7 +125,7 @@ var Toggler = class({
         },
 
         _drawButton: function() {
-            this._context.fillStyle = this._toggler.isOn() ? this._onColor : this._offColor;
+            this._context.fillStyle = this._toggler.getState() ? this._onColor : this._offColor;
             this._context.fillRect(this._buttonX, this._buttonY, this._buttonWidth, this._buttonHeight);
         },
 
@@ -173,7 +140,7 @@ var Toggler = class({
             this._context.fillStyle = this._fontColor;
             this._context.textAlign = "center";
             this._context.textBaseline = "middle";
-            this._context.fillText(this._toggler.getText(), this._toggler.getWidth() / 2, this._toggler.getHeight() / 2);
+            this._context.fillText(this._toggler.getExternalValue(), this._toggler.getWidth() / 2, this._toggler.getHeight() / 2);
         }
 
     })

@@ -6,7 +6,7 @@ describe("Toggler", function() {
     beforeEach(function() {
         toggler = new Toggler(buttonElement);
         toggler.onchange = function() { };
-        toggler.setOn(false);
+        toggler.setState(0);
 
         togglerDriver = new ControlDriver(toggler);
     });
@@ -15,46 +15,21 @@ describe("Toggler", function() {
         expect(Toggler.prototype.extends).toBe(Control);
     });
 
-    describe("setOn", function() {
+    describe("getStateCount", function() {
 
-        it("should set the state", function() {
-            toggler.setOn(true);
-            expect(toggler.isOn()).toBeTruthy();
-        });
-
-        it("should invoke a draw on changing state", function() {
-            spyOn(toggler, "draw");
-            toggler.setOn(true);
-            expect(toggler.draw).toHaveBeenCalled();
-        });
-
-        it("should not invoke a draw on not-changing state", function() {
-            spyOn(toggler, "draw");
-            toggler.setOn(false);
-            expect(toggler.draw).not.toHaveBeenCalled();
-        });
-
-        it("should trigger a change event on changing state", function() {
-            spyOn(toggler, "onchange");
-            toggler.setOn(true);
-            expect(toggler.onchange).toHaveBeenCalled();
-        });
-
-        it("should not trigger a change event on not-changing state", function() {
-            spyOn(toggler, "onchange");
-            toggler.setOn(false);
-            expect(toggler.onchange).not.toHaveBeenCalled();
+        it("should return two", function() {
+            expect(toggler.getStateCount()).toBe(2);
         });
 
     });
 
-    describe("toggleOn", function() {
+    describe("toggleState", function() {
 
         it("should alternate the state", function() {
-            toggler.toggleOn();
-            expect(toggler.isOn()).toBeTruthy();
-            toggler.toggleOn();
-            expect(toggler.isOn()).toBeFalsy();
+            toggler.toggleState();
+            expect(toggler.getState()).toBe(1);
+            toggler.toggleState();
+            expect(toggler.getState()).toBe(0);
         });
 
     });
@@ -71,9 +46,9 @@ describe("Toggler", function() {
 
             it("should toggle the state", function() {
                 togglerDriver.mouseDown();
-                expect(toggler.isOn()).toBeTruthy();
+                expect(toggler.getState()).toBe(1);
                 togglerDriver.mouseDown();
-                expect(toggler.isOn()).toBeFalsy();
+                expect(toggler.getState()).toBe(0);
             });
 
         });
@@ -86,14 +61,14 @@ describe("Toggler", function() {
 
             it("should toggle the state on enter key", function() {
                 togglerDriver.enterKey(13); // enter
-                expect(toggler.isOn()).toBeTruthy();
+                expect(toggler.getState()).toBe(1);
                 togglerDriver.enterKey(13); // enter
-                expect(toggler.isOn()).toBeFalsy();
+                expect(toggler.getState()).toBe(0);
             });
 
             it("should not toggle the state on tab key", function() {
                 togglerDriver.enterKey(9); // tab
-                expect(toggler.isOn()).toBeFalsy();
+                expect(toggler.getState()).toBe(0);
             });
 
         });

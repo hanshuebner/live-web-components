@@ -49,18 +49,25 @@
 
             new Toggler("toggler_one", {
                 text: "Large",
-                onchange: function(on) {
-                    printLine("Toggler 1: " + on)
+                externalMapping: {
+                    toDisplay: function(state) { return state ? "On" : "Off" }
+                },
+                internalMapping: {
+                    toValue: function(state) { return state ? true : false },
+                    fromValue: function(value) { return value ? 1 : 0 }
+                },
+                onchange: function(internalValue, externalValue, state) {
+                    printLine("Toggler 1: internal = " + internalValue + " / external = " + externalValue + " / state = " + state);
                 }
             });
             new Toggler("toggler_two", {
                 width: 60,
                 height: 24,
                 borderWidth: 1,
-                state: true,
+                state: 1,
                 text: "Small",
-                onchange: function(on) {
-                    printLine("Toggler 2: " + on)
+                onchange: function(internalValue, externalValue, state) {
+                    printLine("Toggler 2: internal = " + internalValue + " / external = " + externalValue + " / state = " + state);
                 }
             });
 
