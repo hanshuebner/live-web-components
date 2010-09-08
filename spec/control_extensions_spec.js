@@ -101,6 +101,10 @@ describe("StateChagingKeyHandler", function() {
 
         beforeEach(function() {
             control.setState(50);
+            control.setExternalMapping({
+                toDisplay: function(state) { return state; },
+                fromDisplay: function(display) { return parseInt(display); }
+            });
         });
 
         it("should add a keyStep if up arrow is pressed", function() {
@@ -115,9 +119,17 @@ describe("StateChagingKeyHandler", function() {
             expect(control.getState()).toBe(oldState - 1);
         });
 
-        it("should go into the entering-mode if a digit is pressed", function() {
+        it("should go into entering-mode if a digit is pressed", function() {
             controlDriver.enterKey(49); // "1"
             expect(keyHandler.isEntering()).toBeTruthy();
+        });
+
+        it("should not go into entering-mode if no fromDisplay mapping is given", function() {
+            control.setExternalMapping({
+                toDisplay: function(state) { return state; }
+            });
+            controlDriver.enterKey(49); // "1"
+            expect(keyHandler.isEntering()).toBeFalsy();
         });
 
         it("should leave the entering-mode and commit the new value if enter is pressed", function() {

@@ -4,7 +4,12 @@ describe("Spinner", function() {
     var spinner, spinnerDriver;
 
     beforeEach(function() {
-        spinner = new Spinner(buttonElement);
+        spinner = new Spinner(buttonElement, {
+            externalMapping: {
+                toDisplay: function(state) { return state; },
+                fromDisplay: function(display) { return parseInt(display); }
+            }
+        });
         spinner.onchange = function() { };
 
         spinnerDriver = new ControlDriver(spinner);
@@ -59,9 +64,9 @@ describe("Spinner", function() {
     describe("blur", function() {
 
         it("should end value entering", function() {
-            spyOn(spinner, "abortEntering");
+            spyOn(spinner._keyHandler, "abortEntering");
             spinner.blur();
-            expect(spinner.abortEntering).toHaveBeenCalled();
+            expect(spinner._keyHandler..abortEntering).toHaveBeenCalled();
         });
 
     });

@@ -63,6 +63,10 @@ var StateChangingKeyHandler = class({
         this._enteredText = null;
     },
 
+    isEnteringEnabled: function() {
+        return this._control.getExternalMapping() && this._control.getExternalMapping().fromDisplay;
+    },
+
     getEnteredText: function() {
         return this._enteredText;
     },
@@ -126,6 +130,7 @@ var StateChangingKeyHandler = class({
     },
 
     _enterCharacter: function(character) {
+        if (!this.isEnteringEnabled()) return;
         if (!this.isEntering()) this._enteredText = "";
         this._entering = true;
         this._enteredText += character;

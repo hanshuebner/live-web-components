@@ -8,24 +8,12 @@ var Spinner = class({
         state: 50,
         stateCount: 101,
 
-        externalMapping: {
-            fromState: function(state) { return Math.round(state * 200.0 - 100.0); },
-            toState: function(value) { return (value + 100.0) / 200.0; }
-        },
-        internalMapping: {
-            fromState: function(state) { return Math.round(state * 255); },
-            toState: function(value) { return value / 255.0; }
-        },
-
-        // mouse handler
         mouseScale: 1,              // a value of 1 means, that the spinner has turned completly around
                                     // if the mouse has been moved 1 time the distance of "size".
 
-        // key handler
         keyStep: 1,                 // a value of 1 means, that the spinner increases step index by one
                                     // on each key stroke
 
-        // drawer
         lineWidth: 3,
         radiusDifference: 0,
         lowArcColor: "red",
@@ -42,7 +30,7 @@ var Spinner = class({
 
         this._mouseHandler = new StateChangingMouseHandler(this, options);
         this._keyHandler = new StateChangingKeyHandler(this, options);
-        this._drawer = new this.Drawer(this, options);
+        this._drawer = new this.Drawer(this, this._keyHandler, options);
     },
 
     setOptions: function(options) {
@@ -80,7 +68,7 @@ var Spinner = class({
 
     setState: function(value) {
         this._super_setState(value);
-        this.abortEntering();
+        if (this._keyHandler) this._keyHandler.abortEntering();
     },
 
     setStateCount: function(value) {
@@ -92,20 +80,8 @@ var Spinner = class({
     },
 
     blur: function() {
-        this.abortEntering();
+        this._keyHandler.abortEntering();
         this._super_blur();
-    },
-
-    getEnteredText: function() {
-        return this._keyHandler.getEnteredText();
-    },
-
-    abortEntering: function() {
-        if (this.isEntering()) this._keyHandler.abortEntering();
-    },
-
-    isEntering: function() {
-        return this._keyHandler && this._keyHandler.isEntering();
     },
 
     draw: function() {
@@ -143,8 +119,9 @@ var Spinner = class({
             "cursorColor"
         ],
 
-        initialize: function(spinner, options) {
+        initialize: function(spinner, keyHandler, options) {
             this._spinner = spinner;
+            this._keyHandler = keyHandler;
             this._context = this._spinner.getCanvasElement().getContext("2d");
 
             this._super_initialize(this._spinner.defaults, options);
@@ -252,17 +229,17 @@ var Spinner = class({
             var offsetY = this._getSpinnerOffsetY();
             var size = this._spinner.getSize();
 
-            var x = size / 2 + (this._spinner.isEntering() ? this._lineWidth : this.getMaximalValueWidth());
+            var x = size / 2 + (this._keyHandler.isEntering() ? this._lineWidth : this.getMaximalValueWidth());
 
             this._context.font = this._fontSize + "px " + this._font;
             this._context.textBaseline = "middle";
             this._context.fillStyle = this._fontColor;
-            this._context.textAlign = this._spinner.isEntering() ? "left" : "right";
+            this._context.textAlign = this._keyHandler.isEntering() ? "left" : "right";
             this._context.fillText(this._getDisplayText(), offsetX + x, offsetY + size * 0.75);
         },
 
         _drawCursor: function() {
-            if (!this._spinner.isEntering()) return;
+            if (!this._keyHandler.isEntering()) return;
 
             var offsetX = this._getSpinnerOffsetX();
             var offsetY = this._getSpinnerOffsetY();
@@ -288,7 +265,7 @@ var Spinner = class({
         },
 
         _getDisplayText: function() {
-            return this._spinner.isEntering() ? this._spinner.getEnteredText() : this._spinner.getExternalValue();
+            return this._keyHandler.isEntering() ? this._keyHandler.getEnteredText() : this._spinner.getExternalValue();
         }
 
     })
