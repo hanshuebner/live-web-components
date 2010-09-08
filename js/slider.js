@@ -3,7 +3,7 @@ var Slider = class({
 
     extends: Control,
 
-    defaults: {
+    defaultOptions: {
         width: 100,
         height: 40,
         padding: 5,
@@ -21,19 +21,12 @@ var Slider = class({
     initialize: function(element_or_id, options) {
         this._super_initialize(element_or_id, options);
 
-        this._dimensioner = new this.Dimensioner(this, options);
-        this._positioner = new this.Positioner(this, this._dimensioner, options);
-        this._drawer = new this.Drawer(this, this._dimensioner, this._positioner, options);
+        this._dimensioner = new this.Dimensioner(this);
+        this._positioner = new this.Positioner(this, this._dimensioner);
+        this._drawer = new this.Drawer(this, this._dimensioner, this._positioner);
 
-        this._mouseHandler = new StateChangingMouseHandler(this, options);
-        this._keyHandler = new StateChangingKeyHandler(this, options);
-    },
-
-    setOptions: function(options) {
-        options = options || { };
-        this._super_setOptions(options);
-
-        if (options.stateCount) this.setStateCount(options.stateCount);
+        this._mouseHandler = new StateChangingMouseHandler(this);
+        this._keyHandler = new StateChangingKeyHandler(this);
     },
 
     setStateCount: function(value) {
@@ -51,23 +44,15 @@ var Slider = class({
 
     Dimensioner: class({
 
-        extends: Optionable,
-
-        OPTION_KEYS: [
-            "padding",
-            "fontSize",
-            "borderSize"
-        ],
-
-        initialize: function(slider, options) {
+        initialize: function(slider) {
             this._slider = slider;
-            this._super_initialize(this._slider.defaults, options);
+            this._options = this._slider.getOptions();
         },
 
         getBorder: function() {
             return {
-                width: this._slider.getWidth() - this._padding * 2,
-                height: this._slider.getHeight() - this._padding * 2
+                width: this._slider.getWidth() - this._options.padding * 2,
+                height: this._slider.getHeight() - this._options.padding * 2
             };
         },
 
@@ -80,29 +65,23 @@ var Slider = class({
         },
 
         getFontSize: function() {
-            return this._fontSize || (this.getBorder().height - this._borderSize * 2);
+            return this._options.fontSize || (this.getBorder().height - this._options.borderSize * 2);
         }
 
     }),
 
     Positioner: class({
 
-        extends: Optionable,
-
-        OPTION_KEYS: [
-            "padding"
-        ],
-
-        initialize: function(slider, dimensioner, options) {
+        initialize: function(slider, dimensioner) {
             this._slider = slider;
             this._dimensioner = dimensioner;
-            this._super_initialize(this._slider.defaults, options);
+            this._options = this._slider.getOptions();
         },
 
         getBorder: function() {
             return {
-                x: this._padding,
-                y: this._padding
+                x: this._options.padding,
+                y: this._options.padding
             };
         },
 
@@ -127,24 +106,13 @@ var Slider = class({
 
     Drawer: class({
 
-        extends: Optionable,
-
-        OPTION_KEYS: [
-            "barColor",
-            "borderColor",
-            "borderSize",
-            "font",
-            "fontColor"
-        ],
-
-        initialize: function(slider, dimensioner, positioner, options) {
+        initialize: function(slider, dimensioner, positioner) {
             this._slider = slider;
             this._dimensioner = dimensioner;
             this._positioner = positioner;
-            this._super_initialize(this._slider.defaults, options);
+            this._options = this._slider.getOptions();
 
             this._context = this._slider.getCanvasElement().getContext("2d");
-
             this.draw();
         },
 
@@ -157,22 +125,22 @@ var Slider = class({
         _drawBar: function() {
             var barDimension = this._dimensioner.getBar();
             var barPosition = this._positioner.getBar();
-            this._context.fillStyle = this._barColor;
+            this._context.fillStyle = this._options.barColor;
             this._context.fillRect(barPosition.x, barPosition.y, barDimension.width, barDimension.height);
         },
 
         _drawBorder: function() {
             var borderDimension = this._dimensioner.getBorder();
             var borderPosition = this._positioner.getBorder();
-            this._context.strokeStyle = this._borderColor;
-            this._context.lineWidth = this._borderSize;
+            this._context.strokeStyle = this._options.borderColor;
+            this._context.lineWidth = this._options.borderSize;
             this._context.strokeRect(borderPosition.x, borderPosition.y, borderDimension.width, borderDimension.height);
         },
 
         _drawText: function() {
             var textPosition = this._positioner.getText();
-            this._context.fillStyle = this._fontColor;
-            this._context.font = this._dimensioner.getFontSize() + "px " + this._font;
+            this._context.fillStyle = this._options.fontColor;
+            this._context.font = this._dimensioner.getFontSize() + "px " + this._options.font;
             this._context.textAlign = "center";
             this._context.textBaseline = "middle";
             this._context.fillText(this._slider.getExternalValue(), textPosition.x, textPosition.y);

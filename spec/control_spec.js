@@ -36,6 +36,41 @@ describe("Control", function() {
 
     });
 
+    describe("setOptions", function() {
+
+        beforeEach(function() {
+            control.defaultOptions = {
+                width: 100,
+                height: 100
+            };
+        });
+
+        it("should set the defaults if nothing is given", function() {
+            control.setOptions();
+            expect(control.getOptions().width).toBe(100);
+            expect(control.getOptions().height).toBe(100);
+        });
+
+        it("should set the options", function() {
+            control.setOptions({ height: 50 });
+            expect(control.getOptions().width).toBe(100);
+            expect(control.getOptions().height).toBe(50);
+        });
+
+        it("should be able to nullify the values", function() {
+            control.setOptions({ height: 0 });
+            expect(control.getOptions().width).toBe(100);
+            expect(control.getOptions().height).toBe(0);
+        });
+
+        it("should call the setters for the options", function() {
+            control.setOptions();
+            expect(control.getWidth()).toBe(100);
+            expect(control.getHeight()).toBe(100);
+        });
+
+    });
+
     describe("setHeight", function() {
 
         it("should set the height", function() {
@@ -175,9 +210,9 @@ describe("Control", function() {
         });
 
         it("should trigger a onchange event", function() {
-            spyOn(control, "onchange");
+            spyOn(control.getOptions(), "onchange");
             control.setState(80);
-            expect(control.onchange).toHaveBeenCalled();
+            expect(control.getOptions().onchange).toHaveBeenCalled();
         });
 
     });

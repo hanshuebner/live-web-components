@@ -4,7 +4,9 @@ var control, controlDriver, documentDriver;
 beforeEach(function() {
     control = new Control(buttonElement, {
         width: 100,
-        height: 100
+        height: 100,
+        mouseScale: 1,
+        keyStep: 1
     });
     control.getStateCount = function() { return 101; };
 
@@ -17,9 +19,7 @@ describe("StateChangingMouseHandler", function() {
     var mouseHandler;
 
     beforeEach(function() {
-        mouseHandler = new StateChangingMouseHandler(control, {
-            mouseScale: 1
-        });
+        mouseHandler = new StateChangingMouseHandler(control);
     });
 
     describe("_onMouseDownHandler", function() {
@@ -59,7 +59,7 @@ describe("StateChangingMouseHandler", function() {
         });
 
         it("should calculate the new state based on the mouseScale", function() {
-            mouseHandler.setOptions({ mouseScale: 2 });
+            mouseHandler._options.mouseScale = 2;
 
             documentDriver.mouseMove(-50);
             expect(control.getState()).toBe(75);
@@ -92,9 +92,7 @@ describe("StateChagingKeyHandler", function() {
     var keyHandler;
 
     beforeEach(function() {
-        keyHandler = new StateChangingKeyHandler(control, {
-            keyStep: 1
-        });
+        keyHandler = new StateChangingKeyHandler(control);
     });
 
     describe("_onKeyDownHandler", function() {

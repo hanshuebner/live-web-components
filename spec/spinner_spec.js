@@ -66,7 +66,7 @@ describe("Spinner", function() {
         it("should end value entering", function() {
             spyOn(spinner._keyHandler, "abortEntering");
             spinner.blur();
-            expect(spinner._keyHandler..abortEntering).toHaveBeenCalled();
+            expect(spinner._keyHandler.abortEntering).toHaveBeenCalled();
         });
 
     });
@@ -80,9 +80,9 @@ describe("Spinner", function() {
 
         it("should abort entering", function() {
             spinnerDriver.enterKey(49) // "1"
-            expect(spinner.isEntering()).toBeTruthy();
+            expect(spinner._keyHandler.isEntering()).toBeTruthy();
             spinner.setState(0.8);
-            expect(spinner.isEntering()).toBeFalsy();
+            expect(spinner._keyHandler.isEntering()).toBeFalsy();
         });
 
     });

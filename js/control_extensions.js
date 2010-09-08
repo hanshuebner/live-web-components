@@ -1,17 +1,10 @@
 
 var StateChangingMouseHandler = class({
 
-    extends: Optionable,
-
-    OPTION_KEYS: [
-        "mouseScale"
-    ],
-
-    initialize: function(control, options) {
+    initialize: function(control) {
         this._control = control;
+        this._options = this._control.getOptions();
         this._control.getButtonElement().onmousedown = this._onMouseDownHandler.bind(this);
-
-        this._super_initialize(this._control.defaults, options);
     },
 
     _onMouseDownHandler: function(event) {
@@ -27,7 +20,7 @@ var StateChangingMouseHandler = class({
     },
 
     _onMouseMoveHandler: function(event) {
-        var range = this._control.getHeight() * this._mouseScale;
+        var range = this._control.getHeight() * this._options.mouseScale;
         var difference = this._startY - event.screenY;
         var stateDifference = Math.round((difference / range) * this._control.getStateCount());
 
@@ -47,17 +40,10 @@ var StateChangingMouseHandler = class({
 
 var StateChangingKeyHandler = class({
 
-    extends: Optionable,
-
-    OPTION_KEYS: [
-        "keyStep"
-    ],
-
-    initialize: function(control, options) {
+    initialize: function(control) {
         this._control = control;
+        this._options = this._control.getOptions();
         this._control.getButtonElement().onkeydown = this._onKeyDownHandler.bind(this);
-
-        this._super_initialize(this._control.defaults, options);
 
         this._entering = false;
         this._enteredText = null;
@@ -122,11 +108,11 @@ var StateChangingKeyHandler = class({
     },
 
     _stepUp: function() {
-        this._control.setState(this._control.getState() + this._keyStep);
+        this._control.setState(this._control.getState() + this._options.keyStep);
     },
 
     _stepDown: function() {
-        this._control.setState(this._control.getState() - this._keyStep);
+        this._control.setState(this._control.getState() - this._options.keyStep);
     },
 
     _enterCharacter: function(character) {

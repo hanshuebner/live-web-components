@@ -5,6 +5,7 @@ describe("Slider", function() {
 
     beforeEach(function() {
         slider = new Slider(buttonElement, {
+            height: 40,
             stateCount: 101
         });
         sliderDriver = new ControlDriver(slider);
@@ -53,7 +54,7 @@ describe("Slider", function() {
         describe("getFontSize", function() {
 
             it("should return the given font size", function() {
-                dimensioner.setOptions({ fontSize: 30 });
+                dimensioner._options.fontSize = 30;
                 expect(dimensioner.getFontSize()).toBe(30);
             });
 

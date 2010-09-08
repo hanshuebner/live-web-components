@@ -5,7 +5,8 @@ describe("Selector", function() {
 
     beforeEach(function() {
         selector = new Selector(buttonElement, {
-            items: [ "one", "two", "three" ]
+            items: [ "one", "two", "three" ],
+            fontSize: 26
         });
         selector.onchange = function() { };
 
@@ -130,16 +131,15 @@ describe("Selector", function() {
 
         beforeEach(function() {
             selector.setItems([ "short", "long long" ]);
-            dimensioner = new Selector.prototype.Dimensioner(selector);
-            dimensioner.setOptions({ fontSize: 26 });
+            dimensioner = selector._dimensioner;
         });
 
         describe("getMinimalWidth", function() {
 
             it("should calculate the minimal width", function() {
-                expect(dimensioner.getMinimalWidth()).toBe(136);
+                expect(dimensioner.getMinimalWidth()).toBe(140);
                 selector.setItems([ "one", "two", "three", "long long entry" ]);
-                expect(dimensioner.getMinimalWidth()).toBe(197);
+                expect(dimensioner.getMinimalWidth()).toBe(204);
             });
 
         });
@@ -147,11 +147,11 @@ describe("Selector", function() {
         describe("getMenu", function() {
 
             it("should calculate the menu dimensions", function() {
-                expect(dimensioner.getMenu().width).toBe(120);
+                expect(dimensioner.getMenu().width).toBe(124);
                 expect(dimensioner.getMenu().height).toBe(60);
 
                 selector.setItems([ "one", "two", "three", "long long entry" ]);
-                expect(dimensioner.getMenu().width).toBe(181);
+                expect(dimensioner.getMenu().width).toBe(188);
                 expect(dimensioner.getMenu().height).toBe(120);
             });
 
@@ -160,7 +160,7 @@ describe("Selector", function() {
         describe("getBorder", function() {
 
             it("should calculate the border dimensions", function() {
-                expect(dimensioner.getBorder().width).toBe(120);
+                expect(dimensioner.getBorder().width).toBe(124);
                 expect(dimensioner.getBorder().height).toBe(30);
             });
 
@@ -185,7 +185,7 @@ describe("Selector", function() {
         describe("getItem", function() {
 
             it("should return the item dimensions", function() {
-                expect(dimensioner.getItem().width).toBe(107);
+                expect(dimensioner.getItem().width).toBe(111);
                 expect(dimensioner.getItem().height).toBe(30);
             });
 
@@ -194,7 +194,7 @@ describe("Selector", function() {
         describe("getMaximalTextWidth", function() {
 
             it("should return the width of the longest item", function() {
-                expect(dimensioner.getMaximalTextWidth()).toBe(99);
+                expect(dimensioner.getMaximalTextWidth()).toBe(103);
             });
 
         });
@@ -202,12 +202,12 @@ describe("Selector", function() {
         describe("getTextWidth", function() {
 
             it("should return the width for the given text", function() {
-                expect(dimensioner.getTextWidth("test")).toBe(36);
+                expect(dimensioner.getTextWidth("test")).toBe(41);
             });
 
             it("should return the width for the given text base on the font size", function() {
-                dimensioner.setOptions({ fontSize: 30 });
-                expect(dimensioner.getTextWidth("test")).toBe(41);
+                dimensioner._options.fontSize = 30;
+                expect(dimensioner.getTextWidth("test")).toBe(48);
             });
 
         });
@@ -229,13 +229,10 @@ describe("Selector", function() {
 
     describe("Positioner", function() {
 
-        var dimensioner, positioner;
+        var positioner;
 
         beforeEach(function() {
-            dimensioner = new Selector.prototype.Dimensioner(selector);
-            dimensioner.setOptions({ fontSize: 26 });
-
-            positioner = new selector.Positioner(selector, dimensioner);
+            positioner = selector._positioner;
         });
 
         describe("getMenu", function() {
@@ -259,7 +256,7 @@ describe("Selector", function() {
         describe("getArrow", function() {
 
             it("should return the arrow position", function() {
-                expect(positioner.getArrow().x).toBe(68);
+                expect(positioner.getArrow().x).toBe(73);
                 expect(positioner.getArrow().y).toBe(13);
             });
 
@@ -268,7 +265,7 @@ describe("Selector", function() {
         describe("getState", function() {
 
             it("should return the selected item position", function() {
-                expect(positioner.getState().x).toBe(36);
+                expect(positioner.getState().x).toBe(38);
                 expect(positioner.getState().y).toBe(20);
             });
 

@@ -1,16 +1,15 @@
 
 var Control = class({
 
-    defaults: { },
+    defaultOptions: { },
 
     initialize: function(element_or_id, options) {
         this._initializeButtonElement(element_or_id);
         this._createCanvasElement();
 
-        this._controlDrawer = new this.ControlDrawer(this, options);
-
-        this.setDefaults();
         this.setOptions(options);
+
+        this._controlDrawer = new this.ControlDrawer(this, this.getOptions());
     },
 
     getButtonElement: function() {
@@ -21,21 +20,14 @@ var Control = class({
         return this._canvasElement;
     },
 
-    setDefaults: function() {
-        this.setOptions(this.defaults)
+    setOptions: function(options) {
+        this._options = options || { };
+        this._setDefaultOptions();
+        this._callSettersForOptions();
     },
 
-    setOptions: function(options) {
-        options = options || { };
-
-        if (options.height) this.setHeight(options.height);
-        if (options.width) this.setWidth(options.width);
-
-        if (options.state) this.setState(options.state);
-        if (options.externalMapping) this.setExternalMapping(options.externalMapping);
-        if (options.internalMapping) this.setInternalMapping(options.internalMapping);
-
-        if (options.onchange) this.onchange = options.onchange;
+    getOptions: function() {
+        return this._options;
     },
 
     setHeight: function(value) {
@@ -152,28 +144,37 @@ var Control = class({
         }
     },
 
+    _setDefaultOptions: function() {
+        for (var key in this.defaultOptions) {
+            if (this._options[key] === undefined)
+                this._options[key] = this.defaultOptions[key];
+        }
+    },
+
+    _callSettersForOptions: function() {
+        for (var key in this._options) {
+            var setterName = "set" + key.substring(0, 1).toUpperCase() + key.substring(1);
+            if (typeof(this[setterName]) === "function")
+                this[setterName](this._options[key]);
+        }
+    },
+
     _createCanvasElement: function() {
         this._canvasElement = document.createElement("canvas");
         this._buttonElement.appendChild(this._canvasElement);
     },
 
     _triggerOnChange: function() {
-        if (this.onchange) this.onchange(this.getInternalValue(), this.getExternalValue(), this.getState());
+        if (this.getOptions().onchange)
+            this.getOptions().onchange(this.getInternalValue(), this.getExternalValue(), this.getState());
     },
 
     ControlDrawer: class({
 
-        extends: Optionable,
-
-        OPTION_KEYS: [
-            "focusColor"
-        ],
-
         initialize: function(control, options) {
             this._control = control;
+            this._options = options;
             this._context = this._control.getCanvasElement().getContext("2d");
-
-            this._super_initialize(this._control.defaults, options);
 
             this.draw();
         },
@@ -199,7 +200,7 @@ var Control = class({
 
             this._context.lineWidth = 1;
             this._context.lineCap = "round";
-            this._context.strokeStyle = this._focusColor;
+            this._context.strokeStyle = this._options.focusColor;
             this._context.beginPath();
             this._context.moveTo(0, 0);
             this._context.lineTo(widthLength, 0);
