@@ -81,6 +81,7 @@
             });
 
             new Slider("slider_one", {
+                state: 50,
                 onchange: function(internalValue, externalValue, state) {
                     printLine("Slider 1: internal = " + internalValue + " / external = " + externalValue + " / state = " + state);
                 }

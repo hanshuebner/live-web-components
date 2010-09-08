@@ -34,6 +34,7 @@ var Selector = class({
         options = options || { };
         this._super_setOptions(options);
 
+        if (options.stateCount) this.setStateCount(options.stateCount);
         if (options.items) this.setItems(options.items);
     },
 
@@ -318,6 +319,7 @@ var Selector = class({
             var arrowDimension = this._dimensioner.getArrow();
             var arrowPosition = this._positioner.getArrow();
             this._context.strokeStyle = this._borderColor;
+            this._context.lineWidth = this._borderSize;
             this._context.beginPath();
             this._context.moveTo(arrowPosition.x, arrowPosition.y);
             this._context.lineTo(arrowPosition.x + arrowDimension.width, arrowPosition.y);
