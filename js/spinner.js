@@ -40,8 +40,8 @@ var Spinner = class({
     initialize: function(element_or_id, options) {
         this._super_initialize(element_or_id, options);
 
-        this._mouseHandler = new StateChangeMouseHandler(this, options);
-        this._keyHandler = new this.KeyHandler(this, options);
+        this._mouseHandler = new StateChangingMouseHandler(this, options);
+        this._keyHandler = new StateChangingKeyHandler(this, options);
         this._drawer = new this.Drawer(this, options);
     },
 
@@ -112,108 +112,6 @@ var Spinner = class({
         this._super_draw();
         if (this._drawer) this._drawer.draw();
     },
-
-    KeyHandler: class({
-
-        extends: Optionable,
-
-        OPTION_KEYS: [
-            "keyStep"
-        ],
-
-        initialize: function(spinner, options) {
-            this._spinner = spinner;
-            this._spinner.getButtonElement().onkeydown = this._onKeyDownHandler.bind(this);
-
-            this._super_initialize(this._spinner.defaults, options);
-
-            this._entering = false;
-            this._enteredText = null;
-        },
-
-        getEnteredText: function() {
-            return this._enteredText;
-        },
-
-        abortEntering: function() {
-            this._entering = false;
-            this._enteredText = null;
-            this._spinner.draw();
-        },
-
-        isEntering: function() {
-            return !!this._entering;
-        },
-
-        _onKeyDownHandler: function(event) {
-            switch (event.keyCode) {
-            case 8: // backspace
-                this._deleteCharacter();
-                return false;
-            case 13: // enter
-                this._enter();
-                return false;
-            case 37: // left arrow
-            case 38: // up arrow
-                this._stepUp();
-                return false;
-            case 39: // right arrow
-            case 40: // down arrow
-                this._stepDown();
-                return false;
-            case 48:
-            case 49:
-            case 50:
-            case 51:
-            case 52:
-            case 53:
-            case 54:
-            case 55:
-            case 56:
-            case 57: // digits 0-9
-                this._enterCharacter(event.keyCode - 48);
-                return false;
-            case 109: // substract
-            case 189: // "-"
-                this._enterCharacter("-");
-                return false;
-            case 190: // "."
-                this._enterCharacter(".");
-                return false;
-            default:
-                return true;
-            }
-        },
-
-        _stepUp: function() {
-            this._spinner.setState(this._spinner.getState() + this._keyStep);
-        },
-
-        _stepDown: function() {
-            this._spinner.setState(this._spinner.getState() - this._keyStep);
-        },
-
-        _enterCharacter: function(character) {
-            if (!this.isEntering()) this._enteredText = "";
-            this._entering = true;
-            this._enteredText += character;
-
-            this._spinner.draw();
-        },
-
-        _deleteCharacter: function() {
-            if (!this.isEntering()) return;
-            this._enteredText = this._enteredText.substring(0, Math.max(0, this._enteredText.length - 1));
-            this._spinner.draw();
-        },
-
-        _enter: function() {
-            this._spinner.setExternalValue(parseFloat(this._enteredText));
-            this._entering = false;
-            this._enteredText = null;
-        }
-
-    }),
 
     Dimensioner: class({
 

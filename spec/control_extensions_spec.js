@@ -12,12 +12,12 @@ beforeEach(function() {
     documentDriver = new DocumentDriver();
 });
 
-describe("StateChangeMouseHandler", function() {
+describe("StateChangingMouseHandler", function() {
 
     var mouseHandler;
 
     beforeEach(function() {
-        mouseHandler = new StateChangeMouseHandler(control, {
+        mouseHandler = new StateChangingMouseHandler(control, {
             mouseScale: 1
         });
     });
@@ -81,6 +81,62 @@ describe("StateChangeMouseHandler", function() {
         it("should assign a global mouseup handler", function() {
             documentDriver.mouseUp();
             expect(document.onmouseup).toBe(null);
+        });
+
+    });
+
+});
+
+describe("StateChagingKeyHandler", function() {
+
+    var keyHandler;
+
+    beforeEach(function() {
+        keyHandler = new StateChangingKeyHandler(control, {
+            keyStep: 1
+        });
+    });
+
+    describe("_onKeyDownHandler", function() {
+
+        beforeEach(function() {
+            control.setState(50);
+        });
+
+        it("should add a keyStep if up arrow is pressed", function() {
+            var oldState = control.getState();
+            controlDriver.enterKey(38); // up arrow
+            expect(control.getState()).toBe(oldState + 1);
+        });
+
+        it("should substract a keyStep if down arrow is pressed", function() {
+            var oldState = control.getState();
+            controlDriver.enterKey(40); // down arrow
+            expect(control.getState()).toBe(oldState - 1);
+        });
+
+        it("should go into the entering-mode if a digit is pressed", function() {
+            controlDriver.enterKey(49); // "1"
+            expect(keyHandler.isEntering()).toBeTruthy();
+        });
+
+        it("should leave the entering-mode and commit the new value if enter is pressed", function() {
+            controlDriver.enterKey(49); // "1"
+            controlDriver.enterKey(13); // enter
+            expect(keyHandler.isEntering()).toBeFalsy();
+            expect(control.getExternalValue()).toBe(1);
+        });
+
+        it("should accept negative values", function() {
+            control.setExternalMapping({
+                toDisplay: function(state) { return state - 50; },
+                fromDisplay: function(display) { return parseInt(display) + 50 }
+            });
+            controlDriver.enterKey(189); // "-"
+            controlDriver.enterKey(49);  // "1"
+            controlDriver.enterKey(13);  // enter
+            expect(keyHandler.isEntering()).toBeFalsy();
+            expect(control.getExternalValue()).toBe(-1);
         });
 
     });

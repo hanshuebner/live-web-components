@@ -41,8 +41,8 @@
                     toDisplay: function(state) {
                         return Math.round(state / 100.0 * 400.0 - 200.0);
                     },
-                    fromDisplay: function(value) {
-                        return (value * 100.0 + 200.0) / 400.0;
+                    fromDisplay: function(display) {
+                        return Math.round((parseInt(display) + 200.0) / 400.0 * 100.0);
                     }
                 },
                 onchange: function(internalValue, externalValue, state) {

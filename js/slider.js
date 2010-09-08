@@ -9,6 +9,7 @@ var Slider = class({
         padding: 5,
         stateCount: 101,
         mouseScale: 1,
+        keyStep: 1,
         barColor: "green",
         font: "sans-serif",
         fontSize: null,             // null means, that the font size gonna be calculated
@@ -24,7 +25,8 @@ var Slider = class({
         this._positioner = new this.Positioner(this, this._dimensioner, options);
         this._drawer = new this.Drawer(this, this._dimensioner, this._positioner, options);
 
-        this._mouseHandler = new StateChangeMouseHandler(this, options);
+        this._mouseHandler = new StateChangingMouseHandler(this, options);
+        this._keyHandler = new StateChangingKeyHandler(this, options);
     },
 
     setOptions: function(options) {
