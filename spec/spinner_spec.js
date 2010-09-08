@@ -7,7 +7,7 @@ describe("Spinner", function() {
         spinner = new Spinner(buttonElement);
         spinner.onchange = function() { };
 
-        spinnerDriver = new SpinnerDriver(spinner);
+        spinnerDriver = new ControlDriver(spinner);
     });
 
     it("should extend Control", function() {
@@ -78,73 +78,6 @@ describe("Spinner", function() {
             expect(spinner.isEntering()).toBeTruthy();
             spinner.setState(0.8);
             expect(spinner.isEntering()).toBeFalsy();
-        });
-
-    });
-
-    describe("MouseHandler", function() {
-
-        describe("_onMouseDownHandler", function() {
-
-            it("should move the focus to the current control", function() {
-                spyOn(spinner.getButtonElement(), "focus");
-                spinnerDriver.mouseDown();
-                expect(spinner.getButtonElement().focus).toHaveBeenCalled();
-            });
-
-            it("should assign a global mousemove handler", function() {
-                spinnerDriver.mouseDown();
-                expect(typeof(document.onmousemove)).toBe("function");
-                expect(typeof(document.onmousemove)).toBe("function");
-            });
-
-            it("should assign a global mouseup handler", function() {
-                spinnerDriver.mouseDown();
-                expect(typeof(document.onmouseup)).toBe("function");
-            });
-
-        });
-
-        describe("_onMouseMoveHandler", function() {
-
-            beforeEach(function() {
-                spinner.setState(50);
-                spinnerDriver.mouseDown(0);
-            });
-
-            it("should calculate the new state", function() {
-                spinnerDriver.mouseMove(25);
-                expect(spinner.getState()).toBe(75);
-
-                spinnerDriver.mouseMove(-25);
-                expect(spinner.getState()).toBe(25);
-            });
-
-            it("should calculate the new state based on the mouseScale", function() {
-                spinner._mouseHandler.setOptions({ mouseScale: 2 });
-
-                spinnerDriver.mouseMove(50);
-                expect(spinner.getState()).toBe(75);
-            });
-
-        });
-
-        describe("_onMouseUpHandler", function() {
-
-            beforeEach(function() {
-                spinnerDriver.mouseDown();
-            });
-
-            it("should unassign the global mousemove handler", function() {
-                spinnerDriver.mouseUp();
-                expect(document.onmousemove).toBe(null);
-            });
-
-            it("should assign a global mouseup handler", function() {
-                spinnerDriver.mouseUp();
-                expect(document.onmouseup).toBe(null);
-            });
-
         });
 
     });

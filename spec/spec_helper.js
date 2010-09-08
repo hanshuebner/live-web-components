@@ -17,9 +17,7 @@ var ControlDriver = class({
 
 });
 
-var SpinnerDriver = class({
-
-    extends: ControlDriver,
+var DocumentDriver = class({
 
     mouseMove: function(screenY) {
         document.onmousemove({ screenY: screenY });

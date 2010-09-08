@@ -40,7 +40,7 @@ var Spinner = class({
     initialize: function(element_or_id, options) {
         this._super_initialize(element_or_id, options);
 
-        this._mouseHandler = new this.MouseHandler(this, options);
+        this._mouseHandler = new StateChangeMouseHandler(this, options);
         this._keyHandler = new this.KeyHandler(this, options);
         this._drawer = new this.Drawer(this, options);
     },
@@ -112,52 +112,6 @@ var Spinner = class({
         this._super_draw();
         if (this._drawer) this._drawer.draw();
     },
-
-    MouseHandler: class({
-
-        extends: Optionable,
-
-        OPTION_KEYS: [
-            "mouseScale"
-        ],
-
-        initialize: function(spinner, options) {
-            this._spinner = spinner;
-            this._spinner.getButtonElement().onmousedown = this._onMouseDownHandler.bind(this);
-
-            this._super_initialize(this._spinner.defaults, options);
-        },
-
-        _onMouseDownHandler: function(event) {
-            this._spinner.getButtonElement().focus();
-
-            this._startY = event.screenY;
-            this._startState = this._spinner.getState();
-
-            document.onmousemove = this._onMouseMoveHandler.bind(this);
-            document.onmouseup = this._onMouseUpHandler.bind(this);
-
-            return false;
-        },
-
-        _onMouseMoveHandler: function(event) {
-            var range = this._spinner.getSize() * this._mouseScale;
-            var difference = event.screenY - this._startY;
-            var stateDifference = Math.round((difference / range) * this._spinner.getStateCount());
-
-            this._spinner.setState(this._startState + stateDifference);
-
-            return false;
-        },
-
-        _onMouseUpHandler: function() {
-            document.onmousemove = null;
-            document.onmouseup = null;
-
-            return false;
-        }
-
-    }),
 
     KeyHandler: class({
 

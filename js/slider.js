@@ -8,6 +8,7 @@ var Slider = class({
         height: 40,
         padding: 5,
         stateCount: 101,
+        mouseScale: 1,
         barColor: "green",
         font: "sans-serif",
         fontSize: null,             // null means, that the font size gonna be calculated
@@ -22,6 +23,8 @@ var Slider = class({
         this._dimensioner = new this.Dimensioner(this, options);
         this._positioner = new this.Positioner(this, this._dimensioner, options);
         this._drawer = new this.Drawer(this, this._dimensioner, this._positioner, options);
+
+        this._mouseHandler = new StateChangeMouseHandler(this, options);
     },
 
     setOptions: function(options) {
