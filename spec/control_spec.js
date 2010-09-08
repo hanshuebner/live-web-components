@@ -4,6 +4,8 @@ describe("Control", function() {
     var control;
 
     beforeEach(function() {
+        buttonElement.style.fontSize = "26px";
+        Control.prototype.defaultStyle = { height: 100 };
         control = new Control(buttonElement, {
             width: 200,
             externalMapping: {
@@ -23,7 +25,6 @@ describe("Control", function() {
 
         it("should initialize the button element", function() {
             expect(control.getButtonElement().getAttribute("class")).toBe("control");
-            expect(control.getButtonElement().getAttribute("style")).toBe("border: 0px; padding: 0px; background: transparent; outline: none;");
         });
 
         it("should create an canvas element", function() {
@@ -32,6 +33,18 @@ describe("Control", function() {
 
         it("should set the options", function() {
             expect(control.getWidth()).toBe(200);
+        });
+
+        it("should read the css styles", function() {
+            expect(control.getStyle().fontSize).toBe(26);
+        });
+
+        it("should set the default styles", function() {
+            expect(control.getStyle().height).toBe(100);
+        });
+
+        it("should set the setters for the styles", function() {
+            expect(control.getHeight()).toBe(100);
         });
 
     });

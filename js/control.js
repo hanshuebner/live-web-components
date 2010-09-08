@@ -2,12 +2,14 @@
 var Control = class({
 
     defaultOptions: { },
+    defaultStyle: { },
 
     initialize: function(element_or_id, options) {
         this._initializeButtonElement(element_or_id);
         this._createCanvasElement();
-
         this.setOptions(options);
+        this._setStyle();
+        this._unifyButtonElement();
 
         this._controlDrawer = new this.ControlDrawer(this, this.getOptions());
     },
@@ -28,6 +30,10 @@ var Control = class({
 
     getOptions: function() {
         return this._options;
+    },
+
+    getStyle: function() {
+        return this._style;
     },
 
     setHeight: function(value) {
@@ -135,13 +141,16 @@ var Control = class({
         element = typeof(element_or_id) === "string" ? document.getElementById(element_or_id) : element_or_id;
         if (element && element.nodeName == "BUTTON") {
             this._buttonElement = element;
-            this._buttonElement.setAttribute("class", "control");
-            this._buttonElement.setAttribute("style", "border: 0px; padding: 0px; background: transparent; outline: none;");
             this._buttonElement.onfocus = function() { this.focus(); }.bind(this);
             this._buttonElement.onblur = function() { this.blur(); }.bind(this);
         } else {
             throw("The given id doesn't belong to a button element!");
         }
+    },
+
+    _unifyButtonElement: function() {
+        this._buttonElement.setAttribute("class", "control");
+        this._buttonElement.setAttribute("style", "border: 0px; padding: 0px; background: transparent; outline: none;");
     },
 
     _setDefaultOptions: function() {
@@ -152,11 +161,55 @@ var Control = class({
     },
 
     _callSettersForOptions: function() {
-        for (var key in this._options) {
+        this._callSettersFor(this._options);
+    },
+
+    _setStyle: function() {
+        this._readStyle();
+        this._setDefaultStyle();
+        this._callSettersForStyle();
+    },
+
+    _readStyle: function() {
+        var style = this.getButtonElement().style;
+        this._style = { };
+        for (var index = 0; index < style.length; index++) {
+            var key = style[index];
+            var camelCaseKey = this._convertStyleKey(key);
+            var cssValue = style.getPropertyCSSValue(key);
+            var value = cssValue.cssValueType === CSSPrimitiveValue.CSS_NUMBER ?
+                parseInt(style.getPropertyValue(key)) :
+                style.getPropertyValue(key)
+            this._style[camelCaseKey] = value;
+        }
+    },
+
+    _setDefaultStyle: function() {
+        for (var key in this.defaultStyle) {
+            if (this._style[key] === undefined)
+                this._style[key] = this.defaultStyle[key];
+        }
+    },
+
+    _callSettersForStyle: function() {
+        this._callSettersFor(this._style);
+    },
+
+    _callSettersFor: function(hash) {
+        for (var key in hash) {
             var setterName = "set" + key.substring(0, 1).toUpperCase() + key.substring(1);
             if (typeof(this[setterName]) === "function")
-                this[setterName](this._options[key]);
+                this[setterName](hash[key]);
         }
+    },
+
+    _convertStyleKey: function(key) {
+        var regexp = /-\w/;
+        var result;
+        while (result = key.match(regexp)) {
+            key = key.replace(result, result.toString().substring(1).toUpperCase());
+        }
+        return key;
     },
 
     _createCanvasElement: function() {

@@ -4,23 +4,20 @@ var Toggler = class({
     extends: Control,
 
     defaultOptions: {
+        state: 0
+    },
+
+    defaultStyle: {
         width: 200,
         height: 50,
-        initialValue: false,
-        text: null,
-
-        // drawer
         padding: 5,
         borderColor: "black",
-        borderWidth: 2,
+        borderSize: 2,
         onColor: "green",
         offColor: "white",
         font: "sans-serif",
         fontColor: "black",
-        fontSize: null,             // null means, that the font size gonna be calculated
-
-        // control drawer
-        focusColor: "blue"
+        fontSize: null              // null means, that the font size gonna be calculated
     },
 
     initialize: function(element_or_id, options) {
@@ -82,7 +79,7 @@ var Toggler = class({
 
         initialize: function(toggler) {
             this._toggler = toggler;
-            this._options = this._toggler.getOptions();
+            this._style = this._toggler.getStyle();
             this._context = this._toggler.getCanvasElement().getContext("2d");
 
             this._calculateFontSize();
@@ -99,31 +96,31 @@ var Toggler = class({
         },
 
         _calculateButtonSize: function() {
-            this._buttonX = this._options.padding;
-            this._buttonY = this._options.padding;
-            this._buttonWidth = this._toggler.getWidth() - this._options.padding * 2;
-            this._buttonHeight = this._toggler.getHeight() - this._options.padding * 2;
+            this._buttonX = this._style.padding;
+            this._buttonY = this._style.padding;
+            this._buttonWidth = this._toggler.getWidth() - this._style.padding * 2;
+            this._buttonHeight = this._toggler.getHeight() - this._style.padding * 2;
         },
 
         _calculateFontSize: function() {
-            if (this._options.fontSize) return;
-            this._options.fontSize = this._toggler.getHeight() - this._options.padding * 2 - this._options.borderWidth * 2;
+            if (this._style.fontSize) return;
+            this._style.fontSize = this._toggler.getHeight() - this._style.padding * 2 - this._style.borderSize * 2;
         },
 
         _drawButton: function() {
-            this._context.fillStyle = this._toggler.getState() ? this._options.onColor : this._options.offColor;
+            this._context.fillStyle = this._toggler.getState() ? this._style.onColor : this._style.offColor;
             this._context.fillRect(this._buttonX, this._buttonY, this._buttonWidth, this._buttonHeight);
         },
 
         _drawBorder: function() {
-            this._context.strokeStyle = this._options.borderColor;
-            this._context.lineWidth = this._options.borderWidth;
+            this._context.strokeStyle = this._style.borderColor;
+            this._context.lineWidth = this._style.borderSize;
             this._context.strokeRect(this._buttonX, this._buttonY, this._buttonWidth, this._buttonHeight);
         },
 
         _drawText: function() {
-            this._context.font = this._options.fontSize + "px " + this._options.font;
-            this._context.fillStyle = this._options.fontColor;
+            this._context.font = this._style.fontSize + "px " + this._style.font;
+            this._context.fillStyle = this._style.fontColor;
             this._context.textAlign = "center";
             this._context.textBaseline = "middle";
             this._context.fillText(this._toggler.getExternalValue(), this._toggler.getWidth() / 2, this._toggler.getHeight() / 2);

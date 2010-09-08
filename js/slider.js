@@ -4,12 +4,15 @@ var Slider = class({
     extends: Control,
 
     defaultOptions: {
+        stateCount: 101,
+        mouseScale: 1,
+        keyStep: 1
+    },
+
+    defaultStyle: {
         width: 100,
         height: 40,
         padding: 5,
-        stateCount: 101,
-        mouseScale: 1,
-        keyStep: 1,
         barColor: "green",
         font: "sans-serif",
         fontSize: null,             // null means, that the font size gonna be calculated
@@ -46,13 +49,13 @@ var Slider = class({
 
         initialize: function(slider) {
             this._slider = slider;
-            this._options = this._slider.getOptions();
+            this._style = this._slider.getStyle();
         },
 
         getBorder: function() {
             return {
-                width: this._slider.getWidth() - this._options.padding * 2,
-                height: this._slider.getHeight() - this._options.padding * 2
+                width: this._slider.getWidth() - this._style.padding * 2,
+                height: this._slider.getHeight() - this._style.padding * 2
             };
         },
 
@@ -65,7 +68,7 @@ var Slider = class({
         },
 
         getFontSize: function() {
-            return this._options.fontSize || (this.getBorder().height - this._options.borderSize * 2);
+            return this._style.fontSize || (this.getBorder().height - this._style.borderSize * 2);
         }
 
     }),
@@ -75,13 +78,13 @@ var Slider = class({
         initialize: function(slider, dimensioner) {
             this._slider = slider;
             this._dimensioner = dimensioner;
-            this._options = this._slider.getOptions();
+            this._style = this._slider.getStyle();
         },
 
         getBorder: function() {
             return {
-                x: this._options.padding,
-                y: this._options.padding
+                x: this._style.padding,
+                y: this._style.padding
             };
         },
 
@@ -110,7 +113,7 @@ var Slider = class({
             this._slider = slider;
             this._dimensioner = dimensioner;
             this._positioner = positioner;
-            this._options = this._slider.getOptions();
+            this._style = this._slider.getStyle();
 
             this._context = this._slider.getCanvasElement().getContext("2d");
             this.draw();
@@ -125,22 +128,22 @@ var Slider = class({
         _drawBar: function() {
             var barDimension = this._dimensioner.getBar();
             var barPosition = this._positioner.getBar();
-            this._context.fillStyle = this._options.barColor;
+            this._context.fillStyle = this._style.barColor;
             this._context.fillRect(barPosition.x, barPosition.y, barDimension.width, barDimension.height);
         },
 
         _drawBorder: function() {
             var borderDimension = this._dimensioner.getBorder();
             var borderPosition = this._positioner.getBorder();
-            this._context.strokeStyle = this._options.borderColor;
-            this._context.lineWidth = this._options.borderSize;
+            this._context.strokeStyle = this._style.borderColor;
+            this._context.lineWidth = this._style.borderSize;
             this._context.strokeRect(borderPosition.x, borderPosition.y, borderDimension.width, borderDimension.height);
         },
 
         _drawText: function() {
             var textPosition = this._positioner.getText();
-            this._context.fillStyle = this._options.fontColor;
-            this._context.font = this._dimensioner.getFontSize() + "px " + this._options.font;
+            this._context.fillStyle = this._style.fontColor;
+            this._context.font = this._dimensioner.getFontSize() + "px " + this._style.font;
             this._context.textAlign = "center";
             this._context.textBaseline = "middle";
             this._context.fillText(this._slider.getExternalValue(), textPosition.x, textPosition.y);

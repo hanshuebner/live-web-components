@@ -54,7 +54,7 @@ describe("Slider", function() {
         describe("getFontSize", function() {
 
             it("should return the given font size", function() {
-                dimensioner._options.fontSize = 30;
+                slider.getStyle().fontSize = 30;
                 expect(dimensioner.getFontSize()).toBe(30);
             });
 

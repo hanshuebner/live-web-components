@@ -166,9 +166,8 @@ describe("Selector", function() {
 
             it("should return the custiom dimensions if there are larger than the calculated one", function() {
                 selector.setWidth(500);
-                selector.setHeight(300);
                 expect(dimensioner.getBorder().width).toBe(490);
-                expect(dimensioner.getBorder().height).toBe(290);
+                expect(dimensioner.getBorder().height).toBe(30);
             });
 
         });
@@ -206,7 +205,7 @@ describe("Selector", function() {
             });
 
             it("should return the width for the given text base on the font size", function() {
-                dimensioner._options.fontSize = 30;
+                selector.getStyle().fontSize = 30;
                 expect(dimensioner.getTextWidth("test")).toBe(48);
             });
 

@@ -3,7 +3,7 @@ var Selector = class({
 
     extends: Control,
 
-    defaultOptions: {
+    defaultStyle: {
         width: 10,
         height: 40,
         padding: 5,
@@ -147,14 +147,14 @@ var Selector = class({
 
         initialize: function(selector) {
             this._selector = selector;
-            this._options = this._selector.getOptions();
+            this._style = this._selector.getStyle();
             this._context = this._selector.getCanvasElement().getContext("2d");
         },
 
         getMinimalWidth: function() {
             var item = this.getItem();
             var arrow = this.getArrow();
-            return item.width + arrow.width + this._options.borderSize * 3 + this._options.padding * 2;
+            return item.width + arrow.width + this._style.borderSize * 3 + this._style.padding * 2;
         },
 
         getMenu: function() {
@@ -170,8 +170,8 @@ var Selector = class({
             var itemDimension = this.getItem();
             var arrowDimension = this.getArrow();
             return {
-                width: Math.max(itemDimension.width + arrowDimension.width, this._selector.getWidth() - this._options.padding * 2),
-                height: Math.max(Math.max(itemDimension.height,  arrowDimension.height), this._selector.getHeight() - this._options.padding * 2)
+                width: Math.max(itemDimension.width + arrowDimension.width, this._selector.getWidth() - this._style.padding * 2),
+                height: Math.max(Math.max(itemDimension.height, arrowDimension.height), this._selector.getHeight() - this._style.padding * 2)
             };
         },
 
@@ -186,8 +186,8 @@ var Selector = class({
 
         getItem: function(index) {
             return {
-                width: this.getMaximalTextWidth() + this._options.borderSize * 4,
-                height: this.getFontSize() + this._options.borderSize * 2
+                width: this.getMaximalTextWidth() + this._style.borderSize * 4,
+                height: this.getFontSize() + this._style.borderSize * 2
             };
         },
 
@@ -200,12 +200,12 @@ var Selector = class({
         },
 
         getTextWidth: function(text) {
-            this._context.font = this.getFontSize() + "px " + this._options.font;
+            this._context.font = this.getFontSize() + "px " + this._style.font;
             return this._context.measureText(text).width;
         },
 
         getFontSize: function() {
-            return this._options.fontSize || (this._selector.getHeight() - this._options.borderSize * 2 - this._options.padding * 2);
+            return this._style.fontSize || (this._selector.getHeight() - this._style.borderSize * 2 - this._style.padding * 2);
         }
 
     }),
@@ -215,7 +215,7 @@ var Selector = class({
         initialize: function(selector, dimensioner) {
             this._selector = selector;
             this._dimensioner = dimensioner;
-            this._options = this._selector.getOptions();
+            this._style = this._selector.getStyle();
         },
 
         getMenu: function() {
@@ -229,8 +229,8 @@ var Selector = class({
 
         getBorder: function() {
             return {
-                x: this._options.padding,
-                y: this._options.padding
+                x: this._style.padding,
+                y: this._style.padding
             };
         },
 
@@ -239,7 +239,7 @@ var Selector = class({
             var borderDimension = this._dimensioner.getBorder();
             var arrowDimension = this._dimensioner.getArrow();
             return {
-                x: borderPosition.x + borderDimension.width - this._options.borderSize * 2 - arrowDimension.width,
+                x: borderPosition.x + borderDimension.width - this._style.borderSize * 2 - arrowDimension.width,
                 y: borderPosition.y + Math.round(borderDimension.height / 2) - Math.round(arrowDimension.height / 2)
             };
         },
@@ -261,7 +261,7 @@ var Selector = class({
             this._selector = selector;
             this._dimensioner = dimensioner;
             this._positioner = positioner;
-            this._options = this._selector.getOptions();
+            this._style = this._selector.getStyle();
             this._context = this._selector.getCanvasElement().getContext("2d");
 
             this.draw();
@@ -277,15 +277,15 @@ var Selector = class({
         _drawBackground: function() {
             var borderDimensioner = this._dimensioner.getBorder();
             var borderPosition = this._positioner.getBorder();
-            this._context.fillStyle = this._options.backgroundColor;
+            this._context.fillStyle = this._style.backgroundColor;
             this._context.fillRect(borderPosition.x, borderPosition.y, borderDimensioner.width, borderDimensioner.height);
         },
 
         _drawArrow: function() {
             var arrowDimension = this._dimensioner.getArrow();
             var arrowPosition = this._positioner.getArrow();
-            this._context.strokeStyle = this._options.borderColor;
-            this._context.lineWidth = this._options.borderSize;
+            this._context.strokeStyle = this._style.borderColor;
+            this._context.lineWidth = this._style.borderSize;
             this._context.beginPath();
             this._context.moveTo(arrowPosition.x, arrowPosition.y);
             this._context.lineTo(arrowPosition.x + arrowDimension.width, arrowPosition.y);
@@ -296,8 +296,8 @@ var Selector = class({
 
         _drawState: function() {
             var statePosition = this._positioner.getState();
-            this._context.fillStyle = this._options.fontColor;
-            this._context.font = this._dimensioner.getFontSize() + "px " + this._options.font;
+            this._context.fillStyle = this._style.fontColor;
+            this._context.font = this._dimensioner.getFontSize() + "px " + this._style.font;
             this._context.textAlign = "center";
             this._context.textBaseline = "middle";
             this._context.fillText(this._selector.getExternalValue(), statePosition.x, statePosition.y);
@@ -306,8 +306,8 @@ var Selector = class({
         _drawBorder: function() {
             var borderDimensioner = this._dimensioner.getBorder();
             var borderPosition = this._positioner.getBorder();
-            this._context.strokeStyle = this._options.borderColor;
-            this._context.lineWidth = this._options.borderSize;
+            this._context.strokeStyle = this._style.borderColor;
+            this._context.lineWidth = this._style.borderSize;
             this._context.strokeRect(borderPosition.x, borderPosition.y, borderDimensioner.width, borderDimensioner.height);
         }
 
@@ -427,7 +427,7 @@ var Selector = class({
                 this._selector = selector;
                 this._menu = menu;
                 this._dimensioner = dimensioner;
-                this._options = this._selector.getOptions();
+                this._style = this._selector.getStyle();
 
                 this._context = this._menu.getCanvasElement().getContext("2d");
             },
@@ -441,7 +441,7 @@ var Selector = class({
 
             _drawBackground: function() {
                 var menuDimension = this._dimensioner.getMenu();
-                this._context.fillStyle = this._options.backgroundColor;
+                this._context.fillStyle = this._style.backgroundColor;
                 this._context.fillRect(0, 0, menuDimension.width, menuDimension.height);
             },
 
@@ -452,14 +452,14 @@ var Selector = class({
                 var itemDimension = this._dimensioner.getItem();
                 var y = this._menu.getHighlightState() * itemDimension.height;
 
-                this._context.fillStyle = this._options.highlightColor;
+                this._context.fillStyle = this._style.highlightColor;
                 this._context.fillRect(0, y, menuDimension.width, itemDimension.height);
             },
 
             _drawBorder: function() {
                 var menuDimension = this._dimensioner.getMenu();
-                this._context.strokeStyle = this._options.borderColor;
-                this._context.lineWidth = this._options.borderSize;
+                this._context.strokeStyle = this._style.borderColor;
+                this._context.lineWidth = this._style.borderSize;
                 this._context.strokeRect(0, 0, menuDimension.width, menuDimension.height);
             },
 
@@ -467,8 +467,8 @@ var Selector = class({
                 var menuDimension = this._dimensioner.getMenu();
                 var itemDimension = this._dimensioner.getItem();
 
-                this._context.fillStyle = this._options.fontColor;
-                this._context.font = this._dimensioner.getFontSize() + "px " + this._options.font;
+                this._context.fillStyle = this._style.fontColor;
+                this._context.font = this._dimensioner.getFontSize() + "px " + this._style.font;
                 this._context.textAlign = "center";
                 this._context.textBaseline = "middle";
 
