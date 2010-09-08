@@ -28,7 +28,7 @@ var StateChangeMouseHandler = class({
 
     _onMouseMoveHandler: function(event) {
         var range = this._control.getHeight() * this._mouseScale;
-        var difference = event.screenY - this._startY;
+        var difference = this._startY - event.screenY;
         var stateDifference = Math.round((difference / range) * this._control.getStateCount());
 
         this._control.setState(this._startState + stateDifference);

@@ -51,17 +51,17 @@ describe("StateChangeMouseHandler", function() {
         });
 
         it("should calculate the new state", function() {
-            documentDriver.mouseMove(25);
+            documentDriver.mouseMove(-25);
             expect(control.getState()).toBe(75);
 
-            documentDriver.mouseMove(-25);
+            documentDriver.mouseMove(25);
             expect(control.getState()).toBe(25);
         });
 
         it("should calculate the new state based on the mouseScale", function() {
             mouseHandler.setOptions({ mouseScale: 2 });
 
-            documentDriver.mouseMove(50);
+            documentDriver.mouseMove(-50);
             expect(control.getState()).toBe(75);
         });
 
