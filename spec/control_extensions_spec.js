@@ -89,14 +89,30 @@ describe("TitleBorderDimensioner", function() {
 
     });
 
+    describe("getFittingFontSize", function() {
+
+        it("should return the maximal font size where all given texts fit into the given rectangle", function() {
+            expect(dimensioner.getFittingFontSize(100, 40)).toBe(39);
+        });
+
+    });
+
+    describe("getMaximalTextWidth", function() {
+
+        it("should return the width of the longest item", function() {
+            expect(dimensioner.getMaximalTextWidth(26)).toBe(15);
+        });
+
+    });
+
     describe("getTextWidth", function() {
 
         it("should return the width for the given text", function() {
-            expect(dimensioner.getTextWidth("test", "sans-serif", 10)).toBe(16);
+            expect(dimensioner.getTextWidth("test", 10)).toBe(16);
         });
 
         it("should return the width for the given text base on the font size", function() {
-            expect(dimensioner.getTextWidth("test", "sans-serif", 30)).toBe(48);
+            expect(dimensioner.getTextWidth("test", 30)).toBe(48);
         });
 
     });

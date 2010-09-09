@@ -38,8 +38,28 @@ var TitleBorderDimensioner = class({
         return this._style.fontSize || 10;
     },
 
-    getTextWidth: function(text, font, fontSize) {
-        this._context.font = fontSize + "px " + font;
+    getFittingFontSize: function(width, height) {
+        var fontSize = 1;
+        var textWidth = 0;
+        do {
+            textWidth = this.getMaximalTextWidth(fontSize);
+            fontSize++;
+        } while(textWidth < width && fontSize < height);
+        return fontSize - 1;
+    },
+
+    getMaximalTextWidth: function(fontSize) {
+        var width = 0;
+        var text;
+        for (var index = 0; index < this._control.getStateCount(); index++) {
+            text = this._control.getExternalValueFor(index);
+            width = Math.max(width, this.getTextWidth(text, this._style.font, fontSize));
+        }
+        return width;
+    },
+
+    getTextWidth: function(text, fontSize) {
+        this._context.font = fontSize + "px " + this._style.font;
         return this._context.measureText(text).width;
     }
 

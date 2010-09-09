@@ -104,22 +104,9 @@ var Toggler = class({
                     return Math.round((this._control.getHeight() - this._style.marginTop * 2 - this._style.marginBottom - this._style.paddingTop - this._style.paddingBottom) / 2);
                 } else {
                     var areaDimension = this.getArea();
-                    var fontSize = 1;
-                    var width = 0;
-                    do {
-                        width = this.getMaximalTextWidth(fontSize);
-                        fontSize++;
-                    } while(width < areaDimension.width && fontSize < areaDimension.height);
-                    return fontSize - 1;
+                    return this.getFittingFontSize(areaDimension.width, areaDimension.height);
                 }
             }
-        },
-
-        getMaximalTextWidth: function(fontSize) {
-            return Math.max(
-                this.getTextWidth(this._control.getExternalValueFor(0), this._style.font, fontSize),
-                this.getTextWidth(this._control.getExternalValueFor(this._control.getStateCount() - 1), this._style.font, fontSize)
-            );
         }
 
     }),

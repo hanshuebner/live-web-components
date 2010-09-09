@@ -185,25 +185,9 @@ var Selector = class({
                     return Math.round((this._control.getHeight() - this._style.marginTop * 2 - this._style.marginBottom - this._style.paddingTop - this._style.paddingBottom) / 2);
                 } else {
                     var areaDimension = this.getArea();
-                    var fontSize = 1;
-                    var width = 0;
-                    do {
-                        width = this.getMaximalTextWidth(fontSize);
-                        fontSize++;
-                    } while(width < areaDimension.width && fontSize < areaDimension.height);
-                    return fontSize - 1;
+                    return this.getFittingFontSize(areaDimension.width, areaDimension.height);
                 }
             }
-        },
-
-        getMaximalTextWidth: function(fontSize) {
-            var width = 0;
-            var text;
-            for (var index = 0; index < this._control.getStateCount(); index++) {
-                text = this._control.getExternalValueFor(index);
-                width = Math.max(width, this.getTextWidth(text, this._style.font, fontSize));
-            }
-            return width;
         }
 
     }),

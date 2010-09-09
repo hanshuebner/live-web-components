@@ -137,11 +137,11 @@ describe("Selector", function() {
 
             it("should calculate the menu dimensions", function() {
                 expect(dimensioner.getMenu().width).toBe(90);
-                expect(dimensioner.getMenu().height).toBe(42);
+                expect(dimensioner.getMenu().height).toBe(50);
 
                 selector.setItems([ "one", "two", "three", "long long entry" ]);
                 expect(dimensioner.getMenu().width).toBe(90);
-                expect(dimensioner.getMenu().height).toBe(56);
+                expect(dimensioner.getMenu().height).toBe(4);
             });
 
         });
@@ -149,8 +149,8 @@ describe("Selector", function() {
         describe("getState", function() {
 
             it("should return the item dimensions", function() {
-                expect(dimensioner.getState().width).toBe(71);
-                expect(dimensioner.getState().height).toBe(21);
+                expect(dimensioner.getState().width).toBe(69);
+                expect(dimensioner.getState().height).toBe(25);
             });
 
         });
@@ -158,8 +158,8 @@ describe("Selector", function() {
         describe("getArrow", function() {
 
             it("should return the arrow dimensions", function() {
-                expect(dimensioner.getArrow().width).toBe(11);
-                expect(dimensioner.getArrow().height).toBe(11);
+                expect(dimensioner.getArrow().width).toBe(13);
+                expect(dimensioner.getArrow().height).toBe(13);
             });
 
         });
@@ -167,7 +167,7 @@ describe("Selector", function() {
         describe("getFontSize", function() {
 
             it("should return the calculated font size by fitting the text in", function() {
-                expect(dimensioner.getFontSize()).toBe(21);
+                expect(dimensioner.getFontSize()).toBe(25);
             });
 
             it("should return the calculated font size by using the control height", function() {
@@ -178,14 +178,6 @@ describe("Selector", function() {
             it("should return the given font size", function() {
                 dimensioner._style.fontSize = 30;
                 expect(dimensioner.getFontSize()).toBe(30);
-            });
-
-        });
-
-        describe("getMaximalTextWidth", function() {
-
-            it("should return the width of the longest item", function() {
-                expect(dimensioner.getMaximalTextWidth(26)).toBe(103);
             });
 
         });

@@ -69,14 +69,6 @@ describe("Toggler", function() {
 
         });
 
-        describe("getMaximalTextWidth", function() {
-
-            it("should return the width of the longest item", function() {
-                expect(dimensioner.getMaximalTextWidth(26)).toBe(14);
-            });
-
-        });
-
     });
 
     describe("Positioner", function() {
