@@ -22,7 +22,8 @@ var Selector = generateClass({
         paddingRight: 2,
         backgroundColor: "white",
 
-        highlightColor: "green"
+        highlightColor: "green",
+        disabledColor: "gray"
     },
 
     initialize: function(element_or_id, options) {
@@ -91,6 +92,7 @@ var Selector = generateClass({
         },
 
         _onMouseDownHandler: function() {
+            if (this._selector.isDisabled()) return;
             this._selector.getButtonElement().focus();
             this._selector.toggleMenu();
             return false;
@@ -111,6 +113,7 @@ var Selector = generateClass({
         },
 
         _handleSelectorKey: function(keyCode) {
+            if (this._selector.isDisabled()) return;
             switch(keyCode) {
             case 13: // enter
             case 32: // space
@@ -250,7 +253,7 @@ var Selector = generateClass({
         _drawArrow: function() {
             var arrowDimension = this._dimensioner.getArrow();
             var arrowPosition = this._positioner.getArrow();
-            this._context.strokeStyle = this._style.borderColor;
+            this._context.strokeStyle = this._getColor("borderColor");
             this._context.lineWidth = this._style.borderSize;
             this._context.beginPath();
             this._context.moveTo(arrowPosition.x, arrowPosition.y);
@@ -262,7 +265,7 @@ var Selector = generateClass({
 
         _drawState: function() {
             var statePosition = this._positioner.getState();
-            this._context.fillStyle = this._style.fontColor;
+            this._context.fillStyle = this._getColor("fontColor");
             this._context.font = this._dimensioner.getFontSize() + "px " + this._style.font;
             this._context.textAlign = "center";
             this._context.textBaseline = "middle";

@@ -57,7 +57,16 @@ var Control = generateClass({
     getHeight: function() {
         return this._height || 0;
     },
-    
+
+    setDisabled: function(value) {
+        this._disabled = value;
+        this.draw();
+    },
+
+    isDisabled: function() {
+        return this._disabled;
+    },
+
     setTitle: function(value) {
         this._title = value;
     },

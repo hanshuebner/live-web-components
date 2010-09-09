@@ -45,6 +45,12 @@ describe("Selector", function() {
 
     describe("MouseHandler", function() {
 
+        it("should do nothing is selector is disabled", function() {
+            selector.setDisabled(true);
+            selectorDriver.mouseDown();
+            expect(selector.visibleMenu()).toBeFalsy();
+        });
+
         it("should set the focus on the control", function() {
             spyOn(selector.getButtonElement(), "focus")
             selectorDriver.mouseDown();
@@ -74,10 +80,15 @@ describe("Selector", function() {
                     menu.hide();
                 });
 
+                it("should do nothing if the selector is disabled", function() {
+                    selector.setDisabled(true);
+                    selectorDriver.enterKey(38); // up arrow
+                    expect(menu.getHighlightState()).not.toBe(selector.getState());
+                });
+
                 it("should set the highlight index to the selected index", function() {
                     selectorDriver.enterKey(38); // up arrow
                     expect(menu.getHighlightState()).toBe(selector.getState());
-
                 });
 
                 it("should show the menu if up/down arrow is pressed", function() {

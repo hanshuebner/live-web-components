@@ -173,6 +173,12 @@ describe("StateChangingMouseHandler", function() {
 
     describe("_onMouseDownHandler", function() {
 
+        it("should do nothing is control is disabled", function() {
+            control.setDisabled(true);
+            controlDriver.mouseDown();
+            expect(typeof(document.onmousemove)).not.toBe("function");
+        });
+
         it("should move the focus to the current control", function() {
             spyOn(control.getButtonElement(), "focus");
             controlDriver.mouseDown();
@@ -252,6 +258,13 @@ describe("StateChagingKeyHandler", function() {
                 toDisplay: function(state) { return state; },
                 fromDisplay: function(display) { return parseInt(display); }
             });
+        });
+
+        it("should do nothing is control is disabled", function() {
+            control.setDisabled(true);
+            var oldState = control.getState();
+            controlDriver.enterKey(38); // up arrow
+            expect(control.getState()).toBe(oldState);
         });
 
         it("should add a keyStep if up arrow is pressed", function() {

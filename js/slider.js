@@ -28,7 +28,8 @@ var Slider = generateClass({
         paddingRight: 2,
         backgroundColor: "white",
 
-        barColor: "green"
+        barColor: "green",
+        disabledColor: "gray"
     },
 
     initialize: function(element_or_id, options) {
@@ -119,13 +120,13 @@ var Slider = generateClass({
         _drawBar: function() {
             var barDimension = this._dimensioner.getBar();
             var barPosition = this._positioner.getBar();
-            this._context.fillStyle = this._style.barColor;
+            this._context.fillStyle = this._getColor("barColor");
             this._context.fillRect(barPosition.x, barPosition.y, barDimension.width, barDimension.height);
         },
 
         _drawState: function() {
             var statePosition = this._positioner.getState();
-            this._context.fillStyle = this._style.fontColor;
+            this._context.fillStyle = this._getColor("fontColor");
             this._context.font = this._dimensioner.getFontSize() + "px " + this._style.font;
             this._context.textAlign = "center";
             this._context.textBaseline = "middle";

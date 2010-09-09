@@ -125,6 +125,12 @@ describe("Toggler", function() {
 
         describe("_onMouseDownHandler", function() {
 
+            it("should do nothing is control is disabled", function() {
+                toggler.setDisabled(true);
+                togglerDriver.mouseDown();
+                expect(toggler.getState()).toBe(0);
+            });
+
             it("should set the focus on the control", function() {
                 spyOn(toggler.getButtonElement(), "focus")
                 togglerDriver.mouseDown();
@@ -145,6 +151,12 @@ describe("Toggler", function() {
     describe("KeyHandler", function() {
 
         describe("_onKeyDownHandler", function() {
+
+            it("should do nothing is control is disabled", function() {
+                toggler.setDisabled(true);
+                togglerDriver.enterKey(13); // enter
+                expect(toggler.getState()).toBe(0);
+            });
 
             it("should toggle the state on enter key", function() {
                 togglerDriver.enterKey(13); // enter

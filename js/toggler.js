@@ -27,7 +27,8 @@ var Toggler = generateClass({
         backgroundColor: "white",
 
         onColor: "green",
-        offColor: "white"
+        offColor: "white",
+        disabledColor: "gray"
     },
 
     initialize: function(element_or_id, options) {
@@ -69,6 +70,7 @@ var Toggler = generateClass({
         },
 
         _onMouseDownHandler: function() {
+            if (this._toggler.isDisabled()) return;
             this._toggler.getButtonElement().focus();
             this._toggler.toggleState();
         }
@@ -83,6 +85,7 @@ var Toggler = generateClass({
         },
 
         _onKeyDownHandler: function(event) {
+            if (this._toggler.isDisabled()) return;
             switch (event.keyCode) {
             case 13: // enter
             case 32: // space
@@ -151,7 +154,7 @@ var Toggler = generateClass({
         _drawButton: function() {
             var buttonDimension = this._dimensioner.getButton();
             var buttonPosition = this._positioner.getButton();
-            this._context.fillStyle = this._control.getState() ? this._style.onColor : this._style.offColor;
+            this._context.fillStyle = this._control.getState() ? this._getColor("onColor") : this._style.offColor;
             this._context.fillRect(buttonPosition.x, buttonPosition.y, buttonDimension.width, buttonDimension.height);
         },
 
@@ -159,7 +162,7 @@ var Toggler = generateClass({
             var statePosition = this._positioner.getState();
             var fontSize = this._dimensioner.getFontSize();
             this._context.font = fontSize + "px " + this._style.font;
-            this._context.fillStyle = this._style.fontColor;
+            this._context.fillStyle = this._getColor("fontColor");
             this._context.textAlign = "center";
             this._context.textBaseline = "middle";
             this._context.fillText(this._control.getExternalValue(), statePosition.x, statePosition.y);

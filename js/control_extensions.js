@@ -119,7 +119,7 @@ var TitleBorderDrawer = generateClass({
 
         var fontSize = this._dimensioner.getFontSize();
         var titlePosition = this._positioner.getTitle();
-        this._context.fillStyle = this._style.fontColor;
+        this._context.fillStyle = this._getColor("fontColor");
         this._context.font = fontSize + "px " + this._style.font;
         this._context.textBaseline = "middle";
         this._context.textAlign = "center";
@@ -136,9 +136,13 @@ var TitleBorderDrawer = generateClass({
     _drawBorder: function() {
         var borderDimensioner = this._dimensioner.getBorder();
         var borderPosition = this._positioner.getBorder();
-        this._context.strokeStyle = this._style.borderColor;
+        this._context.strokeStyle = this._getColor("borderColor");
         this._context.lineWidth = this._style.borderTopWidth;
         this._context.strokeRect(borderPosition.x, borderPosition.y, borderDimensioner.width, borderDimensioner.height);
+    },
+
+    _getColor: function(key) {
+        return this._control.isDisabled() ? this._style.disabledColor : this._style[key];
     }
 
 });
@@ -152,6 +156,8 @@ var StateChangingMouseHandler = generateClass({
     },
 
     _onMouseDownHandler: function(event) {
+        if (this._control.isDisabled()) return;
+
         this._control.getButtonElement().focus();
 
         this._startY = event.screenY;
@@ -212,6 +218,8 @@ var StateChangingKeyHandler = generateClass({
     },
 
     _onKeyDownHandler: function(event) {
+        if (this._control.isDisabled()) return;
+        
         switch (event.keyCode) {
         case 8: // backspace
             this._deleteCharacter();

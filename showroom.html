@@ -66,6 +66,7 @@
                 }
             });
             new Toggler("toggler_two", {
+                disabled: true,
                 onchange: function(internalValue, externalValue, state) {
                     printLine("Toggler 2: internal = " + internalValue + " / external = " + externalValue + " / state = " + state);
                 }
@@ -80,6 +81,7 @@
             });
             new Selector("selector_two", {
                 items: longItemArray,
+                disabled: true,
                 onchange: function(internalValue, externalValue, state) {
                     printLine("Selector 2: internal = " + internalValue + " / external = " + externalValue + " / state = " + state);
                 }
@@ -94,6 +96,7 @@
                 }
             });
             new Slider("slider_two", {
+                disabled: true,
                 onchange: function(internalValue, externalValue, state) {
                     printLine("Slider 2: internal = " + internalValue + " / external = " + externalValue + " / state = " + state);
                 }
