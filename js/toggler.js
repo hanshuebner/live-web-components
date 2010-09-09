@@ -8,24 +8,37 @@ var Toggler = class({
     },
 
     defaultStyle: {
-        width: 200,
-        height: 50,
-        padding: 5,
+        width: 100,
+        height: 40,
+        font: "sans-serif",
+        fontSize: undefined,
+        fontColor: "black",
+        marginTop: 5,
+        marginLeft: 5,
+        marginBottom: 5,
+        marginRight: 5,
         borderColor: "black",
         borderSize: 2,
+        borderTopWidth: 2,
+        paddingTop: 2,
+        paddingLeft: 2,
+        paddingBottom: 2,
+        paddingRight: 2,
+        backgroundColor: "white",
+
         onColor: "green",
-        offColor: "white",
-        font: "sans-serif",
-        fontColor: "black",
-        fontSize: null              // null means, that the font size gonna be calculated
+        offColor: "white"
     },
 
     initialize: function(element_or_id, options) {
         this._super_initialize(element_or_id, options);
 
+        this._dimensioner = new this.Dimensioner(this);
+        this._positioner = new this.Positioner(this, this._dimensioner);
+        this._drawer = new this.Drawer(this, this._dimensioner, this._positioner);
+
         this._mouseHandler = new this.MouseHandler(this);
         this._keyHandler = new this.KeyHandler(this);
-        this._drawer = new this.Drawer(this);
     },
 
     getStateCount: function() {
@@ -75,55 +88,87 @@ var Toggler = class({
 
     }),
 
+    Dimensioner: class({
+
+        extends: TitleBorderDimensioner,
+
+        getButton: function() {
+            return this.getBorder();
+        },
+
+        getFontSize: function() {
+            if (this._style.fontSize) {
+                return this._style.fontSize;
+            } else {
+                if (this._control.hasTitle()) {
+                    return Math.round((this._control.getHeight() - this._style.marginTop * 2 - this._style.marginBottom - this._style.paddingTop - this._style.paddingBottom) / 2);
+                } else {
+                    var areaDimension = this.getArea();
+                    var fontSize = 1;
+                    var width = 0;
+                    do {
+                        width = this.getMaximalTextWidth(fontSize);
+                        fontSize++;
+                    } while(width < areaDimension.width && fontSize < areaDimension.height);
+                    return fontSize - 1;
+                }
+            }
+        },
+
+        getMaximalTextWidth: function(fontSize) {
+            return Math.max(
+                this.getTextWidth(this._control.getExternalValueFor(0), this._style.font, fontSize),
+                this.getTextWidth(this._control.getExternalValueFor(this._control.getStateCount() - 1), this._style.font, fontSize)
+            );
+        }
+
+    }),
+
+    Positioner: class({
+
+        extends: TitleBorderPositioner,
+
+        getButton: function() {
+            return this.getBorder();
+        },
+
+        getState: function() {
+            var areaDimension = this._dimensioner.getArea();
+            var areaPosition = this.getArea();
+            return {
+                x: areaPosition.x + Math.round(areaDimension.width / 2),
+                y: areaPosition.y + Math.round(areaDimension.height / 2)
+            };
+        }
+
+    }),
+
     Drawer: class({
 
-        initialize: function(toggler) {
-            this._toggler = toggler;
-            this._style = this._toggler.getStyle();
-            this._context = this._toggler.getCanvasElement().getContext("2d");
-
-            this._calculateFontSize();
-            this.draw();
-        },
+        extends: TitleBorderDrawer,
 
         draw: function() {
-            if (!this._context) return;
-
-            this._calculateButtonSize();
+            this._drawTitle();
             this._drawButton();
             this._drawBorder();
-            this._drawText();
-        },
-
-        _calculateButtonSize: function() {
-            this._buttonX = this._style.padding;
-            this._buttonY = this._style.padding;
-            this._buttonWidth = this._toggler.getWidth() - this._style.padding * 2;
-            this._buttonHeight = this._toggler.getHeight() - this._style.padding * 2;
-        },
-
-        _calculateFontSize: function() {
-            if (this._style.fontSize) return;
-            this._style.fontSize = this._toggler.getHeight() - this._style.padding * 2 - this._style.borderSize * 2;
+            this._drawState();
         },
 
         _drawButton: function() {
-            this._context.fillStyle = this._toggler.getState() ? this._style.onColor : this._style.offColor;
-            this._context.fillRect(this._buttonX, this._buttonY, this._buttonWidth, this._buttonHeight);
+            var buttonDimension = this._dimensioner.getButton();
+            var buttonPosition = this._positioner.getButton();
+            this._context.fillStyle = this._control.getState() ? this._style.onColor : this._style.offColor;
+            this._context.fillRect(buttonPosition.x, buttonPosition.y, buttonDimension.width, buttonDimension.height);
         },
 
-        _drawBorder: function() {
-            this._context.strokeStyle = this._style.borderColor;
-            this._context.lineWidth = this._style.borderSize;
-            this._context.strokeRect(this._buttonX, this._buttonY, this._buttonWidth, this._buttonHeight);
-        },
-
-        _drawText: function() {
-            this._context.font = this._style.fontSize + "px " + this._style.font;
+        _drawState: function() {
+            var statePosition = this._positioner.getState();
+            var fontSize = this._dimensioner.getFontSize();
+            this._context.font = fontSize + "px " + this._style.font;
             this._context.fillStyle = this._style.fontColor;
             this._context.textAlign = "center";
             this._context.textBaseline = "middle";
-            this._context.fillText(this._toggler.getExternalValue(), this._toggler.getWidth() / 2, this._toggler.getHeight() / 2);
+            this._context.fillText(this._control.getExternalValue(), statePosition.x, statePosition.y);
         }
 
     })

@@ -34,6 +34,79 @@ describe("Toggler", function() {
 
     });
 
+    describe("Dimensioner", function() {
+
+        var dimensioner;
+
+        beforeEach(function() {
+            dimensioner = toggler._dimensioner;
+        });
+
+        describe("getButton", function() {
+
+            it("should return button dimensions", function() {
+                expect(dimensioner.getButton().width).toBe(90);
+                expect(dimensioner.getButton().height).toBe(30);
+            });
+
+        });
+
+        describe("getFontSize", function() {
+
+            it("should return the calculated font size by fitting the text in", function() {
+                expect(dimensioner.getFontSize()).toBe(25);
+            });
+
+            it("should return the calculated font size by using the control height", function() {
+                toggler.setTitle("Test");
+                expect(dimensioner.getFontSize()).toBe(11);
+            });
+
+            it("should return the given font size", function() {
+                dimensioner._style.fontSize = 30;
+                expect(dimensioner.getFontSize()).toBe(30);
+            });
+
+        });
+
+        describe("getMaximalTextWidth", function() {
+
+            it("should return the width of the longest item", function() {
+                expect(dimensioner.getMaximalTextWidth(26)).toBe(14);
+            });
+
+        });
+
+    });
+
+    describe("Positioner", function() {
+
+        var positioner;
+
+        beforeEach(function() {
+            positioner = toggler._positioner;
+        });
+
+        describe("getButton", function() {
+
+            it("should return the bar position", function() {
+                expect(positioner.getButton().x).toBe(5);
+                expect(positioner.getButton().y).toBe(5);
+            });
+
+        });
+
+        describe("getState", function() {
+
+            it("should return the text position", function() {
+                expect(positioner.getState().x).toBe(50);
+                expect(positioner.getState().y).toBe(20);
+            });
+
+        });
+
+    });
+
     describe("MouseHandler", function() {
 
         describe("_onMouseDownHandler", function() {

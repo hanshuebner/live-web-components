@@ -13,16 +13,16 @@ var Selector = class({
         marginLeft: 5,
         marginBottom: 5,
         marginRight: 5,
+        borderColor: "black",
+        borderSize: 2,
+        borderTopWidth: 2,
         paddingTop: 2,
         paddingLeft: 2,
         paddingBottom: 2,
         paddingRight: 2,
+        backgroundColor: "white",
 
-        fontColor: "black",
-        borderColor: "black",
-        borderSize: 2,
-        highlightColor: "green",
-        backgroundColor: "white"
+        highlightColor: "green"
     },
 
     initialize: function(element_or_id, options) {
@@ -150,10 +150,6 @@ var Selector = class({
 
         extends: TitleBorderDimensioner,
 
-        initialize: function(selector) {
-            this._super_initialize(selector);
-        },
-
         getMenu: function() {
             var borderDimension = this.getBorder();
             var stateDimension = this.getState();
@@ -216,10 +212,6 @@ var Selector = class({
 
         extends: TitleBorderPositioner,
 
-        initialize: function(selector, dimensioner) {
-            this._super_initialize(selector, dimensioner);
-        },
-
         getMenu: function() {
             var borderDimension = this._dimensioner.getBorder();
             var borderPosition = this.getBorder();
@@ -253,10 +245,6 @@ var Selector = class({
     Drawer: class({
 
         extends: TitleBorderDrawer,
-
-        initialize: function(selector, dimensioner, positioner) {
-            this._super_initialize(selector, dimensioner, positioner);
-        },
 
         draw: function() {
             this._drawTitle();

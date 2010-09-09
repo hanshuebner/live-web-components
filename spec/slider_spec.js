@@ -50,7 +50,7 @@ describe("Slider", function() {
             });
 
             it("should return a calculated font size if nothing is given", function() {
-                expect(dimensioner.getFontSize()).toBe(26);
+                expect(dimensioner.getFontSize()).toBe(25);
             });
 
         });
@@ -58,11 +58,11 @@ describe("Slider", function() {
         describe("getMaximalTextWidth", function() {
 
             it("should return the width of the longest item", function() {
-                expect(dimensioner.getMaximalTextWidth(26)).toBe(103);
+                expect(dimensioner.getMaximalTextWidth(26)).toBe(42);
             });
 
         });
-        
+
     });
 
     describe("Positioner", function() {

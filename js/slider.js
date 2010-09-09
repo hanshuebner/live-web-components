@@ -19,14 +19,16 @@ var Slider = class({
         marginLeft: 5,
         marginBottom: 5,
         marginRight: 5,
+        borderColor: "black",
+        borderSize: 2,
+        borderTopWidth: 2,
         paddingTop: 2,
         paddingLeft: 2,
         paddingBottom: 2,
         paddingRight: 2,
+        backgroundColor: "white",
 
-        barColor: "green",
-        borderColor: "black",
-        borderSize: 2
+        barColor: "green"
     },
 
     initialize: function(element_or_id, options) {
@@ -56,10 +58,6 @@ var Slider = class({
     Dimensioner: class({
 
         extends: TitleBorderDimensioner,
-
-        initialize: function(slider) {
-            this._super_initialize(slider);
-        },
 
         getBar: function() {
             var borderDimension = this.getBorder();
@@ -101,10 +99,6 @@ var Slider = class({
 
         extends: TitleBorderPositioner,
 
-        initialize: function(slider, dimensioner) {
-            this._super_initialize(slider, dimensioner);
-        },
-
         getBar: function() {
             var borderPosition = this.getBorder();
             return {
@@ -114,11 +108,11 @@ var Slider = class({
         },
 
         getState: function() {
-            var borderDimension = this._dimensioner.getBorder();
-            var borderPosition = this.getBorder();
+            var areaDimension = this._dimensioner.getArea();
+            var areaPosition = this.getArea();
             return {
-                x: borderPosition.x + Math.round(borderDimension.width / 2),
-                y: borderPosition.y + Math.round(borderDimension.height / 2)
+                x: areaPosition.x + Math.round(areaDimension.width / 2),
+                y: areaPosition.y + Math.round(areaDimension.height / 2)
             };
         }
 
@@ -127,10 +121,6 @@ var Slider = class({
     Drawer: class({
 
         extends: TitleBorderDrawer,
-
-        initialize: function(slider, dimensioner, positioner) {
-            this._super_initialize(slider, dimensioner, positioner);
-        },
 
         draw: function() {
             this._drawTitle();

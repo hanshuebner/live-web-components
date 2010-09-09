@@ -50,7 +50,7 @@
             });
 
             new Toggler("toggler_one", {
-                text: "Large",
+                title: "Large",
                 externalMapping: {
                     toDisplay: function(state) { return state ? "On" : "Off" }
                 },
@@ -64,7 +64,6 @@
             });
             new Toggler("toggler_two", {
                 state: 1,
-                text: "Small",
                 onchange: function(internalValue, externalValue, state) {
                     printLine("Toggler 2: internal = " + internalValue + " / external = " + externalValue + " / state = " + state);
                 }
@@ -105,7 +104,7 @@
     <button id="spinner_one" style="display: inline;"></button>
     <button id="spinner_two" style="display: inline;"></button>
     <button id="spinner_three" style="display: inline;"></button>
-    <button id="toggler_one" style="display: inline;"></button>
+    <button id="toggler_one" style="display: inline; width: 150px; height: 80px;"></button>
     <button id="toggler_two" style="display: inline; width: 60px; height: 24px;"></button><br/>
     <button id="selector_one" style="display: inline; height: 60px;"></button>
     <button id="selector_two" style="display: inline;"></button>

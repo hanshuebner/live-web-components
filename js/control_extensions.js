@@ -91,7 +91,7 @@ var TitleBorderDrawer = class({
     },
 
     draw: function() {
-
+        // has be implemented
     },
 
     _drawTitle: function() {
@@ -117,7 +117,7 @@ var TitleBorderDrawer = class({
         var borderDimensioner = this._dimensioner.getBorder();
         var borderPosition = this._positioner.getBorder();
         this._context.strokeStyle = this._style.borderColor;
-        this._context.lineWidth = this._style.borderSize;
+        this._context.lineWidth = this._style.borderTopWidth;
         this._context.strokeRect(borderPosition.x, borderPosition.y, borderDimensioner.width, borderDimensioner.height);
     }
 
