@@ -159,7 +159,7 @@ describe("Selector", function() {
 
         describe("getState", function() {
 
-            it("should return the item dimensions", function() {
+            it("should return the state dimensions", function() {
                 expect(dimensioner.getState().width).toBe(73);
                 expect(dimensioner.getState().height).toBe(18);
             });
