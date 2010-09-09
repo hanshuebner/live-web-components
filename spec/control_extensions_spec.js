@@ -2,16 +2,150 @@
 var control, controlDriver, documentDriver;
 
 beforeEach(function() {
-    control = new Control(buttonElement, {
+    Control.prototype.defaultStyle = {
         width: 100,
-        height: 100,
+        height: 100
+    }
+    control = new Control(buttonElement, {
         mouseScale: 1,
-        keyStep: 1
+        keyStep: 1,
+        title: "Test"
     });
     control.getStateCount = function() { return 101; };
+    control._style = {
+        font: "sans-serif",
+        fontSize: undefined,
+        marginTop: 5,
+        marginLeft: 5,
+        marginBottom: 5,
+        marginRight: 5,
+        paddingTop: 2,
+        paddingLeft: 2,
+        paddingBottom: 2,
+        paddingRight: 2
+    };
 
     controlDriver = new ControlDriver(control);
     documentDriver = new DocumentDriver();
+});
+
+describe("TitleBorderDimensioner", function() {
+
+    var dimensioner;
+
+    beforeEach(function() {
+        dimensioner = new TitleBorderDimensioner(control);
+    });
+
+    describe("getArea", function() {
+
+        it("should return the area dimension", function() {
+            expect(dimensioner.getArea().width).toBe(86);
+            expect(dimensioner.getArea().height).toBe(71);
+        });
+
+    });
+
+    describe("getBorder", function() {
+
+        it("should return the border dimension", function() {
+            expect(dimensioner.getBorder().width).toBe(90);
+            expect(dimensioner.getBorder().height).toBe(75);
+        });
+
+        it("should return a bigger border if no title is given", function() {
+            control.setTitle(null);
+            expect(dimensioner.getBorder().width).toBe(90);
+            expect(dimensioner.getBorder().height).toBe(90);
+        });
+
+    });
+
+    describe("getTitle", function() {
+
+        it("should return the title dimension", function() {
+            expect(dimensioner.getTitle().width).toBe(19);
+            expect(dimensioner.getTitle().height).toBe(10);
+        });
+
+        it("should return null if no title is given", function() {
+            control.setTitle(null);
+            expect(dimensioner.getTitle().width).toBe(0);
+            expect(dimensioner.getTitle().height).toBe(0);
+        });
+
+    });
+
+    describe("getTextWidth", function() {
+
+        it("should return the width for the given text", function() {
+            expect(dimensioner.getTextWidth("test")).toBe(16);
+        });
+
+        it("should return the width for the given text base on the font size", function() {
+            dimensioner.getStyle().fontSize = 30;
+            expect(dimensioner.getTextWidth("test")).toBe(48);
+        });
+
+    });
+
+    describe("getFontSize", function() {
+
+        it("should return the given font size", function() {
+            dimensioner.getStyle().fontSize = 26;
+            expect(dimensioner.getFontSize()).toBe(26);
+        });
+
+        it("should return 10 if no font size is given", function() {
+            expect(dimensioner.getFontSize()).toBe(10);
+        });
+
+    });
+
+});
+
+describe("TitleBorderPositioner", function() {
+
+    var dimensioner, positioner;
+
+    beforeEach(function() {
+        dimensioner = new TitleBorderDimensioner(control);
+        positioner = new TitleBorderPositioner(control, dimensioner);
+    });
+
+    describe("getArea", function() {
+
+        it("should return the area position", function() {
+            expect(positioner.getArea().x).toBe(7);
+            expect(positioner.getArea().y).toBe(22);
+        });
+
+    });
+
+    describe("getBorder", function() {
+
+        it("should return the border position", function() {
+            expect(positioner.getBorder().x).toBe(5);
+            expect(positioner.getBorder().y).toBe(20);
+        });
+
+        it("should return a different position if no title is given", function() {
+            control.setTitle(null);
+            expect(positioner.getBorder().x).toBe(5);
+            expect(positioner.getBorder().y).toBe(5);
+        });
+
+    });
+
+    describe("getTitle", function() {
+
+        it("should return the title position", function() {
+            expect(positioner.getTitle().x).toBe(41);
+            expect(positioner.getTitle().y).toBe(10);
+        });
+
+    });
+
 });
 
 describe("StateChangingMouseHandler", function() {

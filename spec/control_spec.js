@@ -4,10 +4,15 @@ describe("Control", function() {
     var control;
 
     beforeEach(function() {
-        buttonElement.style.fontSize = "26px";
-        Control.prototype.defaultStyle = { height: 100 };
-        control = new Control(buttonElement, {
+        buttonElement.setAttribute("class", "test");
+
+        Control.prototype.defaultStyle = {
             width: 200,
+            height: 100,
+            fontSize: 26
+        };
+
+        control = new Control(buttonElement, {
             externalMapping: {
                 toDisplay: function(state) { return Math.round(state / 100.0 * 200.0 - 100.0); },
                 fromDisplay: function(display) { return Math.round((display + 100.0) * 100.0 / 200.0); }
@@ -24,7 +29,8 @@ describe("Control", function() {
     describe("initialize", function() {
 
         it("should initialize the button element", function() {
-            expect(control.getButtonElement().getAttribute("class")).toBe("control");
+            expect(control.getButtonElement().getAttribute("class")).toContain("test");
+            expect(control.getButtonElement().getAttribute("class")).toContain("control");
         });
 
         it("should create an canvas element", function() {

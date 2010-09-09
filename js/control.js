@@ -58,6 +58,18 @@ var Control = class({
         return this._width || 0;
     },
 
+    setTitle: function(value) {
+        this._title = value;
+    },
+
+    getTitle: function() {
+        return this._title;
+    },
+
+    hasTitle: function() {
+        return !!this._title;
+    },
+
     setExternalMapping: function(mapping) {
         this._externalMapping = mapping;
     },
@@ -149,8 +161,7 @@ var Control = class({
     },
 
     _unifyButtonElement: function() {
-        this._buttonElement.setAttribute("class", "control");
-        this._buttonElement.setAttribute("style", "border: 0px; padding: 0px; background: transparent; outline: none;");
+        this._buttonElement.setAttribute("class", this._buttonElement.getAttribute("class") + " control");
     },
 
     _setDefaultOptions: function() {

@@ -1,4 +1,101 @@
 
+var TitleBorderDimensioner = class({
+
+    initialize: function(control) {
+        this._control = control;
+        this._style = this._control.getStyle();
+        this._context = this._control.getCanvasElement().getContext("2d");
+    },
+
+    getStyle: function() {
+        return this._style;
+    },
+
+    getContext: function() {
+        return this._context;
+    },
+
+    getArea: function() {
+        var borderDimension = this.getBorder();
+        return {
+            width: borderDimension.width - this._style.paddingLeft - this._style.paddingRight,
+            height: borderDimension.height - this._style.paddingTop - this._style.paddingBottom
+        };
+    },
+
+    getBorder: function() {
+        return {
+            width: this._control.getWidth() - this._style.marginLeft - this._style.marginRight,
+            height: this._control.getHeight() -
+                    this._style.marginTop - this._style.marginBottom -
+                    (this._control.hasTitle() ? this.getTitle().height + this._style.marginTop : 0)
+        }
+    },
+
+    getTitle: function() {
+        return this._control.hasTitle() ? {
+            width: this.getTextWidth(this._control.getTitle()),
+            height: this.getFontSize()
+        } : {
+            width: 0,
+            height: 0
+        }
+    },
+
+    getTextWidth: function(text) {
+        var context = this.getContext();
+        context.font = this.getFontSize() + "px " + this._style.font;
+        return context.measureText(text).width;
+    },
+
+    getFontSize: function() {
+        return this._style.fontSize || 10;
+    }
+
+});
+
+var TitleBorderPositioner = class({
+
+    initialize: function(control, dimensioner) {
+        this._control = control;
+        this._dimensioner = dimensioner;
+        this._style = this._control.getStyle();
+    },
+
+    getStyle: function() {
+        return this._style;
+    },
+
+    getDimensioner: function() {
+        return this._dimensioner;
+    },
+
+    getArea: function() {
+        var borderPosition = this.getBorder();
+        return {
+            x: borderPosition.x + this._style.paddingLeft,
+            y: borderPosition.y + this._style.paddingTop
+        };
+    },
+
+    getBorder: function() {
+        return {
+            x: this._style.marginLeft,
+            y: this._style.marginTop +
+               (this._control.hasTitle() ? this._dimensioner.getTitle().height + this._style.marginTop : 0)
+        };
+    },
+
+    getTitle: function() {
+        var titleDimension = this._dimensioner.getTitle();
+        return {
+            x: Math.round(this._control.getWidth() / 2 - titleDimension.width / 2),
+            y: Math.round(this._style.marginTop + titleDimension.height / 2)
+        };
+    }
+
+});
+
 var StateChangingMouseHandler = class({
 
     initialize: function(control) {

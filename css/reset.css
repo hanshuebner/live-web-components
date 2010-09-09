@@ -1,4 +1,11 @@
 
+button.control {
+    border: 0px;
+    padding: 0px;
+    background: transparent;
+    outline: none;
+}
+
 button.control::-moz-focus-inner {
     border: none;
 }

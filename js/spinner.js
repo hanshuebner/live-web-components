@@ -16,13 +16,14 @@ var Spinner = class({
     },
 
     defaultStyle: {
+        font: "sans-serif",
+        fontColor: "black",
+        fontSize: null,             // null means, that the font size gonna be calculated
+
         lineWidth: 3,
         radiusDifference: 0,
         lowArcColor: "red",
         highArcColor: "black",
-        font: "sans-serif",
-        fontColor: "black",
-        fontSize: null,             // null means, that the font size gonna be calculated
         cursorColor: "black",
         focusColor: "blue"
     },
