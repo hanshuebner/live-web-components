@@ -255,6 +255,7 @@ var StateChangingKeyHandler = class({
     },
 
     _enter: function() {
+        if (!this.isEntering()) return;
         this._control.setExternalValue(this._enteredText);
         this._entering = false;
         this._enteredText = null;

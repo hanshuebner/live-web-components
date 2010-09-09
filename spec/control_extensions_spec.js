@@ -263,6 +263,15 @@ describe("StateChagingKeyHandler", function() {
             expect(keyHandler.isEntering()).toBeFalsy();
         });
 
+        it("should not go change state if no fromDisplay mapping is given", function() {
+            control.setExternalMapping({
+                toDisplay: function(state) { return state; }
+            });
+            var oldState = control.getState();
+            controlDriver.enterKey(13); // enter
+            expect(control.getState()).toBe(oldState);
+        });
+
         it("should leave the entering-mode and commit the new value if enter is pressed", function() {
             controlDriver.enterKey(49); // "1"
             controlDriver.enterKey(13); // enter
