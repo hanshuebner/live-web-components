@@ -4,7 +4,7 @@ describe("Control", function() {
     var control;
 
     beforeEach(function() {
-        buttonElement.setAttribute("generateClass", "test");
+        buttonElement.setAttribute("class", "test");
 
         Control.prototype.defaultStyle = {
             width: 200,
@@ -29,8 +29,8 @@ describe("Control", function() {
     describe("initialize", function() {
 
         it("should initialize the button element", function() {
-            expect(control.getButtonElement().getAttribute("generateClass")).toContain("test");
-            expect(control.getButtonElement().getAttribute("generateClass")).toContain("control");
+            expect(control.getButtonElement().getAttribute("class")).toContain("test");
+            expect(control.getButtonElement().getAttribute("class")).toContain("control");
         });
 
         it("should create an canvas element", function() {

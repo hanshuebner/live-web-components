@@ -307,6 +307,17 @@ describe("StateChagingKeyHandler", function() {
             expect(control.getExternalValue()).toBe(-1);
         });
 
+        it("should accept string values", function() {
+            control.setExternalMapping({
+                toDisplay: function(state) { return state; },
+                fromDisplay: function(display) { return display.charCodeAt(0); }
+            });
+            controlDriver.enterKey(67);  // "c"
+            controlDriver.enterKey(13);  // enter
+            expect(keyHandler.isEntering()).toBeFalsy();
+            expect(control.getExternalValue()).toBe(67);
+        });
+
     });
 
 });

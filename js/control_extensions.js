@@ -227,18 +227,6 @@ var StateChangingKeyHandler = generateClass({
         case 40: // down arrow
             this._stepDown();
             return false;
-        case 48:
-        case 49:
-        case 50:
-        case 51:
-        case 52:
-        case 53:
-        case 54:
-        case 55:
-        case 56:
-        case 57: // digits 0-9
-            this._enterCharacter(event.keyCode - 48);
-            return false;
         case 109: // substract
         case 189: // "-"
             this._enterCharacter("-");
@@ -247,7 +235,12 @@ var StateChangingKeyHandler = generateClass({
             this._enterCharacter(".");
             return false;
         default:
-            return true;
+            if (event.keyCode >= 48 && event.keyCode <= 90) {
+                this._enterCharacter(String.fromCharCode(event.keyCode));
+                return false;
+            } else {
+                return true;
+            }
         }
     },
 
