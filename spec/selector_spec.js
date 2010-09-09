@@ -148,11 +148,11 @@ describe("Selector", function() {
 
             it("should calculate the menu dimensions", function() {
                 expect(dimensioner.getMenu().width).toBe(90);
-                expect(dimensioner.getMenu().height).toBe(58);
+                expect(dimensioner.getMenu().height).toBe(44);
 
                 selector.setItems([ "one", "two", "three", "long long entry" ]);
                 expect(dimensioner.getMenu().width).toBe(90);
-                expect(dimensioner.getMenu().height).toBe(12);
+                expect(dimensioner.getMenu().height).toBe(56);
             });
 
         });
@@ -161,7 +161,7 @@ describe("Selector", function() {
 
             it("should return the item dimensions", function() {
                 expect(dimensioner.getState().width).toBe(73);
-                expect(dimensioner.getState().height).toBe(25);
+                expect(dimensioner.getState().height).toBe(18);
             });
 
         });
@@ -178,7 +178,7 @@ describe("Selector", function() {
         describe("getFontSize", function() {
 
             it("should return the calculated font size by fitting the text in", function() {
-                expect(dimensioner.getFontSize()).toBe(25);
+                expect(dimensioner.getFontSize()).toBe(18);
             });
 
             it("should return the calculated font size by using the control height", function() {

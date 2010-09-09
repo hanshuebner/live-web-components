@@ -53,7 +53,7 @@ var TitleBorderDimensioner = generateClass({
         var text;
         for (var index = 0; index < this._control.getStateCount(); index++) {
             text = this._control.getExternalValueFor(index);
-            width = Math.max(width, this.getTextWidth(text, this._style.font, fontSize));
+            width = Math.max(width, this.getTextWidth(text, fontSize));
         }
         return width;
     },

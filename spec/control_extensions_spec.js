@@ -100,7 +100,7 @@ describe("TitleBorderDimensioner", function() {
     describe("getMaximalTextWidth", function() {
 
         it("should return the width of the longest item", function() {
-            expect(dimensioner.getMaximalTextWidth(26)).toBe(15);
+            expect(dimensioner.getMaximalTextWidth(26)).toBe(42);
         });
 
     });
