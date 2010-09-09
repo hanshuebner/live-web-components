@@ -15,6 +15,28 @@ describe("Toggler", function() {
         expect(Toggler.prototype.extendClass).toBe(Control);
     });
 
+    describe("setItems", function() {
+
+        var items;
+
+        beforeEach(function() {
+            items = [ "one", "two" ];
+        });
+
+        it("should install a external mapping function", function() {
+            toggler.setItems(items);
+            toggler.setState(1);
+            expect(toggler.getExternalValue()).toBe("two")
+        });
+
+        it("should invoke a draw", function() {
+            spyOn(toggler, "draw");
+            toggler.setItems(items);
+            expect(toggler.draw).toHaveBeenCalled();
+        });
+
+    });
+
     describe("getStateCount", function() {
 
         it("should return two", function() {

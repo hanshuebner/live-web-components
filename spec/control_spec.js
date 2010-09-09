@@ -90,31 +90,6 @@ describe("Control", function() {
 
     });
 
-    describe("setHeight", function() {
-
-        it("should set the height", function() {
-            control.setHeight(111);
-            expect(control.getHeight()).toBe(111);
-        });
-
-        it("should set the height of the button element", function() {
-            control.setHeight(222);
-            expect(control.getButtonElement().getAttribute("height")).toBe("222px");
-        });
-
-        it("should set the height of the canvas element", function() {
-            control.setHeight(333);
-            expect(control.getCanvasElement().height).toBe(333);
-        });
-
-        it("should invoke a draw", function() {
-            spyOn(control, "draw");
-            control.setHeight(444);
-            expect(control.draw).toHaveBeenCalled();
-        });
-
-    });
-
     describe("setWidth", function() {
 
         it("should set the width", function() {
@@ -135,6 +110,31 @@ describe("Control", function() {
         it("should invoke a draw", function() {
             spyOn(control, "draw");
             control.setWidth(444);
+            expect(control.draw).toHaveBeenCalled();
+        });
+
+    });
+
+    describe("setHeight", function() {
+
+        it("should set the height", function() {
+            control.setHeight(111);
+            expect(control.getHeight()).toBe(111);
+        });
+
+        it("should set the height of the button element", function() {
+            control.setHeight(222);
+            expect(control.getButtonElement().getAttribute("height")).toBe("222px");
+        });
+
+        it("should set the height of the canvas element", function() {
+            control.setHeight(333);
+            expect(control.getCanvasElement().height).toBe(333);
+        });
+
+        it("should invoke a draw", function() {
+            spyOn(control, "draw");
+            control.setHeight(444);
             expect(control.draw).toHaveBeenCalled();
         });
 

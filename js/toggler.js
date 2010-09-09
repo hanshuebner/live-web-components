@@ -41,6 +41,13 @@ var Toggler = generateClass({
         this._keyHandler = new this.KeyHandler(this);
     },
 
+    setItems: function(value) {
+        this.setExternalMapping({
+            toDisplay: function(state) { return value[state]; }
+        });
+        this.draw();
+    },
+
     getStateCount: function() {
         return 2;
     },

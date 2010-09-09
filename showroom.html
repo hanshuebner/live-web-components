@@ -55,9 +55,8 @@
 
             new Toggler("toggler_one", {
                 title: "Large",
-                externalMapping: {
-                    toDisplay: function(state) { return state ? "On" : "Off" }
-                },
+                items: [ "Off", "On" ],
+                state: 1,
                 internalMapping: {
                     toValue: function(state) { return state ? true : false },
                     fromValue: function(value) { return value ? 1 : 0 }
@@ -67,7 +66,6 @@
                 }
             });
             new Toggler("toggler_two", {
-                state: 1,
                 onchange: function(internalValue, externalValue, state) {
                     printLine("Toggler 2: internal = " + internalValue + " / external = " + externalValue + " / state = " + state);
                 }

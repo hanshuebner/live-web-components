@@ -36,17 +36,6 @@ var Control = generateClass({
         return this._style;
     },
 
-    setHeight: function(value) {
-        this._height = value;
-        this._buttonElement.setAttribute("height", this._height + "px");
-        this._canvasElement.height = this._height;
-        this.draw();
-    },
-
-    getHeight: function() {
-        return this._height || 0;
-    },
-
     setWidth: function(value) {
         this._width = value;
         this._buttonElement.setAttribute("width", this._width + "px");
@@ -58,6 +47,17 @@ var Control = generateClass({
         return this._width || 0;
     },
 
+    setHeight: function(value) {
+        this._height = value;
+        this._buttonElement.setAttribute("height", this._height + "px");
+        this._canvasElement.height = this._height;
+        this.draw();
+    },
+
+    getHeight: function() {
+        return this._height || 0;
+    },
+    
     setTitle: function(value) {
         this._title = value;
     },
