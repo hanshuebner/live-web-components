@@ -25,7 +25,8 @@ var Spinner = generateClass({
         lowArcColor: "red",
         highArcColor: "black",
         cursorColor: "black",
-        focusColor: "blue"
+        focusColor: "blue",
+        disabledColor: "gray"
     },
 
     initialize: function(element_or_id, options) {
@@ -153,7 +154,7 @@ var Spinner = generateClass({
         _drawTitle: function() {
             if (!this._spinner.getTitle()) return;
 
-            this._context.fillStyle = this._style.fontColor;
+            this._context.fillStyle = this._getColor("fontColor");
             this._context.font = this._style.fontSize + "px " + this._style.font;
             this._context.textBaseline = "middle";
             this._context.textAlign = "center";
@@ -169,7 +170,7 @@ var Spinner = generateClass({
             this._context.lineWidth = (this._style.lineWidth || 1);
             this._context.lineCap = "round";
 
-            this._context.strokeStyle = this._style.lowArcColor;
+            this._context.strokeStyle = this._getColor("lowArcColor");
             this._context.beginPath();
             this._context.arc(
                     offsetX + size / 2,
@@ -181,7 +182,7 @@ var Spinner = generateClass({
             );
             this._context.stroke();
 
-            this._context.strokeStyle = this._style.highArcColor;
+            this._context.strokeStyle = this._getColor("highArcColor");
             this._context.beginPath();
             if (angle == 2 * Math.PI) {
                 this._context.moveTo(offsetX + size - this._style.lineWidth, offsetY + size / 2);
@@ -206,10 +207,10 @@ var Spinner = generateClass({
 
             var x = size / 2 + (this._keyHandler.isEntering() ? this._style.lineWidth : this.getMaximalValueWidth());
 
+            this._context.fillStyle = this._getColor("fontColor");
             this._context.font = this._style.fontSize + "px " + this._style.font;
-            this._context.textBaseline = "middle";
-            this._context.fillStyle = this._style.fontColor;
             this._context.textAlign = this._keyHandler.isEntering() ? "left" : "right";
+            this._context.textBaseline = "middle";
             this._context.fillText(this._getDisplayText(), offsetX + x, offsetY + size * 0.75);
         },
 
@@ -224,7 +225,7 @@ var Spinner = generateClass({
                           this._style.lineWidth * 2 +
                           this._context.measureText(this._getDisplayText()).width;
 
-            this._context.strokeStyle = this._style.cursorColor;
+            this._context.strokeStyle = this._getColor("cursorColor");
             this._context.beginPath();
             this._context.moveTo(offsetX + cursorX, offsetY + Math.round(size * 0.75 - this._style.fontSize / 2));
             this._context.lineTo(offsetX + cursorX, offsetY + Math.round(size * 0.75 + this._style.fontSize / 2));
@@ -241,6 +242,10 @@ var Spinner = generateClass({
 
         _getDisplayText: function() {
             return this._keyHandler.isEntering() ? this._keyHandler.getEnteredText() : this._spinner.getExternalValue();
+        },
+
+        _getColor: function(key) {
+            return this._spinner.isDisabled() ? this._style.disabledColor : this._style[key];
         }
 
     })

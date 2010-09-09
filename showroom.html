@@ -32,6 +32,7 @@
             new Spinner('spinner_two', {
                 mouseScale: 2,
                 keyStep: 2,
+                disabled: true,
                 onchange: function(internalValue, externalValue, state) {
                     printLine("Spinner 2: internal = " + internalValue + " / external = " + externalValue + " / state = " + state);
                 }
@@ -75,13 +76,13 @@
             new Selector("selector_one", {
                 title: "Select 1",
                 items: [ "one", "two", "three" ],
+                disabled: true,
                 onchange: function(internalValue, externalValue, state) {
                     printLine("Selector 1: internal = " + internalValue + " / external = " + externalValue + " / state = " + state);
                 }
             });
             new Selector("selector_two", {
                 items: longItemArray,
-                disabled: true,
                 onchange: function(internalValue, externalValue, state) {
                     printLine("Selector 2: internal = " + internalValue + " / external = " + externalValue + " / state = " + state);
                 }
