@@ -176,7 +176,7 @@ describe("Selector", function() {
             });
 
             it("should return the given font size", function() {
-                dimensioner.getStyle().fontSize = 30;
+                dimensioner._style.fontSize = 30;
                 expect(dimensioner.getFontSize()).toBe(30);
             });
 

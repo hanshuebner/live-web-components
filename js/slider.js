@@ -12,11 +12,19 @@ var Slider = class({
     defaultStyle: {
         width: 100,
         height: 40,
-        padding: 5,
-        barColor: "green",
         font: "sans-serif",
-        fontSize: null,             // null means, that the font size gonna be calculated
+        fontSize: undefined,
         fontColor: "black",
+        marginTop: 5,
+        marginLeft: 5,
+        marginBottom: 5,
+        marginRight: 5,
+        paddingTop: 2,
+        paddingLeft: 2,
+        paddingBottom: 2,
+        paddingRight: 2,
+
+        barColor: "green",
         borderColor: "black",
         borderSize: 2
     },
@@ -47,45 +55,54 @@ var Slider = class({
 
     Dimensioner: class({
 
-        initialize: function(slider) {
-            this._slider = slider;
-            this._style = this._slider.getStyle();
-        },
+        extends: TitleBorderDimensioner,
 
-        getBorder: function() {
-            return {
-                width: this._slider.getWidth() - this._style.padding * 2,
-                height: this._slider.getHeight() - this._style.padding * 2
-            };
+        initialize: function(slider) {
+            this._super_initialize(slider);
         },
 
         getBar: function() {
             var borderDimension = this.getBorder();
             return {
-                width: Math.round(borderDimension.width / this._slider.getStateCount() * this._slider.getState()),
+                width: Math.round(borderDimension.width / this._control.getStateCount() * this._control.getState()),
                 height: borderDimension.height
             };
         },
 
         getFontSize: function() {
-            return this._style.fontSize || (this.getBorder().height - this._style.borderSize * 2);
+            if (this._style.fontSize) {
+                return this._style.fontSize;
+            } else {
+                if (this._control.hasTitle()) {
+                    return Math.round((this._control.getHeight() - this._style.marginTop * 2 - this._style.marginBottom - this._style.paddingTop - this._style.paddingBottom) / 2);
+                } else {
+                    var areaDimension = this.getArea();
+                    var fontSize = 1;
+                    var width = 0;
+                    do {
+                        width = this.getMaximalTextWidth(fontSize);
+                        fontSize++;
+                    } while(width < areaDimension.width && fontSize < areaDimension.height);
+                    return fontSize - 1;
+                }
+            }
+        },
+
+        getMaximalTextWidth: function(fontSize) {
+            return Math.max(
+                this.getTextWidth(this._control.getExternalValueFor(0), this._style.font, fontSize),
+                this.getTextWidth(this._control.getExternalValueFor(this._control.getStateCount() - 1), this._style.font, fontSize)
+            );
         }
 
     }),
 
     Positioner: class({
 
-        initialize: function(slider, dimensioner) {
-            this._slider = slider;
-            this._dimensioner = dimensioner;
-            this._style = this._slider.getStyle();
-        },
+        extends: TitleBorderPositioner,
 
-        getBorder: function() {
-            return {
-                x: this._style.padding,
-                y: this._style.padding
-            };
+        initialize: function(slider, dimensioner) {
+            this._super_initialize(slider, dimensioner);
         },
 
         getBar: function() {
@@ -96,7 +113,7 @@ var Slider = class({
             };
         },
 
-        getText: function() {
+        getState: function() {
             var borderDimension = this._dimensioner.getBorder();
             var borderPosition = this.getBorder();
             return {
@@ -109,20 +126,17 @@ var Slider = class({
 
     Drawer: class({
 
-        initialize: function(slider, dimensioner, positioner) {
-            this._slider = slider;
-            this._dimensioner = dimensioner;
-            this._positioner = positioner;
-            this._style = this._slider.getStyle();
+        extends: TitleBorderDrawer,
 
-            this._context = this._slider.getCanvasElement().getContext("2d");
-            this.draw();
+        initialize: function(slider, dimensioner, positioner) {
+            this._super_initialize(slider, dimensioner, positioner);
         },
 
         draw: function() {
+            this._drawTitle();
             this._drawBar();
             this._drawBorder();
-            this._drawText();
+            this._drawState();
         },
 
         _drawBar: function() {
@@ -132,21 +146,13 @@ var Slider = class({
             this._context.fillRect(barPosition.x, barPosition.y, barDimension.width, barDimension.height);
         },
 
-        _drawBorder: function() {
-            var borderDimension = this._dimensioner.getBorder();
-            var borderPosition = this._positioner.getBorder();
-            this._context.strokeStyle = this._style.borderColor;
-            this._context.lineWidth = this._style.borderSize;
-            this._context.strokeRect(borderPosition.x, borderPosition.y, borderDimension.width, borderDimension.height);
-        },
-
-        _drawText: function() {
-            var textPosition = this._positioner.getText();
+        _drawState: function() {
+            var statePosition = this._positioner.getState();
             this._context.fillStyle = this._style.fontColor;
             this._context.font = this._dimensioner.getFontSize() + "px " + this._style.font;
             this._context.textAlign = "center";
             this._context.textBaseline = "middle";
-            this._context.fillText(this._slider.getExternalValue(), textPosition.x, textPosition.y);
+            this._context.fillText(this._control.getExternalValue(), statePosition.x, statePosition.y);
         }
 
     })

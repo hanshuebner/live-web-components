@@ -23,15 +23,6 @@ describe("Slider", function() {
             dimensioner = slider._dimensioner;
         });
 
-        describe("getBorder", function() {
-
-            it("should return the border dimensions", function() {
-                expect(dimensioner.getBorder().width).toBe(90);
-                expect(dimensioner.getBorder().height).toBe(30);
-            });
-
-        });
-
         describe("getBar", function() {
 
             beforeEach(function() {
@@ -54,7 +45,7 @@ describe("Slider", function() {
         describe("getFontSize", function() {
 
             it("should return the given font size", function() {
-                slider.getStyle().fontSize = 30;
+                dimensioner._style.fontSize = 30;
                 expect(dimensioner.getFontSize()).toBe(30);
             });
 
@@ -64,6 +55,14 @@ describe("Slider", function() {
 
         });
 
+        describe("getMaximalTextWidth", function() {
+
+            it("should return the width of the longest item", function() {
+                expect(dimensioner.getMaximalTextWidth(26)).toBe(103);
+            });
+
+        });
+        
     });
 
     describe("Positioner", function() {
@@ -72,15 +71,6 @@ describe("Slider", function() {
 
         beforeEach(function() {
             positioner = slider._positioner;
-        });
-
-        describe("getBorder", function() {
-
-            it("should return the border position", function() {
-                expect(positioner.getBorder().x).toBe(5);
-                expect(positioner.getBorder().y).toBe(5);
-            });
-
         });
 
         describe("getBar", function() {
@@ -92,11 +82,11 @@ describe("Slider", function() {
 
         });
 
-        describe("getText", function() {
+        describe("getState", function() {
 
             it("should return the text position", function() {
-                expect(positioner.getText().x).toBe(50);
-                expect(positioner.getText().y).toBe(20);
+                expect(positioner.getState().x).toBe(50);
+                expect(positioner.getState().y).toBe(20);
             });
 
         });

@@ -8,6 +8,7 @@ var Selector = class({
         height: 40,
         font: "sans-serif",
         fontSize: undefined,
+        fontColor: "black",
         marginTop: 5,
         marginLeft: 5,
         marginBottom: 5,
@@ -154,21 +155,19 @@ var Selector = class({
         },
 
         getMenu: function() {
-            var control = this.getControl();
             var borderDimension = this.getBorder();
             var stateDimension = this.getState();
             return {
                 width: borderDimension.width,
-                height: stateDimension.height * control.getStateCount()
+                height: stateDimension.height * this._control.getStateCount()
             };
         },
 
         getState: function() {
-            var style = this.getStyle();
             var areaDimension = this.getArea();
             var arrowDimension = this.getArrow();
             return {
-                width: areaDimension.width - arrowDimension.width - style.paddingRight * 2,
+                width: areaDimension.width - arrowDimension.width - this._style.paddingRight * 2,
                 height: this.getFontSize()
             };
         },
@@ -183,13 +182,11 @@ var Selector = class({
         },
 
         getFontSize: function() {
-            var style = this.getStyle();
-            if (style.fontSize) {
-                return style.fontSize;
+            if (this._style.fontSize) {
+                return this._style.fontSize;
             } else {
-                var control = this.getControl();
-                if (control.hasTitle()) {
-                    return Math.round((control.getHeight() - style.marginTop * 2 - style.marginBottom - style.paddingTop - style.paddingBottom) / 2);
+                if (this._control.hasTitle()) {
+                    return Math.round((this._control.getHeight() - this._style.marginTop * 2 - this._style.marginBottom - this._style.paddingTop - this._style.paddingBottom) / 2);
                 } else {
                     var areaDimension = this.getArea();
                     var fontSize = 1;
@@ -204,13 +201,11 @@ var Selector = class({
         },
 
         getMaximalTextWidth: function(fontSize) {
-            var control = this.getControl();
-            var style = this.getStyle();
             var width = 0;
             var text;
-            for (var index = 0; index < control.getStateCount(); index++) {
-                text = control.getExternalValueFor(index);
-                width = Math.max(width, this.getTextWidth(text, style.font, fontSize));
+            for (var index = 0; index < this._control.getStateCount(); index++) {
+                text = this._control.getExternalValueFor(index);
+                width = Math.max(width, this.getTextWidth(text, this._style.font, fontSize));
             }
             return width;
         }
@@ -226,32 +221,27 @@ var Selector = class({
         },
 
         getMenu: function() {
-            var control = this.getControl();
-            var dimensioner = this.getDimensioner();
-            var borderDimension = dimensioner.getBorder();
+            var borderDimension = this._dimensioner.getBorder();
             var borderPosition = this.getBorder();
             return {
-                top: control.getButtonElement().offsetTop + borderPosition.y + borderDimension.height,
-                left: control.getButtonElement().offsetLeft + borderPosition.x
+                top: this._control.getButtonElement().offsetTop + borderPosition.y + borderDimension.height,
+                left: this._control.getButtonElement().offsetLeft + borderPosition.x
             };
         },
 
         getArrow: function() {
-            var dimensioner = this.getDimensioner();
-            var style = this.getStyle();
             var areaPosition = this.getArea();
-            var areaDimension = dimensioner.getArea();
-            var arrowDimension = dimensioner.getArrow();
+            var areaDimension = this._dimensioner.getArea();
+            var arrowDimension = this._dimensioner.getArrow();
             return {
-                x: areaPosition.x + areaDimension.width - arrowDimension.width - style.paddingRight,
+                x: areaPosition.x + areaDimension.width - arrowDimension.width - this._style.paddingRight,
                 y: areaPosition.y + Math.round(areaDimension.height / 2 - arrowDimension.height / 2)
             };
         },
 
         getState: function() {
-            var dimensioner = this.getDimensioner();
             var areaPosition = this.getArea();
-            var stateDimension = dimensioner.getState();
+            var stateDimension = this._dimensioner.getState();
             return {
                 x: areaPosition.x + Math.round(stateDimension.width / 2),
                 y: areaPosition.y + Math.round(stateDimension.height / 2)

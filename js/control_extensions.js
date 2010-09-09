@@ -7,18 +7,6 @@ var TitleBorderDimensioner = class({
         this._context = this._control.getCanvasElement().getContext("2d");
     },
 
-    getControl: function() {
-        return this._control;
-    },
-
-    getStyle: function() {
-        return this._style;
-    },
-
-    getContext: function() {
-        return this._context;
-    },
-
     getArea: function() {
         var borderDimension = this.getBorder();
         return {
@@ -51,9 +39,8 @@ var TitleBorderDimensioner = class({
     },
 
     getTextWidth: function(text, font, fontSize) {
-        var context = this.getContext();
-        context.font = fontSize + "px " + font;
-        return context.measureText(text).width;
+        this._context.font = fontSize + "px " + font;
+        return this._context.measureText(text).width;
     }
 
 });
@@ -64,18 +51,6 @@ var TitleBorderPositioner = class({
         this._control = control;
         this._dimensioner = dimensioner;
         this._style = this._control.getStyle();
-    },
-
-    getControl: function() {
-        return this._control;
-    },
-
-    getDimensioner: function() {
-        return this._dimensioner;
-    },
-
-    getStyle: function() {
-        return this._style;
     },
 
     getArea: function() {

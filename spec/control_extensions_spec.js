@@ -79,7 +79,7 @@ describe("TitleBorderDimensioner", function() {
     describe("getFontSize", function() {
 
         it("should return the given font size", function() {
-            dimensioner.getStyle().fontSize = 26;
+            dimensioner._style.fontSize = 26;
             expect(dimensioner.getFontSize()).toBe(26);
         });
 
@@ -139,7 +139,7 @@ describe("TitleBorderPositioner", function() {
     describe("getTitle", function() {
 
         it("should return the title position", function() {
-            expect(positioner.getTitle().x).toBe(41);
+            expect(positioner.getTitle().x).toBe(50);
             expect(positioner.getTitle().y).toBe(10);
         });
 

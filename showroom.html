@@ -85,9 +85,16 @@
             });
 
             new Slider("slider_one", {
+                title: "Slide 1",
+                stateCount: 101,
                 state: 50,
                 onchange: function(internalValue, externalValue, state) {
                     printLine("Slider 1: internal = " + internalValue + " / external = " + externalValue + " / state = " + state);
+                }
+            });
+            new Slider("slider_two", {
+                onchange: function(internalValue, externalValue, state) {
+                    printLine("Slider 2: internal = " + internalValue + " / external = " + externalValue + " / state = " + state);
                 }
             });
         }
@@ -103,6 +110,7 @@
     <button id="selector_one" style="display: inline; height: 60px;"></button>
     <button id="selector_two" style="display: inline;"></button>
     <button id="slider_one" style="display: inline;"></button>
+    <button id="slider_two" style="display: inline;"></button>
     <input />
     <p id="output"></p>
 </body>
