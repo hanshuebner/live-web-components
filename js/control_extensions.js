@@ -160,6 +160,7 @@ var StateChangingMouseHandler = generateClass({
 
         this._control.getButtonElement().focus();
 
+        this._startX = event.screenX;
         this._startY = event.screenY;
         this._startState = this._control.getState();
 
@@ -171,7 +172,9 @@ var StateChangingMouseHandler = generateClass({
 
     _onMouseMoveHandler: function(event) {
         var range = this._control.getHeight() * this._options.mouseScale;
-        var difference = this._startY - event.screenY;
+        var differenceX = event.screenX - this._startX;
+        var differenceY = this._startY - event.screenY;
+        var difference = Math.abs(differenceX) > Math.abs(differenceY) ? differenceX : differenceY;
         var stateDifference = Math.round((difference / range) * this._control.getStateCount());
 
         this._control.setState(this._startState + stateDifference);
@@ -219,7 +222,7 @@ var StateChangingKeyHandler = generateClass({
 
     _onKeyDownHandler: function(event) {
         if (this._control.isDisabled()) return;
-        
+
         switch (event.keyCode) {
         case 8: // backspace
             this._deleteCharacter();

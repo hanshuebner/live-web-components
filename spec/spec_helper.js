@@ -7,8 +7,8 @@ var ControlDriver = generateClass({
         this._control = control;
     },
 
-    mouseDown: function(screenY) {
-        this._control.getButtonElement().onmousedown({ screenY: screenY });
+    mouseDown: function(screenX, screenY) {
+        this._control.getButtonElement().onmousedown({ screenX: screenX, screenY: screenY });
     },
 
     enterKey: function(keyCode) {
@@ -19,8 +19,8 @@ var ControlDriver = generateClass({
 
 var DocumentDriver = generateClass({
 
-    mouseMove: function(screenY) {
-        document.onmousemove({ screenY: screenY });
+    mouseMove: function(screenX, screenY) {
+        document.onmousemove({ screenX: screenX, screenY: screenY });
     },
 
     mouseUp: function() {
