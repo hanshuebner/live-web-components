@@ -5,8 +5,7 @@ describe("Selector", function() {
 
     beforeEach(function() {
         selector = new Selector(buttonElement, {
-            items: [ "one", "two", "three" ],
-            fontSize: 26
+            items: [ "one", "two", "three" ]
         });
         selector.onchange = function() { };
 
@@ -134,40 +133,24 @@ describe("Selector", function() {
             dimensioner = selector._dimensioner;
         });
 
-        describe("getMinimalWidth", function() {
-
-            it("should calculate the minimal width", function() {
-                expect(dimensioner.getMinimalWidth()).toBe(140);
-                selector.setItems([ "one", "two", "three", "long long entry" ]);
-                expect(dimensioner.getMinimalWidth()).toBe(204);
-            });
-
-        });
-
         describe("getMenu", function() {
 
             it("should calculate the menu dimensions", function() {
-                expect(dimensioner.getMenu().width).toBe(124);
-                expect(dimensioner.getMenu().height).toBe(60);
+                expect(dimensioner.getMenu().width).toBe(90);
+                expect(dimensioner.getMenu().height).toBe(42);
 
                 selector.setItems([ "one", "two", "three", "long long entry" ]);
-                expect(dimensioner.getMenu().width).toBe(188);
-                expect(dimensioner.getMenu().height).toBe(120);
+                expect(dimensioner.getMenu().width).toBe(90);
+                expect(dimensioner.getMenu().height).toBe(56);
             });
 
         });
 
-        describe("getBorder", function() {
+        describe("getState", function() {
 
-            it("should calculate the border dimensions", function() {
-                expect(dimensioner.getBorder().width).toBe(124);
-                expect(dimensioner.getBorder().height).toBe(30);
-            });
-
-            it("should return the custiom dimensions if there are larger than the calculated one", function() {
-                selector.setWidth(500);
-                expect(dimensioner.getBorder().width).toBe(490);
-                expect(dimensioner.getBorder().height).toBe(30);
+            it("should return the item dimensions", function() {
+                expect(dimensioner.getState().width).toBe(71);
+                expect(dimensioner.getState().height).toBe(21);
             });
 
         });
@@ -175,17 +158,26 @@ describe("Selector", function() {
         describe("getArrow", function() {
 
             it("should return the arrow dimensions", function() {
-                expect(dimensioner.getArrow().width).toBe(13);
-                expect(dimensioner.getArrow().height).toBe(13);
+                expect(dimensioner.getArrow().width).toBe(11);
+                expect(dimensioner.getArrow().height).toBe(11);
             });
 
         });
 
-        describe("getItem", function() {
+        describe("getFontSize", function() {
 
-            it("should return the item dimensions", function() {
-                expect(dimensioner.getItem().width).toBe(111);
-                expect(dimensioner.getItem().height).toBe(30);
+            it("should return the calculated font size by fitting the text in", function() {
+                expect(dimensioner.getFontSize()).toBe(21);
+            });
+
+            it("should return the calculated font size by using the control height", function() {
+                selector.setTitle("Test");
+                expect(dimensioner.getFontSize()).toBe(11);
+            });
+
+            it("should return the given font size", function() {
+                dimensioner.getStyle().fontSize = 30;
+                expect(dimensioner.getFontSize()).toBe(30);
             });
 
         });
@@ -193,33 +185,7 @@ describe("Selector", function() {
         describe("getMaximalTextWidth", function() {
 
             it("should return the width of the longest item", function() {
-                expect(dimensioner.getMaximalTextWidth()).toBe(103);
-            });
-
-        });
-
-        describe("getTextWidth", function() {
-
-            it("should return the width for the given text", function() {
-                expect(dimensioner.getTextWidth("test")).toBe(41);
-            });
-
-            it("should return the width for the given text base on the font size", function() {
-                selector.getStyle().fontSize = 30;
-                expect(dimensioner.getTextWidth("test")).toBe(48);
-            });
-
-        });
-
-        describe("getFontSize", function() {
-
-            it("should return the fontSize", function() {
-                expect(dimensioner.getFontSize()).toBe(26);
-            });
-
-            it("should calculate the fontSize by height if not given", function() {
-                dimensioner._fontSize = null;
-                expect(dimensioner.getFontSize()).toBe(26);
+                expect(dimensioner.getMaximalTextWidth(26)).toBe(103);
             });
 
         });
@@ -243,20 +209,11 @@ describe("Selector", function() {
 
         });
 
-        describe("getBorder", function() {
-
-            it("should return the border position", function() {
-                expect(positioner.getBorder().x).toBe(5);
-                expect(positioner.getBorder().y).toBe(5);
-            });
-
-        });
-
         describe("getArrow", function() {
 
             it("should return the arrow position", function() {
-                expect(positioner.getArrow().x).toBe(73);
-                expect(positioner.getArrow().y).toBe(13);
+                expect(positioner.getArrow().x).toBe(78);
+                expect(positioner.getArrow().y).toBe(14);
             });
 
         });
@@ -264,7 +221,7 @@ describe("Selector", function() {
         describe("getState", function() {
 
             it("should return the selected item position", function() {
-                expect(positioner.getState().x).toBe(38);
+                expect(positioner.getState().x).toBe(42);
                 expect(positioner.getState().y).toBe(20);
             });
 
@@ -320,11 +277,11 @@ describe("Selector", function() {
             describe("_onMouseDownHandler", function() {
 
                 it("should select the correct item", function() {
-                    menuDriver.mouseDown(25);
+                    menuDriver.mouseDown(20);
                     expect(selector.getExternalValue()).toBe("one");
-                    menuDriver.mouseDown(50);
+                    menuDriver.mouseDown(40);
                     expect(selector.getExternalValue()).toBe("two");
-                    menuDriver.mouseDown(75);
+                    menuDriver.mouseDown(60);
                     expect(selector.getExternalValue()).toBe("three");
                 });
 
@@ -333,16 +290,16 @@ describe("Selector", function() {
             describe("_onMouseMoveHandler", function() {
 
                 it("should set a highlight", function() {
-                    menuDriver.mouseMove(25);
+                    menuDriver.mouseMove(20);
                     expect(menu.hasHighlight()).toBeTruthy();
                 });
 
                 it("should update the highlight index", function() {
-                    menuDriver.mouseMove(25);
+                    menuDriver.mouseMove(20);
                     expect(menu.getHighlightState()).toBe(0);
-                    menuDriver.mouseMove(50);
+                    menuDriver.mouseMove(40);
                     expect(menu.getHighlightState()).toBe(1);
-                    menuDriver.mouseMove(75);
+                    menuDriver.mouseMove(60);
                     expect(menu.getHighlightState()).toBe(2);
                 });
 
@@ -351,7 +308,7 @@ describe("Selector", function() {
             describe("_onMouseOutHandler", function() {
 
                 beforeEach(function() {
-                    menuDriver.mouseMove(25);
+                    menuDriver.mouseMove(20);
                 });
 
                 it("should clear the highlight index", function() {

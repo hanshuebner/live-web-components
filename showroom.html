@@ -71,6 +71,7 @@
             });
 
             new Selector("selector_one", {
+                title: "Selector title",
                 items: [ "one", "two", "three" ],
                 onchange: function(internalValue, externalValue, state) {
                     printLine("Selector 1: internal = " + internalValue + " / external = " + externalValue + " / state = " + state);

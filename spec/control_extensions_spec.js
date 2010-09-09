@@ -76,19 +76,6 @@ describe("TitleBorderDimensioner", function() {
 
     });
 
-    describe("getTextWidth", function() {
-
-        it("should return the width for the given text", function() {
-            expect(dimensioner.getTextWidth("test")).toBe(16);
-        });
-
-        it("should return the width for the given text base on the font size", function() {
-            dimensioner.getStyle().fontSize = 30;
-            expect(dimensioner.getTextWidth("test")).toBe(48);
-        });
-
-    });
-
     describe("getFontSize", function() {
 
         it("should return the given font size", function() {
@@ -98,6 +85,18 @@ describe("TitleBorderDimensioner", function() {
 
         it("should return 10 if no font size is given", function() {
             expect(dimensioner.getFontSize()).toBe(10);
+        });
+
+    });
+
+    describe("getTextWidth", function() {
+
+        it("should return the width for the given text", function() {
+            expect(dimensioner.getTextWidth("test", "sans-serif", 10)).toBe(16);
+        });
+
+        it("should return the width for the given text base on the font size", function() {
+            expect(dimensioner.getTextWidth("test", "sans-serif", 30)).toBe(48);
         });
 
     });
