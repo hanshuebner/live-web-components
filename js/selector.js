@@ -155,7 +155,7 @@ var Selector = generateClass({
             var stateDimension = this.getState();
             return {
                 width: borderDimension.width,
-                height: stateDimension.height * this._control.getStateCount()
+                height: stateDimension.height * this._control.getStateCount() + this._style.borderTopWidth * 4
             };
         },
 
@@ -169,8 +169,8 @@ var Selector = generateClass({
         },
 
         getArrow: function() {
-            var fontSizeDimension = this.getFontSize();
-            var size = Math.round(fontSizeDimension / 2);
+            var areaDimension = this.getArea();
+            var size = Math.round(areaDimension.height / 3);
             return {
                 width:  size,
                 height: size
@@ -185,7 +185,8 @@ var Selector = generateClass({
                     return Math.round((this._control.getHeight() - this._style.marginTop * 2 - this._style.marginBottom - this._style.paddingTop - this._style.paddingBottom) / 2);
                 } else {
                     var areaDimension = this.getArea();
-                    return this.getFittingFontSize(areaDimension.width, areaDimension.height);
+                    var arrowDimension = this.getArrow();
+                    return this.getFittingFontSize(areaDimension.width - arrowDimension.width - this._style.paddingRight * 2, areaDimension.height);
                 }
             }
         }
@@ -199,8 +200,12 @@ var Selector = generateClass({
         getMenu: function() {
             var borderDimension = this._dimensioner.getBorder();
             var borderPosition = this.getBorder();
+            var menuDimension = this._dimensioner.getMenu();
+            var top = this._control.getButtonElement().offsetTop + borderPosition.y + borderDimension.height;
+            if (top + menuDimension.height > this._getDocumentHeight())
+                top -= top + menuDimension.height - this._getDocumentHeight();
             return {
-                top: this._control.getButtonElement().offsetTop + borderPosition.y + borderDimension.height,
+                top: top,
                 left: this._control.getButtonElement().offsetLeft + borderPosition.x
             };
         },
@@ -222,6 +227,10 @@ var Selector = generateClass({
                 x: areaPosition.x + Math.round(stateDimension.width / 2),
                 y: areaPosition.y + Math.round(stateDimension.height / 2)
             };
+        },
+
+        _getDocumentHeight: function() {
+            return document.height;
         }
 
     }),
@@ -285,6 +294,7 @@ var Selector = generateClass({
         hide: function() {
             this._visible = false;
             this._setCanvasElementStyle();
+            // this._selector.draw();
         },
 
         isVisible: function() {
@@ -292,13 +302,19 @@ var Selector = generateClass({
         },
 
         clearHighlightState: function() {
+            var oldHighlightState = this._highlightState;
             this._highlightState = undefined;
-            this.draw();
+            this._drawer.drawState(oldHighlightState);
         },
 
         setHighlightState: function(value) {
+            var oldHighlightState = this._highlightState;
             this._highlightState = value;
-            this.draw();
+            if (oldHighlightState != this._highlightState) {
+                if (oldHighlightState !== undefined)
+                    this._drawer.drawState(oldHighlightState);
+                this._drawer.drawState(this._highlightState);
+            }
         },
 
         getHighlightState: function() {
@@ -383,9 +399,35 @@ var Selector = generateClass({
 
             draw: function() {
                 this._drawBackground();
-                this._drawHighlight();
-                this._drawBorder();
                 this._drawStates();
+                this._drawBorder();
+            },
+
+            drawState: function(index) {
+                var menuDimension = this._dimensioner.getMenu();
+                var stateDimension = this._dimensioner.getState();
+                var y = index * stateDimension.height + this._style.borderTopWidth * 2;
+
+                this._context.fillStyle = (index === this._menu.getHighlightState()) ?
+                    this._style.highlightColor :
+                    this._style.backgroundColor;
+                this._context.fillRect(
+                        this._style.borderTopWidth * 2,
+                        y,
+                        menuDimension.width - this._style.borderTopWidth * 4,
+                        stateDimension.height);
+
+                this._context.fillStyle = this._style.fontColor;
+                this._context.font = this._dimensioner.getFontSize() + "px " + this._style.font;
+                this._context.textAlign = "center";
+                this._context.textBaseline = "middle";
+
+                var x = menuDimension.width / 2;
+                y += stateDimension.height / 2;
+
+                this._context.fillText(this._selector.getExternalValueFor(index), x, y);
+
+                // this._drawBorder();
             },
 
             _drawBackground: function() {
@@ -394,39 +436,20 @@ var Selector = generateClass({
                 this._context.fillRect(0, 0, menuDimension.width, menuDimension.height);
             },
 
-            _drawHighlight: function() {
-                if (!this._menu.hasHighlight()) return;
-
-                var menuDimension = this._dimensioner.getMenu();
-                var stateDimension = this._dimensioner.getState();
-                var y = this._menu.getHighlightState() * stateDimension.height;
-
-                this._context.fillStyle = this._style.highlightColor;
-                this._context.fillRect(0, y, menuDimension.width, stateDimension.height);
-            },
-
             _drawBorder: function() {
                 var menuDimension = this._dimensioner.getMenu();
                 this._context.strokeStyle = this._style.borderColor;
-                this._context.lineWidth = this._style.borderSize;
-                this._context.strokeRect(0, 0, menuDimension.width, menuDimension.height);
+                this._context.lineWidth = this._style.borderTopWidth;
+                this._context.strokeRect(
+                    this._context.lineWidth,
+                    this._context.lineWidth,
+                    menuDimension.width - this._context.lineWidth * 2,
+                    menuDimension.height - this._context.lineWidth * 2);
             },
 
             _drawStates: function() {
-                var menuDimension = this._dimensioner.getMenu();
-                var stateDimension = this._dimensioner.getState();
-
-                this._context.fillStyle = this._style.fontColor;
-                this._context.font = this._dimensioner.getFontSize() + "px " + this._style.font;
-                this._context.textAlign = "center";
-                this._context.textBaseline = "middle";
-
-                var x = menuDimension.width / 2;
-                var y = stateDimension.height / 2;
-
                 for (var index = 0; index < this._selector.getStateCount(); index++) {
-                    this._context.fillText(this._selector.getExternalValueFor(index), x, y);
-                    y += stateDimension.height;
+                    this.drawState(index);
                 }
             }
 

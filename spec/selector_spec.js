@@ -137,11 +137,11 @@ describe("Selector", function() {
 
             it("should calculate the menu dimensions", function() {
                 expect(dimensioner.getMenu().width).toBe(90);
-                expect(dimensioner.getMenu().height).toBe(50);
+                expect(dimensioner.getMenu().height).toBe(58);
 
                 selector.setItems([ "one", "two", "three", "long long entry" ]);
                 expect(dimensioner.getMenu().width).toBe(90);
-                expect(dimensioner.getMenu().height).toBe(4);
+                expect(dimensioner.getMenu().height).toBe(12);
             });
 
         });
@@ -149,7 +149,7 @@ describe("Selector", function() {
         describe("getState", function() {
 
             it("should return the item dimensions", function() {
-                expect(dimensioner.getState().width).toBe(69);
+                expect(dimensioner.getState().width).toBe(73);
                 expect(dimensioner.getState().height).toBe(25);
             });
 
@@ -158,8 +158,8 @@ describe("Selector", function() {
         describe("getArrow", function() {
 
             it("should return the arrow dimensions", function() {
-                expect(dimensioner.getArrow().width).toBe(13);
-                expect(dimensioner.getArrow().height).toBe(13);
+                expect(dimensioner.getArrow().width).toBe(9);
+                expect(dimensioner.getArrow().height).toBe(9);
             });
 
         });
@@ -199,13 +199,21 @@ describe("Selector", function() {
                 expect(positioner.getMenu().left).toBe(5);
             });
 
+            it("should place the menu upwards if document isn't long enough", function() {
+                positioner._getDocumentHeight = function() {
+                    return 100;
+                };
+                expect(positioner.getMenu().top).toBe(17);
+                expect(positioner.getMenu().left).toBe(5);
+            });
+
         });
 
         describe("getArrow", function() {
 
             it("should return the arrow position", function() {
-                expect(positioner.getArrow().x).toBe(78);
-                expect(positioner.getArrow().y).toBe(14);
+                expect(positioner.getArrow().x).toBe(82);
+                expect(positioner.getArrow().y).toBe(16);
             });
 
         });
@@ -213,7 +221,7 @@ describe("Selector", function() {
         describe("getState", function() {
 
             it("should return the selected item position", function() {
-                expect(positioner.getState().x).toBe(42);
+                expect(positioner.getState().x).toBe(44);
                 expect(positioner.getState().y).toBe(20);
             });
 
@@ -234,6 +242,10 @@ describe("Selector", function() {
 
         describe("clearHighlight", function() {
 
+            beforeEach(function() {
+                menu.setHighlightState(1);
+            });
+
             it("should set the highlight state to undefined", function() {
                 menu.clearHighlightState();
                 expect(menu.getHighlightState()).toBe(undefined);
@@ -241,9 +253,9 @@ describe("Selector", function() {
             });
 
             it("should invoke a draw", function() {
-                spyOn(menu, "draw");
-                menu.setHighlightState(1);
-                expect(menu.draw).toHaveBeenCalled();
+                spyOn(menu._drawer, "drawState");
+                menu.clearHighlightState();
+                expect(menu._drawer.drawState).toHaveBeenCalledWith(1);
             });
 
         });
@@ -256,10 +268,13 @@ describe("Selector", function() {
                 expect(menu.hasHighlight()).toBeTruthy();
             });
 
-            it("should invoke a draw", function() {
-                spyOn(menu, "draw");
+            it("should invoke two draws", function() {
+                spyOn(menu._drawer, "drawState");
                 menu.setHighlightState(1);
-                expect(menu.draw).toHaveBeenCalled();
+                expect(menu._drawer.drawState).toHaveBeenCalledWith(1);
+                menu.setHighlightState(0);
+                expect(menu._drawer.drawState).toHaveBeenCalledWith(1);
+                expect(menu._drawer.drawState).toHaveBeenCalledWith(0);
             });
 
         });

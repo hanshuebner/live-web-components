@@ -10,6 +10,10 @@
     <script type="application/javascript" src="js/selector.js"></script>
     <script type="application/javascript" src="js/slider.js"></script>
     <script type="application/javascript">
+        var longItemArray = [  "1",  "2",  "3",  "4",  "5",  "6",  "7",  "8",  "9", "10",
+                              "11", "12", "13", "14", "15", "16", "17", "18", "19", "20",
+                              "21", "22", "23", "24", "25", "26", "27", "28", "29", "30" ];
+
         function printLine(text) {
             var pElement = document.getElementById("output");
             pElement.insertBefore(document.createElement("br"), pElement.firstChild);
@@ -77,7 +81,7 @@
                 }
             });
             new Selector("selector_two", {
-                items: [ "one", "two", "three" ],
+                items: longItemArray,
                 onchange: function(internalValue, externalValue, state) {
                     printLine("Selector 2: internal = " + internalValue + " / external = " + externalValue + " / state = " + state);
                 }
