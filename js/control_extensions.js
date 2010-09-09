@@ -1,5 +1,5 @@
 
-var TitleBorderDimensioner = class({
+var TitleBorderDimensioner = generateClass({
 
     initialize: function(control) {
         this._control = control;
@@ -65,7 +65,7 @@ var TitleBorderDimensioner = class({
 
 });
 
-var TitleBorderPositioner = class({
+var TitleBorderPositioner = generateClass({
 
     initialize: function(control, dimensioner) {
         this._control = control;
@@ -99,7 +99,7 @@ var TitleBorderPositioner = class({
 
 });
 
-var TitleBorderDrawer = class({
+var TitleBorderDrawer = generateClass({
 
     initialize: function(control, dimensioner, positioner) {
         this._control = control;
@@ -143,7 +143,7 @@ var TitleBorderDrawer = class({
 
 });
 
-var StateChangingMouseHandler = class({
+var StateChangingMouseHandler = generateClass({
 
     initialize: function(control) {
         this._control = control;
@@ -182,7 +182,7 @@ var StateChangingMouseHandler = class({
 
 });
 
-var StateChangingKeyHandler = class({
+var StateChangingKeyHandler = generateClass({
 
     initialize: function(control) {
         this._control = control;

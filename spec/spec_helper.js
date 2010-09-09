@@ -1,7 +1,7 @@
 
 var buttonElement = document.createElement("button");
 
-var ControlDriver = class({
+var ControlDriver = generateClass({
 
     initialize: function(control) {
         this._control = control;
@@ -17,7 +17,7 @@ var ControlDriver = class({
 
 });
 
-var DocumentDriver = class({
+var DocumentDriver = generateClass({
 
     mouseMove: function(screenY) {
         document.onmousemove({ screenY: screenY });
@@ -29,7 +29,7 @@ var DocumentDriver = class({
 
 });
 
-var MenuDriver = class({
+var MenuDriver = generateClass({
 
     initialize: function(menu) {
         this._menu = menu;

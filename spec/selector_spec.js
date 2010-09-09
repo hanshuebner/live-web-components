@@ -13,7 +13,7 @@ describe("Selector", function() {
     });
 
     it("should extend Control", function() {
-        expect(Selector.prototype.extends).toBe(Control);
+        expect(Selector.prototype.extendClass).toBe(Control);
     });
 
     describe("setItems", function() {

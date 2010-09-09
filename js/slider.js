@@ -1,7 +1,7 @@
 
-var Slider = class({
+var Slider = generateClass({
 
-    extends: Control,
+    extendClass: Control,
 
     defaultOptions: {
         stateCount: 101,
@@ -55,9 +55,9 @@ var Slider = class({
         if (this._drawer) this._drawer.draw();
     },
 
-    Dimensioner: class({
+    Dimensioner: generateClass({
 
-        extends: TitleBorderDimensioner,
+        extendClass: TitleBorderDimensioner,
 
         getBar: function() {
             var borderDimension = this.getBorder();
@@ -82,9 +82,9 @@ var Slider = class({
 
     }),
 
-    Positioner: class({
+    Positioner: generateClass({
 
-        extends: TitleBorderPositioner,
+        extendClass: TitleBorderPositioner,
 
         getBar: function() {
             var borderPosition = this.getBorder();
@@ -105,9 +105,9 @@ var Slider = class({
 
     }),
 
-    Drawer: class({
+    Drawer: generateClass({
 
-        extends: TitleBorderDrawer,
+        extendClass: TitleBorderDrawer,
 
         draw: function() {
             this._drawTitle();

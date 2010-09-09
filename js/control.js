@@ -1,5 +1,5 @@
 
-var Control = class({
+var Control = generateClass({
 
     defaultOptions: { },
     defaultStyle: { },
@@ -233,7 +233,7 @@ var Control = class({
             this.getOptions().onchange(this.getInternalValue(), this.getExternalValue(), this.getState());
     },
 
-    ControlDrawer: class({
+    ControlDrawer: generateClass({
 
         initialize: function(control, options) {
             this._control = control;

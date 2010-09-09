@@ -12,7 +12,7 @@ describe("Slider", function() {
     });
 
     it("should extend Control", function() {
-        expect(Slider.prototype.extends).toBe(Control);
+        expect(Slider.prototype.extendClass).toBe(Control);
     });
 
     describe("Dimensioner", function() {

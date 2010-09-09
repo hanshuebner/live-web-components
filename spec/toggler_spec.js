@@ -12,7 +12,7 @@ describe("Toggler", function() {
     });
 
     it("should extend Control", function() {
-        expect(Toggler.prototype.extends).toBe(Control);
+        expect(Toggler.prototype.extendClass).toBe(Control);
     });
 
     describe("getStateCount", function() {

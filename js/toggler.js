@@ -1,7 +1,7 @@
 
-var Toggler = class({
+var Toggler = generateClass({
 
-    extends: Control,
+    extendClass: Control,
 
     defaultOptions: {
         state: 0
@@ -54,7 +54,7 @@ var Toggler = class({
         if (this._drawer) this._drawer.draw();
     },
 
-    MouseHandler: class({
+    MouseHandler: generateClass({
 
         initialize: function(toggler) {
             this._toggler = toggler;
@@ -68,7 +68,7 @@ var Toggler = class({
 
     }),
 
-    KeyHandler: class({
+    KeyHandler: generateClass({
 
         initialize: function(toggler) {
             this._toggler = toggler;
@@ -88,9 +88,9 @@ var Toggler = class({
 
     }),
 
-    Dimensioner: class({
+    Dimensioner: generateClass({
 
-        extends: TitleBorderDimensioner,
+        extendClass: TitleBorderDimensioner,
 
         getButton: function() {
             return this.getBorder();
@@ -111,9 +111,9 @@ var Toggler = class({
 
     }),
 
-    Positioner: class({
+    Positioner: generateClass({
 
-        extends: TitleBorderPositioner,
+        extendClass: TitleBorderPositioner,
 
         getButton: function() {
             return this.getBorder();
@@ -130,9 +130,9 @@ var Toggler = class({
 
     }),
 
-    Drawer: class({
+    Drawer: generateClass({
 
-        extends: TitleBorderDrawer,
+        extendClass: TitleBorderDrawer,
 
         draw: function() {
             this._drawTitle();

@@ -1,14 +1,14 @@
 
-var class = function(class) {
+var generateClass = function(class) {
     var constructor = function() {
-        if (typeof(class.extends) === "function") {
-            for (var key in class.extends.prototype) {
+        if (typeof(class.extendClass) === "function") {
+            for (var key in class.extendClass.prototype) {
                 switch (typeof(class[key])) {
                 case "undefined":
-                    class[key] = class.extends.prototype[key];
+                    class[key] = class.extendClass.prototype[key];
                     break;
                 case "function": // override
-                    class["_super_" + key] = class.extends.prototype[key];
+                    class["_super_" + key] = class.extendClass.prototype[key];
                     break;
                 }
             }

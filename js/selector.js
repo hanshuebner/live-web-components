@@ -1,7 +1,7 @@
 
-var Selector = class({
+var Selector = generateClass({
 
-    extends: Control,
+    extendClass: Control,
 
     defaultStyle: {
         width: 100,
@@ -83,7 +83,7 @@ var Selector = class({
         if (this._drawer) this._drawer.draw();
     },
 
-    MouseHandler: class({
+    MouseHandler: generateClass({
 
         initialize: function(selector) {
             this._selector = selector;
@@ -98,7 +98,7 @@ var Selector = class({
 
     }),
 
-    KeyHandler: class({
+    KeyHandler: generateClass({
 
         initialize: function(selector, menu) {
             this._selector = selector;
@@ -146,9 +146,9 @@ var Selector = class({
 
     }),
 
-    Dimensioner: class({
+    Dimensioner: generateClass({
 
-        extends: TitleBorderDimensioner,
+        extendClass: TitleBorderDimensioner,
 
         getMenu: function() {
             var borderDimension = this.getBorder();
@@ -192,9 +192,9 @@ var Selector = class({
 
     }),
 
-    Positioner: class({
+    Positioner: generateClass({
 
-        extends: TitleBorderPositioner,
+        extendClass: TitleBorderPositioner,
 
         getMenu: function() {
             var borderDimension = this._dimensioner.getBorder();
@@ -226,9 +226,9 @@ var Selector = class({
 
     }),
 
-    Drawer: class({
+    Drawer: generateClass({
 
-        extends: TitleBorderDrawer,
+        extendClass: TitleBorderDrawer,
 
         draw: function() {
             this._drawTitle();
@@ -262,7 +262,7 @@ var Selector = class({
 
     }),
 
-    Menu: class({
+    Menu: generateClass({
 
         initialize: function(selector, dimensioner, positioner) {
             this._selector = selector;
@@ -336,7 +336,7 @@ var Selector = class({
             this._context = this._canvasElement.getContext("2d");
         },
 
-        MouseHandler: class({
+        MouseHandler: generateClass({
 
             initialize: function(selector, menu, dimensioner) {
                 this._selector = selector;
@@ -370,7 +370,7 @@ var Selector = class({
 
         }),
 
-        Drawer: class({
+        Drawer: generateClass({
 
             initialize: function(selector, menu, dimensioner) {
                 this._selector = selector;

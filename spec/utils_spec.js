@@ -1,10 +1,10 @@
 
-describe("class", function() {
+describe("generateClass", function() {
 
     var TestParent, TestOne, TestTwo;
 
     beforeEach(function() {
-        TestParent = class({
+        TestParent = generateClass({
             initialize: function(value) {
                 this.one = this.two = value;
             },
@@ -15,8 +15,8 @@ describe("class", function() {
                 this.two = true;
             }
         });
-        TestOne = class({
-            extends: TestParent,
+        TestOne = generateClass({
+            extendClass: TestParent,
             initialize: function(value) {
                 this._super_initialize(value);
                 this.three = value;
@@ -26,8 +26,8 @@ describe("class", function() {
                 this.three = true;
             }
         });
-        TestTwo = class({
-            extends: TestParent,
+        TestTwo = generateClass({
+            extendClass: TestParent,
             funcTwo: function() {
                 this._super_funcTwo();
                 this.three = true;

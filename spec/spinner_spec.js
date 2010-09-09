@@ -16,7 +16,7 @@ describe("Spinner", function() {
     });
 
     it("should extend Control", function() {
-        expect(Spinner.prototype.extends).toBe(Control);
+        expect(Spinner.prototype.extendClass).toBe(Control);
     });
 
     describe("setTitle", function() {

@@ -1,7 +1,7 @@
 
-var Spinner = class({
+var Spinner = generateClass({
 
-    extends: Control,
+    extendClass: Control,
 
     defaultOptions: {
         size: 100,
@@ -83,7 +83,7 @@ var Spinner = class({
         if (this._drawer) this._drawer.draw();
     },
 
-    Dimensioner: class({
+    Dimensioner: generateClass({
 
         initialize: function(spinner) {
             this._spinner = spinner;
@@ -93,7 +93,7 @@ var Spinner = class({
 
     }),
 
-    Drawer: class({
+    Drawer: generateClass({
 
         initialize: function(spinner, keyHandler) {
             this._spinner = spinner;
