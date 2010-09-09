@@ -73,7 +73,7 @@ var TitleBorderPositioner = class({
     getDimensioner: function() {
         return this._dimensioner;
     },
-    
+
     getStyle: function() {
         return this._style;
     },
@@ -97,9 +97,53 @@ var TitleBorderPositioner = class({
     getTitle: function() {
         var titleDimension = this._dimensioner.getTitle();
         return {
-            x: Math.round(this._control.getWidth() / 2 - titleDimension.width / 2),
+            x: Math.round(this._control.getWidth() / 2),
             y: Math.round(this._style.marginTop + titleDimension.height / 2)
         };
+    }
+
+});
+
+var TitleBorderDrawer = class({
+
+    initialize: function(control, dimensioner, positioner) {
+        this._control = control;
+        this._dimensioner = dimensioner;
+        this._positioner = positioner;
+        this._style = this._control.getStyle();
+        this._context = this._control.getCanvasElement().getContext("2d");
+        this.draw();
+    },
+
+    draw: function() {
+
+    },
+
+    _drawTitle: function() {
+        if (!this._control.hasTitle()) return;
+
+        var fontSize = this._dimensioner.getFontSize();
+        var titlePosition = this._positioner.getTitle();
+        this._context.fillStyle = this._style.fontColor;
+        this._context.font = fontSize + "px " + this._style.font;
+        this._context.textBaseline = "middle";
+        this._context.textAlign = "center";
+        this._context.fillText(this._control.getTitle(), titlePosition.x, titlePosition.y);
+    },
+
+    _drawBackground: function() {
+        var borderDimensioner = this._dimensioner.getBorder();
+        var borderPosition = this._positioner.getBorder();
+        this._context.fillStyle = this._style.backgroundColor;
+        this._context.fillRect(borderPosition.x, borderPosition.y, borderDimensioner.width, borderDimensioner.height);
+    },
+
+    _drawBorder: function() {
+        var borderDimensioner = this._dimensioner.getBorder();
+        var borderPosition = this._positioner.getBorder();
+        this._context.strokeStyle = this._style.borderColor;
+        this._context.lineWidth = this._style.borderSize;
+        this._context.strokeRect(borderPosition.x, borderPosition.y, borderDimensioner.width, borderDimensioner.height);
     }
 
 });

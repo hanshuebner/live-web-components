@@ -71,10 +71,16 @@
             });
 
             new Selector("selector_one", {
-                title: "Selector title",
+                title: "Select 1",
                 items: [ "one", "two", "three" ],
                 onchange: function(internalValue, externalValue, state) {
                     printLine("Selector 1: internal = " + internalValue + " / external = " + externalValue + " / state = " + state);
+                }
+            });
+            new Selector("selector_two", {
+                items: [ "one", "two", "three" ],
+                onchange: function(internalValue, externalValue, state) {
+                    printLine("Selector 2: internal = " + internalValue + " / external = " + externalValue + " / state = " + state);
                 }
             });
 
@@ -94,7 +100,8 @@
     <button id="spinner_three" style="display: inline;"></button>
     <button id="toggler_one" style="display: inline;"></button>
     <button id="toggler_two" style="display: inline; width: 60px; height: 24px;"></button><br/>
-    <button id="selector_one" style="display: inline;"></button>
+    <button id="selector_one" style="display: inline; height: 60px;"></button>
+    <button id="selector_two" style="display: inline;"></button>
     <button id="slider_one" style="display: inline;"></button>
     <input />
     <p id="output"></p>

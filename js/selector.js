@@ -262,28 +262,18 @@ var Selector = class({
 
     Drawer: class({
 
-        initialize: function(selector, dimensioner, positioner) {
-            this._selector = selector;
-            this._dimensioner = dimensioner;
-            this._positioner = positioner;
-            this._style = this._selector.getStyle();
-            this._context = this._selector.getCanvasElement().getContext("2d");
+        extends: TitleBorderDrawer,
 
-            this.draw();
+        initialize: function(selector, dimensioner, positioner) {
+            this._super_initialize(selector, dimensioner, positioner);
         },
 
         draw: function() {
+            this._drawTitle();
             this._drawBackground();
             this._drawArrow();
             this._drawState();
             this._drawBorder();
-        },
-
-        _drawBackground: function() {
-            var borderDimensioner = this._dimensioner.getBorder();
-            var borderPosition = this._positioner.getBorder();
-            this._context.fillStyle = this._style.backgroundColor;
-            this._context.fillRect(borderPosition.x, borderPosition.y, borderDimensioner.width, borderDimensioner.height);
         },
 
         _drawArrow: function() {
@@ -305,15 +295,7 @@ var Selector = class({
             this._context.font = this._dimensioner.getFontSize() + "px " + this._style.font;
             this._context.textAlign = "center";
             this._context.textBaseline = "middle";
-            this._context.fillText(this._selector.getExternalValue(), statePosition.x, statePosition.y);
-        },
-
-        _drawBorder: function() {
-            var borderDimensioner = this._dimensioner.getBorder();
-            var borderPosition = this._positioner.getBorder();
-            this._context.strokeStyle = this._style.borderColor;
-            this._context.lineWidth = this._style.borderSize;
-            this._context.strokeRect(borderPosition.x, borderPosition.y, borderDimensioner.width, borderDimensioner.height);
+            this._context.fillText(this._control.getExternalValue(), statePosition.x, statePosition.y);
         }
 
     }),
