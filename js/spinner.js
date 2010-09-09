@@ -115,7 +115,7 @@ var Spinner = generateClass({
         },
 
         getTitleHeight: function() {
-            return this._spinner.getTitle() ? this._style.fontSize + this._style.lineWidth : 0;
+            return this._spinner.getTitle() ? this._style.fontSize + this._style.lineWidth + 10: 0;
         },
 
         getSpinnerWidth: function() {
