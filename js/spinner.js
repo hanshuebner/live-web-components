@@ -140,6 +140,7 @@ var Spinner = generateClass({
         },
 
         _calculateFontSize: function() {
+            if (this._style.fontSize) return;
             this._style.fontSize = this._spinner.getSize() / 2 - this._style.lineWidth * 2;
         },
 
