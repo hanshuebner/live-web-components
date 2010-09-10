@@ -191,16 +191,18 @@ var Control = generateClass({
     },
 
     _readStyle: function() {
-        var style = this.getButtonElement().style;
+        var style = window.getComputedStyle(this.getButtonElement());
         this._style = { };
         for (var index = 0; index < style.length; index++) {
             var key = style[index];
-            var camelCaseKey = this._convertStyleKey(key);
-            var cssValue = style.getPropertyCSSValue(key);
-            var value = cssValue.cssValueType === CSSPrimitiveValue.CSS_NUMBER ?
-                parseInt(style.getPropertyValue(key)) :
-                style.getPropertyValue(key)
-            this._style[camelCaseKey] = value;
+            if (key == 'font-size' || key == 'height') {
+                var camelCaseKey = this._convertStyleKey(key);
+                var value = style[key];
+                if (value.match(/^\d+px/)) {
+                    value = parseInt(value);
+                }
+                this._style[camelCaseKey] = value;
+            }
         }
     },
 
