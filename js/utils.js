@@ -1,14 +1,14 @@
 
-var generateClass = function(className) {
+var generateClass = function(classPrototype) {
     var constructor = function() {
-        if (typeof(className.extendClass) === "function") {
-            for (var key in className.extendClass.prototype) {
-                switch (typeof(className[key])) {
+        if (typeof(classPrototype.extendClass) === "function") {
+            for (var key in classPrototype.extendClass.prototype) {
+                switch (typeof(classPrototype[key])) {
                 case "undefined":
-                    className[key] = className.extendClass.prototype[key];
+                    classPrototype[key] = classPrototype.extendClass.prototype[key];
                     break;
                 case "function": // override
-                    className["_super_" + key] = className.extendClass.prototype[key];
+                    classPrototype["_super_" + key] = classPrototype.extendClass.prototype[key];
                     break;
                 }
             }
@@ -18,7 +18,7 @@ var generateClass = function(className) {
             this.initialize.apply(this, arguments);
     };
 
-    constructor.prototype = className;
+    constructor.prototype = classPrototype;
     return constructor;
 };
 
