@@ -9,7 +9,7 @@ var Control = generateClass({
         this._createCanvasElement();
         this.setOptions(options);
         this._setStyle();
-        this._unifyButtonElement();
+        this._addButtonElementClass();
 
         this._controlDrawer = new this.ControlDrawer(this, this.getOptions());
     },
@@ -20,6 +20,10 @@ var Control = generateClass({
 
     getCanvasElement: function() {
         return this._canvasElement;
+    },
+
+    getClass: function() {
+        return ""; // has to be implemented
     },
 
     setOptions: function(options) {
@@ -137,7 +141,7 @@ var Control = generateClass({
     },
 
     getStateCount: function() {
-        return 0;
+        return 0; // has to be implemented
     },
 
     focus: function() {
@@ -169,8 +173,8 @@ var Control = generateClass({
         }
     },
 
-    _unifyButtonElement: function() {
-        this._buttonElement.setAttribute("class", this._buttonElement.getAttribute("class") + " control");
+    _addButtonElementClass: function() {
+        this._buttonElement.setAttribute("class", this._buttonElement.getAttribute("class") + " control " + this.getClass());
     },
 
     _setDefaultOptions: function() {
@@ -191,16 +195,14 @@ var Control = generateClass({
     },
 
     _readStyle: function() {
-        var style = window.getComputedStyle(this.getButtonElement());
         this._style = { };
+        var style = window.getComputedStyle(this.getButtonElement());
         for (var index = 0; index < style.length; index++) {
             var key = style[index];
-            if (key == 'font-size' || key == 'height') {
+            if (key == "width") {
+                var value = style.getPropertyValue(key);
                 var camelCaseKey = this._convertStyleKey(key);
-                var value = style[key];
-                if (value.match(/^\d+px/)) {
-                    value = parseInt(value);
-                }
+                if (value.match(/^\d+px/)) value = parseInt(value);
                 this._style[camelCaseKey] = value;
             }
         }
@@ -236,6 +238,7 @@ var Control = generateClass({
 
     _createCanvasElement: function() {
         this._canvasElement = document.createElement("canvas");
+        this._canvasElement.setAttribute("style", "position: absolute;");
         this._buttonElement.appendChild(this._canvasElement);
     },
 

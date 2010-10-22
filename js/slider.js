@@ -43,6 +43,10 @@ var Slider = generateClass({
         this._keyHandler = new StateChangingKeyHandler(this);
     },
 
+    getClass: function() {
+        return "slider";
+    },
+
     setStateCount: function(value) {
         this._stateCount = value;
     },

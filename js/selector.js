@@ -38,6 +38,10 @@ var Selector = generateClass({
         this._keyHandler = new this.KeyHandler(this, this._menu);
     },
 
+    getClass: function() {
+        return "selector";
+    },
+
     setItems: function(value) {
         this.setStateCount(value.length);
         this.setExternalMapping({

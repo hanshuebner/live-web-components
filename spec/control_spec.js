@@ -5,12 +5,7 @@ describe("Control", function() {
 
     beforeEach(function() {
         buttonElement.setAttribute("class", "test");
-
-        Control.prototype.defaultStyle = {
-            width: 200,
-            height: 100,
-            fontSize: 26
-        };
+        buttonElement.setAttribute("style", "height: 200px;");
 
         control = new Control(buttonElement, {
             externalMapping: {
@@ -38,19 +33,19 @@ describe("Control", function() {
         });
 
         it("should set the options", function() {
-            expect(control.getWidth()).toBe(200);
+            expect(control.getExternalMapping()).not.toBeNull();
         });
 
-        it("should read the css styles", function() {
-            expect(control.getStyle().fontSize).toBe(26);
+        it("should read the class styles", function() {
+            expect(control.getStyle().width).toBe(100);
         });
 
-        it("should set the default styles", function() {
-            expect(control.getStyle().height).toBe(100);
+        it("should read the element styles", function() {
+            expect(control.getStyle().height).toBe(200);
         });
 
         it("should set the setters for the styles", function() {
-            expect(control.getHeight()).toBe(100);
+            expect(control.getHeight()).toBe(200);
         });
 
     });

@@ -1,11 +1,18 @@
 
 button.control {
+    font: sans-serif black;
+    margin: 5px;
     border: 0px;
-    padding: 0px;
+    padding: 2px;
     background: transparent;
     outline: none;
 }
 
 button.control::-moz-focus-inner {
     border: none;
+}
+
+button.spinner {
+    width: 100px;
+    height: 100px;
 }

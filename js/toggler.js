@@ -42,6 +42,10 @@ var Toggler = generateClass({
         this._keyHandler = new this.KeyHandler(this);
     },
 
+    getClass: function() {
+        return "toggler";
+    },
+
     setItems: function(value) {
         this.setExternalMapping({
             toDisplay: function(state) { return value[state]; }

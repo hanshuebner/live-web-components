@@ -13,7 +13,36 @@ var Spinner = generateClass({
         keyStep: 1                  // a value of 1 means, that the spinner increases step index by one
                                     // on each key stroke
     },
+/*
+    defaultStyle: {
+        width: 100,
+        height: 100,
+        font: "sans-serif",
+        fontSize: undefined,
+        fontColor: "black",
+        marginTop: 5,
+        marginLeft: 5,
+        marginBottom: 5,
+        marginRight: 5,
+        borderColor: "black",
+        borderSize: 0,
+        borderTopWidth: 0,
+        paddingTop: 2,
+        paddingLeft: 2,
+        paddingBottom: 2,
+        paddingRight: 2,
+        backgroundColor: "white",
 
+        lineWidth: 3,
+        radiusDifference: 0,
+        lowArcColor: "red",
+        highArcColor: "black",
+        cursorWidth: 1,
+        cursorColor: "black",
+        focusColor: "blue",
+        disabledColor: "gray"
+    },
+*/
     defaultStyle: {
         width: 100,
         height: 100,
@@ -52,6 +81,10 @@ var Spinner = generateClass({
 
         this._mouseHandler = new StateChangingMouseHandler(this);
         this._keyHandler = new StateChangingKeyHandler(this);
+    },
+
+    getClass: function() {
+        return "spinner";
     },
 
     setState: function(value) {
