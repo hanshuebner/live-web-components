@@ -24,6 +24,14 @@ var TitleBorderDimensioner = generateClass({
         }
     },
 
+    getSpace: function() {
+        var borderDimension = this.getBorder();
+        return {
+            width: borderDimension.width - this._style.paddingLeft - this._style.paddingRight,
+            height: borderDimension.height - this._style.paddingTop - this._style.paddingBottom
+        };
+    },
+
     getTitle: function() {
         return this._control.hasTitle() ? {
             width: this.getTextWidth(this._control.getTitle(), this._style.font, this._style.fontSize),
@@ -89,6 +97,14 @@ var TitleBorderPositioner = generateClass({
         };
     },
 
+    getSpace: function() {
+        var borderPosition = this.getBorder();
+        return {
+            x: borderPosition.x + this._style.paddingLeft,
+            y: borderPosition.y + this._style.paddingTop
+        };
+    },
+
     getTitle: function() {
         var titleDimension = this._dimensioner.getTitle();
         return {
@@ -134,6 +150,7 @@ var TitleBorderDrawer = generateClass({
     },
 
     _drawBorder: function() {
+        if (!this._style.borderTopWidth) return;
         var borderDimensioner = this._dimensioner.getBorder();
         var borderPosition = this._positioner.getBorder();
         this._context.strokeStyle = this._getColor("borderColor");

@@ -61,6 +61,16 @@ describe("TitleBorderDimensioner", function() {
 
     });
 
+    describe("getSpace", function() {
+
+        it("should return the space dimension", function() {
+            control.setTitle(null);
+            expect(dimensioner.getSpace().width).toBe(86);
+            expect(dimensioner.getSpace().width).toBe(86);
+        });
+
+    });
+
     describe("getTitle", function() {
 
         it("should return the title dimension", function() {
@@ -148,6 +158,16 @@ describe("TitleBorderPositioner", function() {
             control.setTitle(null);
             expect(positioner.getBorder().x).toBe(5);
             expect(positioner.getBorder().y).toBe(5);
+        });
+
+    });
+
+    describe("getSpace", function() {
+
+        it("should return the space position", function() {
+            control.setTitle(null);
+            expect(positioner.getSpace().x).toBe(7);
+            expect(positioner.getSpace().y).toBe(7);
         });
 
     });

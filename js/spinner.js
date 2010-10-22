@@ -4,7 +4,6 @@ var Spinner = generateClass({
     extendClass: Control,
 
     defaultOptions: {
-        size: 100,
         state: 50,
         stateCount: 101,
 
@@ -16,14 +15,29 @@ var Spinner = generateClass({
     },
 
     defaultStyle: {
+        width: 100,
+        height: 100,
         font: "sans-serif",
+        fontSize: undefined,
         fontColor: "black",
-        fontSize: null,             // null means, that the font size gonna be calculated
+        marginTop: 5,
+        marginLeft: 5,
+        marginBottom: 5,
+        marginRight: 5,
+        borderColor: "black",
+        borderSize: 0,
+        borderTopWidth: 0,
+        paddingTop: 2,
+        paddingLeft: 2,
+        paddingBottom: 2,
+        paddingRight: 2,
+        backgroundColor: "white",
 
         lineWidth: 3,
         radiusDifference: 0,
         lowArcColor: "red",
         highArcColor: "black",
+        cursorWidth: 1,
         cursorColor: "black",
         focusColor: "blue",
         disabledColor: "gray"
@@ -32,33 +46,12 @@ var Spinner = generateClass({
     initialize: function(element_or_id, options) {
         this._super_initialize(element_or_id, options);
 
+        this._dimensioner = new this.Dimensioner(this);
+        this._positioner = new this.Positioner(this, this._dimensioner);
+        this._drawer = new this.Drawer(this, this._dimensioner, this._positioner);
+
         this._mouseHandler = new StateChangingMouseHandler(this);
         this._keyHandler = new StateChangingKeyHandler(this);
-        this._drawer = new this.Drawer(this, this._keyHandler);
-    },
-
-    setTitle: function(value) {
-        this._title = value;
-        this.draw();
-    },
-
-    getTitle: function() {
-        return this._title;
-    },
-
-    setSize: function(value) {
-        this._size = value;
-        if (this._drawer) {
-            this.setHeight(this._size + this._drawer.getTitleHeight());
-            this.setWidth(this._size / 2 + this._drawer.getTitleHeight());
-        } else {
-            this.setHeight(this._size);
-            this.setWidth(this._size);
-        }
-    },
-
-    getSize: function() {
-        return this._size;
     },
 
     setState: function(value) {
@@ -74,6 +67,10 @@ var Spinner = generateClass({
         return this._stateCount;
     },
 
+    getKeyHandler: function() {
+        return this._keyHandler;
+    },
+
     blur: function() {
         this._keyHandler.abortEntering();
         this._super_blur();
@@ -86,87 +83,105 @@ var Spinner = generateClass({
 
     Dimensioner: generateClass({
 
-        initialize: function(spinner) {
-            this._spinner = spinner;
-            this._style = this._spinner.getStyle();
-            this._super_initialize(this._spinner.defaults, options);
+        extendClass: TitleBorderDimensioner,
+
+        getHighArc: function() {
+            var spaceDimension = this.getSpace();
+            return {
+                radius: Math.round(Math.min(spaceDimension.width, spaceDimension.height) / 2)
+            };
+        },
+
+        getLowArc: function() {
+            var highArcDimension = this.getHighArc();
+            return {
+                radius: highArcDimension.radius - this._style.radiusDifference
+            };
+        },
+
+        getValue: function() {
+            var spaceDimension = this.getSpace();
+            return {
+                width: Math.round(spaceDimension.width / 2),
+                height: Math.round(spaceDimension.height / 2)
+            };
+        },
+
+        getFontSize: function() {
+            if (this._style.fontSize) {
+                return this._style.fontSize;
+            } else {
+                return Math.round(this._control.getHeight() / 3);
+            }
+        },
+
+        getCursor: function() {
+            var fontSize = this.getFontSize();
+            return {
+                height: fontSize + 4
+            };
+        }
+
+    }),
+
+    Positioner: generateClass({
+
+        extendClass: TitleBorderPositioner,
+
+        getHighArc: function() {
+            var spaceDimension = this._dimensioner.getSpace();
+            var spacePosition = this.getSpace();
+            return {
+                x: spacePosition.x + Math.round(spaceDimension.width / 2),
+                y: spacePosition.y + Math.round(spaceDimension.height / 2)
+            };
+        },
+
+        getLowArc: function() {
+            return this.getHighArc();
+        },
+
+        getValue: function() {
+            var spaceDimension = this._dimensioner.getSpace();
+            var highArcPosition = this.getHighArc();
+            var keyHandler = this._control.getKeyHandler();
+            return {
+                x: highArcPosition.x + (keyHandler && keyHandler.isEntering() ? 0 : Math.round(spaceDimension.width / 2)),
+                y: highArcPosition.y + Math.round(spaceDimension.height * 0.25)
+            };
+        },
+
+        getCursor: function() {
+            var cursorDimension = this._dimensioner.getCursor();
+            var fontSize = this._dimensioner.getFontSize();
+            var valuePosition = this.getValue();
+            return {
+                x: valuePosition.x + this._dimensioner.getTextWidth(this._control.getKeyHandler().getEnteredText(), fontSize),
+                y: valuePosition.y - Math.round(cursorDimension.height / 2)
+            };
         }
 
     }),
 
     Drawer: generateClass({
 
-        initialize: function(spinner, keyHandler) {
-            this._spinner = spinner;
-            this._keyHandler = keyHandler;
-            this._style = this._spinner.getStyle();
-            this._context = this._spinner.getCanvasElement().getContext("2d");
-
-            this._calculateFontSize();
-            this._adjustSpinnerHeight();
-            this._adjustSpinnerWidth();
-            this.draw();
-        },
-
-        getTitleWidth: function() {
-            if (!this._spinner.getTitle()) return 0;
-            this._context.font = this._style.fontSize + "px " + this._style.font;
-            return this._context.measureText(this._spinner.getTitle()).width + this._style.lineWidth * 2;
-        },
-
-        getTitleHeight: function() {
-            return this._spinner.getTitle() ? this._style.fontSize + this._style.lineWidth + 10: 0;
-        },
-
-        getSpinnerWidth: function() {
-            return this._spinner.getSize() / 2 + this.getMaximalValueWidth();
-        },
-
-        getMaximalValueWidth: function() {
-            this._context.font = this._style.fontSize + "px " + this._style.font;
-            var minimalValueWidth = this._context.measureText(this._spinner.getExternalValueFor(0)).width;
-            var maximalValueWidth = this._context.measureText(this._spinner.getExternalValueFor(this._spinner.getStateCount() - 1)).width;
-            var width = Math.max(minimalValueWidth, maximalValueWidth);
-            width += this._style.lineWidth * 2;
-            return Math.max(width, this._spinner.getSize() / 2);
-        },
+        extendClass: TitleBorderDrawer,
 
         draw: function() {
-            if (!this._context) return;
             this._drawTitle();
+            this._drawBorder();
             this._drawArcs();
             this._drawValue();
             this._drawCursor();
         },
 
-        _calculateFontSize: function() {
-            if (this._style.fontSize) return;
-            this._style.fontSize = this._spinner.getSize() / 2 - this._style.lineWidth * 2;
-        },
-
-        _adjustSpinnerHeight: function() {
-            this._spinner.setHeight(this._spinner.getSize() + this.getTitleHeight());
-        },
-
-        _adjustSpinnerWidth: function() {
-            this._spinner.setWidth(Math.max(this.getSpinnerWidth(), this.getTitleWidth()));
-        },
-
-        _drawTitle: function() {
-            if (!this._spinner.getTitle()) return;
-
-            this._context.fillStyle = this._getColor("fontColor");
-            this._context.font = this._style.fontSize + "px " + this._style.font;
-            this._context.textBaseline = "middle";
-            this._context.textAlign = "center";
-            this._context.fillText(this._spinner.getTitle(), this._spinner.getWidth() / 2, this._style.lineWidth + this._style.fontSize / 2);
-        },
-
         _drawArcs: function() {
-            var offsetX = this._getSpinnerOffsetX();
-            var offsetY = this._getSpinnerOffsetY();
-            var size = this._spinner.getSize();
-            var angle = (Math.PI / 2) + (3 * (Math.PI / 2) * (this._spinner.getState() / (this._spinner.getStateCount() - 1)));
+            var highArcDimension = this._dimensioner.getHighArc();
+            var lowArcDimension = this._dimensioner.getLowArc();
+            var highArcPosition = this._positioner.getHighArc();
+            var lowArcPosition = this._positioner.getLowArc();
+
+            var angle = (Math.PI / 2) + (3 * (Math.PI / 2) * (this._control.getState() / (this._control.getStateCount() - 1)));
 
             this._context.lineWidth = (this._style.lineWidth || 1);
             this._context.lineCap = "round";
@@ -174,9 +189,9 @@ var Spinner = generateClass({
             this._context.strokeStyle = this._getColor("lowArcColor");
             this._context.beginPath();
             this._context.arc(
-                    offsetX + size / 2,
-                    offsetY + size / 2,
-                    size / 2 - this._style.lineWidth - (this._style.radiusDifference || 0),
+                    lowArcPosition.x,
+                    lowArcPosition.y,
+                    lowArcDimension.radius,
                     (Math.PI / 2),
                     angle,
                     false
@@ -186,67 +201,53 @@ var Spinner = generateClass({
             this._context.strokeStyle = this._getColor("highArcColor");
             this._context.beginPath();
             if (angle == 2 * Math.PI) {
-                this._context.moveTo(offsetX + size - this._style.lineWidth, offsetY + size / 2);
+                this._context.moveTo(highArcPosition.x + highArcDimension.radius, highArcPosition.y);
             } else {
                  this._context.arc(
-                        offsetX + size / 2,
-                        offsetY + size / 2,
-                        size / 2 - this._style.lineWidth,
+                        highArcPosition.x,
+                        highArcPosition.y,
+                        highArcDimension.radius,
                         2 * Math.PI,
                         angle,
                         true
                 );
             }
-            this._context.lineTo(offsetX + size / 2, offsetY + size / 2);
+            this._context.lineTo(highArcPosition.x, highArcPosition.y);
             this._context.stroke();
         },
 
         _drawValue: function() {
-            var offsetX = this._getSpinnerOffsetX();
-            var offsetY = this._getSpinnerOffsetY();
-            var size = this._spinner.getSize();
+            var valuePosition = this._positioner.getValue();
+            var keyHandler = this._control.getKeyHandler();
 
-            var x = size / 2 + (this._keyHandler.isEntering() ? this._style.lineWidth : this.getMaximalValueWidth());
+            var text;
+            if (keyHandler && keyHandler.isEntering()) {
+                this._context.textAlign = "left";
+                text = keyHandler.getEnteredText();
+            } else {
+                this._context.textAlign = "right";
+                text = this._control.getExternalValue();
+            }
 
             this._context.fillStyle = this._getColor("fontColor");
             this._context.font = this._style.fontSize + "px " + this._style.font;
-            this._context.textAlign = this._keyHandler.isEntering() ? "left" : "right";
             this._context.textBaseline = "middle";
-            this._context.fillText(this._getDisplayText(), offsetX + x, offsetY + size * 0.75);
+            this._context.fillText(text, valuePosition.x, valuePosition.y);
         },
 
         _drawCursor: function() {
-            if (!this._keyHandler.isEntering()) return;
+            var keyHandler = this._control.getKeyHandler();
+            if (!(keyHandler && keyHandler.isEntering())) return;
 
-            var offsetX = this._getSpinnerOffsetX();
-            var offsetY = this._getSpinnerOffsetY();
-            var size = this._spinner.getSize();
-
-            var cursorX = size / 2 +
-                          this._style.lineWidth * 2 +
-                          this._context.measureText(this._getDisplayText()).width;
+            var cursorDimension = this._dimensioner.getCursor();
+            var cursorPosition = this._positioner.getCursor();
 
             this._context.strokeStyle = this._getColor("cursorColor");
+            this._context.lineWidth = this._style.cursorWidth;
             this._context.beginPath();
-            this._context.moveTo(offsetX + cursorX, offsetY + Math.round(size * 0.75 - this._style.fontSize / 2));
-            this._context.lineTo(offsetX + cursorX, offsetY + Math.round(size * 0.75 + this._style.fontSize / 2));
+            this._context.moveTo(cursorPosition.x, cursorPosition.y);
+            this._context.lineTo(cursorPosition.x, cursorPosition.y + cursorDimension.height);
             this._context.stroke();
-        },
-
-        _getSpinnerOffsetX: function() {
-            return Math.max(0, this.getTitleWidth() / 2 - this.getSpinnerWidth() / 2);
-        },
-
-        _getSpinnerOffsetY: function() {
-            return this.getTitleHeight();
-        },
-
-        _getDisplayText: function() {
-            return this._keyHandler.isEntering() ? this._keyHandler.getEnteredText() : this._spinner.getExternalValue();
-        },
-
-        _getColor: function(key) {
-            return this._spinner.isDisabled() ? this._style.disabledColor : this._style[key];
         }
 
     })

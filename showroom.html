@@ -23,7 +23,6 @@
         function initialize() {
             new Spinner('spinner_one', {
                 title: "Small with long title",
-                size: 40,
                 stateCount: 5,
                 onchange: function(internalValue, externalValue, state) {
                     printLine("Spinner 1: internal = " + internalValue + " / external = " + externalValue + " / state = " + state);
@@ -39,8 +38,7 @@
             });
             new Spinner('spinner_three', {
                 title: "Long title",
-                state: 80,
-                radiusDifference: 5,
+                state: 101,
                 externalMapping: {
                     toDisplay: function(state) {
                         return Math.round(state / 100.0 * 400.0 - 200.0);

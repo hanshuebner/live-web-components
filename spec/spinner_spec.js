@@ -19,48 +19,6 @@ describe("Spinner", function() {
         expect(Spinner.prototype.extendClass).toBe(Control);
     });
 
-    describe("setTitle", function() {
-
-        it("should set the title", function() {
-            spinner.setTitle("test");
-            expect(spinner.getTitle()).toBe("test");
-        });
-
-        it("should invoke a draw", function() {
-            spyOn(spinner, "draw");
-            spinner.setTitle("test");
-            expect(spinner.draw).toHaveBeenCalled();
-        });
-
-    });
-
-    describe("setSize", function() {
-
-        it("should set the size", function() {
-            spinner.setSize(111);
-            expect(spinner.getSize()).toBe(111);
-        });
-
-        it("should set the height", function() {
-            spyOn(spinner, "setHeight");
-            spinner.setSize(222);
-            expect(spinner.setHeight).toHaveBeenCalledWith(222);
-        });
-
-        it("should set the width", function() {
-            spyOn(spinner, "setWidth");
-            spinner.setSize(333);
-            expect(spinner.setWidth).toHaveBeenCalledWith(166.5);
-        });
-
-        it("should invoke a draw", function() {
-            spyOn(spinner, "draw");
-            spinner.setSize(444);
-            expect(spinner.draw).toHaveBeenCalled();
-        });
-
-    });
-
     describe("blur", function() {
 
         it("should end value entering", function() {
@@ -83,6 +41,131 @@ describe("Spinner", function() {
             expect(spinner._keyHandler.isEntering()).toBeTruthy();
             spinner.setState(0.8);
             expect(spinner._keyHandler.isEntering()).toBeFalsy();
+        });
+
+    });
+
+    describe("Dimensioner", function() {
+
+        var dimensioner;
+
+        beforeEach(function() {
+            dimensioner = spinner._dimensioner;
+        });
+
+        describe("getHighArc", function() {
+
+            it("should return the high-arc radius", function() {
+                expect(dimensioner.getHighArc().radius).toBe(43);
+            });
+
+            it("should return a smaller high-arc radius if a title is set", function() {
+                spinner.setTitle("Test");
+                expect(dimensioner.getHighArc().radius).toBe(24);
+            });
+
+            it("should calculate the high-arc radius on the space available", function() {
+                spinner.setWidth(50);
+                expect(dimensioner.getHighArc().radius).toBe(18);
+            });
+
+        });
+
+        describe("getLowArc", function() {
+
+            it("should return the high-arc radius minus the given difference", function() {
+                dimensioner._style.radiusDifference = 4;
+                expect(dimensioner.getLowArc().radius).toBe(39);
+            });
+
+        });
+
+        describe("getValue", function() {
+
+            it("should return the value dimension", function() {
+                spinner.setWidth(200);
+                expect(dimensioner.getValue().width).toBe(93);
+                expect(dimensioner.getValue().height).toBe(43);
+            });
+
+        });
+
+        describe("getFontSize", function() {
+
+            it("should return the given font size", function() {
+                dimensioner._style.fontSize = 30;
+                expect(dimensioner.getFontSize()).toBe(30);
+            });
+
+            it("should return a calculated font size if nothing is given", function() {
+                expect(dimensioner.getFontSize()).toBe(33);
+            });
+
+        });
+
+        describe("getCursor", function() {
+
+            it("should return the cursor dimension", function() {
+                expect(dimensioner.getCursor().height).toBe(37);
+            });
+
+        });
+
+    });
+
+    describe("Positioner", function() {
+
+        var positioner;
+
+        beforeEach(function() {
+            positioner = spinner._positioner;
+        });
+
+        describe("getHighArc", function() {
+
+            it("should return the high-arc position", function() {
+                expect(positioner.getHighArc().x).toBe(50);
+                expect(positioner.getHighArc().y).toBe(50);
+            });
+
+        });
+
+        describe("getLowArc", function() {
+
+            it("should return the high-arc position", function() {
+                expect(positioner.getLowArc().x).toBe(50);
+                expect(positioner.getLowArc().y).toBe(50);
+            });
+
+        });
+
+        describe("getValue", function() {
+
+            it("should return the value position", function() {
+                expect(positioner.getValue().x).toBe(93);
+                expect(positioner.getValue().y).toBe(72);
+            });
+
+            it("should return the value position for a right-aligned text if user is entering a value", function() {
+                spinnerDriver.enterKey(48); // 'a'
+                expect(positioner.getValue().x).toBe(50);
+                expect(positioner.getValue().y).toBe(72);
+            });
+
+        });
+
+        describe("getCursor", function() {
+
+            beforeEach(function() {
+                spinnerDriver.enterKey(48); // 'a'
+                spinnerDriver.enterKey(49); // 'b'
+            });
+
+            it("should return the cursor position", function() {
+                expect(positioner.getCursor().x).toBe(86);
+                expect(positioner.getCursor().y).toBe(53);
+            });
+
         });
 
     });
