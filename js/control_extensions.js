@@ -93,7 +93,7 @@ var TitleBorderPositioner = generateClass({
         return {
             x: this._style.marginLeft,
             y: this._style.marginTop +
-               (this._control.hasTitle() ? this._dimensioner.getTitle().height + this._style.marginTop : 0)
+               (this._control.hasTitle() ? this._dimensioner.getTitle().height : 0)
         };
     },
 
