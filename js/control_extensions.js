@@ -135,8 +135,8 @@ var TitleBorderDrawer = generateClass({
 
         var fontSize = this._dimensioner.getFontSize();
         var titlePosition = this._positioner.getTitle();
-        this._context.fillStyle = this._getColor("fontColor");
-        this._context.font = fontSize + "px " + this._style.font;
+        this._context.fillStyle = this._getColor("color");
+        this._context.font = fontSize + "px " + this._style.fontFamily;
         this._context.textBaseline = "middle";
         this._context.textAlign = "center";
         this._context.fillText(this._control.getTitle(), titlePosition.x, titlePosition.y);
@@ -153,8 +153,9 @@ var TitleBorderDrawer = generateClass({
         if (!this._style.borderTopWidth) return;
         var borderDimensioner = this._dimensioner.getBorder();
         var borderPosition = this._positioner.getBorder();
-        this._context.strokeStyle = this._getColor("borderColor");
+        this._context.strokeStyle = this._getColor("borderTopColor");
         this._context.lineWidth = this._style.borderTopWidth;
+        // alert(this._style.borderTopWidth);
         this._context.strokeRect(borderPosition.x, borderPosition.y, borderDimensioner.width, borderDimensioner.height);
     },
 

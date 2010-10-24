@@ -7,6 +7,18 @@ describe("Slider", function() {
         slider = new Slider(buttonElement, {
             height: 40,
             stateCount: 101
+        }, {
+            width: 100,
+            height: 40,
+            marginTop: 5,
+            marginLeft: 5,
+            marginBottom: 5,
+            marginRight: 5,
+            borderTopWidth: 2,
+            paddingTop: 2,
+            paddingLeft: 2,
+            paddingBottom: 2,
+            paddingRight: 2
         });
         sliderDriver = new ControlDriver(slider);
     });

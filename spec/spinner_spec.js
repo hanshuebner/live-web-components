@@ -9,6 +9,18 @@ describe("Spinner", function() {
                 toDisplay: function(state) { return state; },
                 fromDisplay: function(display) { return parseInt(display); }
             }
+        }, {
+            width: 100,
+            height: 100,
+            marginTop: 5,
+            marginLeft: 5,
+            marginBottom: 5,
+            marginRight: 5,
+            borderTopWidth: 0,
+            paddingTop: 2,
+            paddingLeft: 2,
+            paddingBottom: 2,
+            paddingRight: 2
         });
         spinner.onchange = function() { };
 
@@ -162,7 +174,7 @@ describe("Spinner", function() {
             });
 
             it("should return the cursor position", function() {
-                expect(positioner.getCursor().x).toBe(86);
+                expect(positioner.getCursor().x).toBe(84);
                 expect(positioner.getCursor().y).toBe(53);
             });
 

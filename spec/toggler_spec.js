@@ -4,7 +4,19 @@ describe("Toggler", function() {
     var toggler, togglerDriver;
 
     beforeEach(function() {
-        toggler = new Toggler(buttonElement);
+        toggler = new Toggler(buttonElement, { }, {
+            width: 100,
+            height: 40,
+            marginTop: 5,
+            marginLeft: 5,
+            marginBottom: 5,
+            marginRight: 5,
+            borderTopWidth: 2,
+            paddingTop: 2,
+            paddingLeft: 2,
+            paddingBottom: 2,
+            paddingRight: 2
+        });
         toggler.onchange = function() { };
         toggler.setState(0);
 

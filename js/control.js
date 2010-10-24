@@ -4,12 +4,11 @@ var Control = generateClass({
     defaultOptions: { },
     defaultStyle: { },
 
-    initialize: function(element_or_id, options) {
+    initialize: function(element_or_id, options, style) {
         this._initializeButtonElement(element_or_id);
         this._createCanvasElement();
-        this.setOptions(options);
-        this._setStyle();
-        this._addButtonElementClass();
+        this._setOptions(options);
+        this._setStyle(style);
 
         this._controlDrawer = new this.ControlDrawer(this, this.getOptions());
     },
@@ -20,16 +19,6 @@ var Control = generateClass({
 
     getCanvasElement: function() {
         return this._canvasElement;
-    },
-
-    getClass: function() {
-        return ""; // has to be implemented
-    },
-
-    setOptions: function(options) {
-        this._options = options || { };
-        this._setDefaultOptions();
-        this._callSettersForOptions();
     },
 
     getOptions: function() {
@@ -43,7 +32,7 @@ var Control = generateClass({
     setWidth: function(value) {
         this._width = value;
         this._buttonElement.setAttribute("width", this._width + "px");
-        this._canvasElement.width = this._width;
+        if (this._canvasElement) this._canvasElement.width = this._width;
         this.draw();
     },
 
@@ -54,7 +43,7 @@ var Control = generateClass({
     setHeight: function(value) {
         this._height = value;
         this._buttonElement.setAttribute("height", this._height + "px");
-        this._canvasElement.height = this._height;
+        if (this._canvasElement) this._canvasElement.height = this._height;
         this.draw();
     },
 
@@ -173,8 +162,10 @@ var Control = generateClass({
         }
     },
 
-    _addButtonElementClass: function() {
-        this._buttonElement.setAttribute("class", this._buttonElement.getAttribute("class") + " control " + this.getClass());
+    _setOptions: function(options) {
+        this._options = options || { };
+        this._setDefaultOptions();
+        this._callSettersForOptions();
     },
 
     _setDefaultOptions: function() {
@@ -184,28 +175,29 @@ var Control = generateClass({
         }
     },
 
-    _callSettersForOptions: function() {
-        this._callSettersFor(this._options);
-    },
-
-    _setStyle: function() {
+    _setStyle: function(style) {
+        this._style = style || { };
         this._readStyle();
+        this._resetStyleOfButtonElement();
         this._setDefaultStyle();
         this._callSettersForStyle();
     },
 
     _readStyle: function() {
-        this._style = { };
         var style = window.getComputedStyle(this.getButtonElement());
         for (var index = 0; index < style.length; index++) {
             var key = style[index];
-            if (key == "width") {
-                var value = style.getPropertyValue(key);
-                var camelCaseKey = this._convertStyleKey(key);
-                if (value.match(/^\d+px/)) value = parseInt(value);
-                this._style[camelCaseKey] = value;
-            }
+            var value = style.getPropertyValue(key);
+            var camelCaseKey = this._convertStyleKey(key);
+            if (value.match(/^\d+px/)) value = parseInt(value);
+            this._style[camelCaseKey] = value;
         }
+    },
+
+    _resetStyleOfButtonElement: function() {
+        this.getButtonElement().style.margin = "0px";
+        this.getButtonElement().style.border = "none";
+        this.getButtonElement().style.padding = "0px";
     },
 
     _setDefaultStyle: function() {
@@ -213,6 +205,10 @@ var Control = generateClass({
             if (this._style[key] === undefined)
                 this._style[key] = this.defaultStyle[key];
         }
+    },
+
+    _callSettersForOptions: function() {
+        this._callSettersFor(this._options);
     },
 
     _callSettersForStyle: function() {
@@ -238,7 +234,9 @@ var Control = generateClass({
 
     _createCanvasElement: function() {
         this._canvasElement = document.createElement("canvas");
-        this._canvasElement.setAttribute("style", "position: absolute;");
+        this._canvasElement.setAttribute("style", "position: relative; top: 0px; left: 0px;");
+        this._canvasElement.width = this.getWidth();
+        this._canvasElement.height = this.getHeight();
         this._buttonElement.appendChild(this._canvasElement);
     },
 

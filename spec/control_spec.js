@@ -4,9 +4,6 @@ describe("Control", function() {
     var control;
 
     beforeEach(function() {
-        buttonElement.setAttribute("class", "test");
-        buttonElement.setAttribute("style", "height: 200px;");
-
         control = new Control(buttonElement, {
             externalMapping: {
                 toDisplay: function(state) { return Math.round(state / 100.0 * 200.0 - 100.0); },
@@ -17,6 +14,9 @@ describe("Control", function() {
                 fromValue: function(value) { return Math.round(value * 100.0 / 255.0); }
             },
             onchange: function(internalValue, externalValue, state) { }
+        }, {
+            width: 100,
+            height: 100
         });
         control.getStateCount = function() { return 101; };
     });
@@ -24,8 +24,7 @@ describe("Control", function() {
     describe("initialize", function() {
 
         it("should initialize the button element", function() {
-            expect(control.getButtonElement().getAttribute("class")).toContain("test");
-            expect(control.getButtonElement().getAttribute("class")).toContain("control");
+            expect(control.getButtonElement()).not.toBeNull();
         });
 
         it("should create an canvas element", function() {
@@ -36,50 +35,11 @@ describe("Control", function() {
             expect(control.getExternalMapping()).not.toBeNull();
         });
 
-        it("should read the class styles", function() {
+        it("should set the style", function() {
             expect(control.getStyle().width).toBe(100);
         });
 
-        it("should read the element styles", function() {
-            expect(control.getStyle().height).toBe(200);
-        });
-
         it("should set the setters for the styles", function() {
-            expect(control.getHeight()).toBe(200);
-        });
-
-    });
-
-    describe("setOptions", function() {
-
-        beforeEach(function() {
-            control.defaultOptions = {
-                width: 100,
-                height: 100
-            };
-        });
-
-        it("should set the defaults if nothing is given", function() {
-            control.setOptions();
-            expect(control.getOptions().width).toBe(100);
-            expect(control.getOptions().height).toBe(100);
-        });
-
-        it("should set the options", function() {
-            control.setOptions({ height: 50 });
-            expect(control.getOptions().width).toBe(100);
-            expect(control.getOptions().height).toBe(50);
-        });
-
-        it("should be able to nullify the values", function() {
-            control.setOptions({ height: 0 });
-            expect(control.getOptions().width).toBe(100);
-            expect(control.getOptions().height).toBe(0);
-        });
-
-        it("should call the setters for the options", function() {
-            control.setOptions();
-            expect(control.getWidth()).toBe(100);
             expect(control.getHeight()).toBe(100);
         });
 

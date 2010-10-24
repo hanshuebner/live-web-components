@@ -1,0 +1,37 @@
+
+button.control {
+    font: sans-serif black;
+    margin: 5px;
+    padding: 2px;
+    background: transparent;
+    outline: none;
+}
+
+button.control::-moz-focus-inner {
+    border: none;
+}
+
+button.spinner {
+    width: 100px;
+    height: 100px;
+    border: none;
+}
+
+button.toggler {
+    width: 100px;
+    height: 40px;
+    border: 2px solid black;
+}
+
+button.selector {
+    width: 100px;
+    height: 40px;
+    border: 2px solid black;
+    background: white;
+}
+
+button.slider {
+    width: 100px;
+    height: 40px;
+    border: 2px solid black;
+}

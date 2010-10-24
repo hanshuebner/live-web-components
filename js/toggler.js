@@ -8,6 +8,7 @@ var Toggler = generateClass({
     },
 
     defaultStyle: {
+        /*
         width: 100,
         height: 40,
         font: "sans-serif",
@@ -25,14 +26,15 @@ var Toggler = generateClass({
         paddingBottom: 2,
         paddingRight: 2,
         backgroundColor: "white",
+        */
 
         onColor: "green",
         offColor: "white",
         disabledColor: "gray"
     },
 
-    initialize: function(element_or_id, options) {
-        this._super_initialize(element_or_id, options);
+    initialize: function(element_or_id, options, style) {
+        this._super_initialize(element_or_id, options, style);
 
         this._dimensioner = new this.Dimensioner(this);
         this._positioner = new this.Positioner(this, this._dimensioner);
@@ -40,10 +42,6 @@ var Toggler = generateClass({
 
         this._mouseHandler = new this.MouseHandler(this);
         this._keyHandler = new this.KeyHandler(this);
-    },
-
-    getClass: function() {
-        return "toggler";
     },
 
     setItems: function(value) {
@@ -158,15 +156,15 @@ var Toggler = generateClass({
         _drawButton: function() {
             var buttonDimension = this._dimensioner.getButton();
             var buttonPosition = this._positioner.getButton();
-            this._context.fillStyle = this._control.getState() ? this._getColor("onColor") : this._style.offColor;
+            this._context.fillStyle = this._control.getState() ? this._getColor("onColor") : this._getColor("offColor");
             this._context.fillRect(buttonPosition.x, buttonPosition.y, buttonDimension.width, buttonDimension.height);
         },
 
         _drawState: function() {
             var statePosition = this._positioner.getState();
             var fontSize = this._dimensioner.getFontSize();
-            this._context.font = fontSize + "px " + this._style.font;
-            this._context.fillStyle = this._getColor("fontColor");
+            this._context.font = fontSize + "px " + this._style.fontFamily;
+            this._context.fillStyle = this._getColor("color");
             this._context.textAlign = "center";
             this._context.textBaseline = "middle";
             this._context.fillText(this._control.getExternalValue(), statePosition.x, statePosition.y);

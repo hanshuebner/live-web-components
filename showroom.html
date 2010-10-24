@@ -1,7 +1,7 @@
 <html>
 <head>
     <title>Live Components</title>
-    <link type="text/css" href="css/reset.css" rel="stylesheet" />
+    <link type="text/css" href="css/defaults.css" rel="stylesheet" />
     <script type="application/javascript" src="js/utils.js"></script>
     <script type="application/javascript" src="js/control.js"></script>
     <script type="application/javascript" src="js/control_extensions.js"></script>
@@ -20,8 +20,10 @@
             pElement.insertBefore(document.createTextNode(text), pElement.firstChild);
         }
 
+        var spinner;
+
         function initialize() {
-            new Spinner('spinner_one', {
+            spinner = new Spinner('spinner_one', {
                 title: "Small with long title",
                 stateCount: 5,
                 onchange: function(internalValue, externalValue, state) {
@@ -50,6 +52,8 @@
                 onchange: function(internalValue, externalValue, state) {
                     printLine("Spinner 3: internal = " + internalValue + " / external = " + externalValue + " / state = " + state);
                 }
+            }, {
+                radiusDifference: 5
             });
 
             new Toggler("toggler_one", {
@@ -105,15 +109,15 @@
 </head>
 <body onload="initialize();">
     <input />
-    <button id="spinner_one" style="display: inline; font-size: 8px" class="test"></button>
-    <button id="spinner_two" style="display: inline;"></button>
-    <button id="spinner_three" style="display: inline;"></button>
-    <button id="toggler_one" style="display: inline; width: 150px; height: 80px; font-size: 40px;"></button>
-    <button id="toggler_two" style="display: inline; width: 60px; height: 24px;"></button><br/>
-    <button id="selector_one" style="display: inline; height: 60px;"></button>
-    <button id="selector_two" style="display: inline;"></button>
-    <button id="slider_one" style="display: inline;"></button>
-    <button id="slider_two" style="display: inline;"></button>
+    <button id="spinner_one" style="display: inline; font-size: 8px; width: 40px; height: 60px;" class="control spinner"></button>
+    <button id="spinner_two" style="display: inline;" class="control spinner"></button>
+    <button id="spinner_three" style="display: inline;" class="control spinner"></button>
+    <button id="toggler_one" style="display: inline; width: 150px; height: 80px; font-size: 40px;" class="control toggler"></button>
+    <button id="toggler_two" style="display: inline; width: 60px; height: 24px;" class="control toggler"></button><br/>
+    <button id="selector_one" style="display: inline;" class="control selector"></button>
+    <button id="selector_two" style="display: inline;" class="control selector"></button>
+    <button id="slider_one" style="display: inline;" class="control slider"></button>
+    <button id="slider_two" style="display: inline;" class="control slider"></button>
     <input />
     <p id="output"></p>
 </body>

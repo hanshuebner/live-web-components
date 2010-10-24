@@ -4,30 +4,12 @@ var Selector = generateClass({
     extendClass: Control,
 
     defaultStyle: {
-        width: 100,
-        height: 40,
-        font: "sans-serif",
-        fontSize: undefined,
-        fontColor: "black",
-        marginTop: 5,
-        marginLeft: 5,
-        marginBottom: 5,
-        marginRight: 5,
-        borderColor: "black",
-        borderSize: 2,
-        borderTopWidth: 2,
-        paddingTop: 2,
-        paddingLeft: 2,
-        paddingBottom: 2,
-        paddingRight: 2,
-        backgroundColor: "white",
-
         highlightColor: "green",
         disabledColor: "gray"
     },
 
-    initialize: function(element_or_id, options) {
-        this._super_initialize(element_or_id, options);
+    initialize: function(element_or_id, options, style) {
+        this._super_initialize(element_or_id, options, style);
 
         this._dimensioner = new this.Dimensioner(this);
         this._positioner = new this.Positioner(this, this._dimensioner);
@@ -36,10 +18,6 @@ var Selector = generateClass({
 
         this._mouseHandler = new this.MouseHandler(this);
         this._keyHandler = new this.KeyHandler(this, this._menu);
-    },
-
-    getClass: function() {
-        return "selector";
     },
 
     setItems: function(value) {
@@ -167,17 +145,17 @@ var Selector = generateClass({
         },
 
         getState: function() {
-            var areaDimension = this.getArea();
+            var spaceDimension = this.getSpace();
             var arrowDimension = this.getArrow();
             return {
-                width: areaDimension.width - arrowDimension.width - this._style.paddingRight * 2,
+                width: spaceDimension.width - arrowDimension.width - this._style.paddingRight * 2,
                 height: this.getFontSize()
             };
         },
 
         getArrow: function() {
-            var areaDimension = this.getArea();
-            var size = Math.round(areaDimension.height / 3);
+            var spaceDimension = this.getSpace();
+            var size = Math.round(spaceDimension.height / 3);
             return {
                 width:  size,
                 height: size
@@ -218,21 +196,22 @@ var Selector = generateClass({
         },
 
         getArrow: function() {
-            var areaPosition = this.getArea();
-            var areaDimension = this._dimensioner.getArea();
             var arrowDimension = this._dimensioner.getArrow();
+            var spaceDimension = this._dimensioner.getSpace();
+            var spacePosition = this.getSpace();
             return {
-                x: areaPosition.x + areaDimension.width - arrowDimension.width - this._style.paddingRight,
-                y: areaPosition.y + Math.round(areaDimension.height / 2 - arrowDimension.height / 2)
+                x: spacePosition.x + spaceDimension.width - arrowDimension.width - this._style.paddingRight,
+                y: spacePosition.y + Math.round(spaceDimension.height / 2 - arrowDimension.height / 2)
             };
         },
 
         getState: function() {
-            var areaPosition = this.getArea();
             var stateDimension = this._dimensioner.getState();
+            var spaceDimension = this._dimensioner.getSpace();
+            var spacePosition = this.getSpace();
             return {
-                x: areaPosition.x + Math.round(stateDimension.width / 2),
-                y: areaPosition.y + Math.round(stateDimension.height / 2)
+                x: spacePosition.x + Math.round(stateDimension.width / 2),
+                y: spacePosition.y + Math.round(spaceDimension.height / 2)
             };
         },
 
@@ -257,7 +236,7 @@ var Selector = generateClass({
         _drawArrow: function() {
             var arrowDimension = this._dimensioner.getArrow();
             var arrowPosition = this._positioner.getArrow();
-            this._context.strokeStyle = this._getColor("borderColor");
+            this._context.strokeStyle = this._getColor("borderTopColor");
             this._context.lineWidth = this._style.borderSize;
             this._context.beginPath();
             this._context.moveTo(arrowPosition.x, arrowPosition.y);
@@ -269,8 +248,8 @@ var Selector = generateClass({
 
         _drawState: function() {
             var statePosition = this._positioner.getState();
-            this._context.fillStyle = this._getColor("fontColor");
-            this._context.font = this._dimensioner.getFontSize() + "px " + this._style.font;
+            this._context.fillStyle = this._getColor("color");
+            this._context.font = this._dimensioner.getFontSize() + "px " + this._style.fontFamily;
             this._context.textAlign = "center";
             this._context.textBaseline = "middle";
             this._context.fillText(this._control.getExternalValue(), statePosition.x, statePosition.y);
@@ -424,8 +403,8 @@ var Selector = generateClass({
                         menuDimension.width - this._style.borderTopWidth * 4,
                         stateDimension.height);
 
-                this._context.fillStyle = this._style.fontColor;
-                this._context.font = this._dimensioner.getFontSize() + "px " + this._style.font;
+                this._context.fillStyle = this._style.color;
+                this._context.font = this._dimensioner.getFontSize() + "px " + this._style.fontFamily;
                 this._context.textAlign = "center";
                 this._context.textBaseline = "middle";
 

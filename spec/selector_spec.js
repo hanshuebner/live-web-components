@@ -6,6 +6,18 @@ describe("Selector", function() {
     beforeEach(function() {
         selector = new Selector(buttonElement, {
             items: [ "one", "two", "three" ]
+        }, {
+            width: 100,
+            height: 40,
+            marginTop: 5,
+            marginLeft: 5,
+            marginBottom: 5,
+            marginRight: 5,
+            borderTopWidth: 2,
+            paddingTop: 2,
+            paddingLeft: 2,
+            paddingBottom: 2,
+            paddingRight: 2
         });
         selector.onchange = function() { };
 
@@ -148,11 +160,11 @@ describe("Selector", function() {
 
             it("should calculate the menu dimensions", function() {
                 expect(dimensioner.getMenu().width).toBe(90);
-                expect(dimensioner.getMenu().height).toBe(44);
+                expect(dimensioner.getMenu().height).toBe(46);
 
                 selector.setItems([ "one", "two", "three", "long long entry" ]);
                 expect(dimensioner.getMenu().width).toBe(90);
-                expect(dimensioner.getMenu().height).toBe(56);
+                expect(dimensioner.getMenu().height).toBe(60);
             });
 
         });
@@ -161,7 +173,7 @@ describe("Selector", function() {
 
             it("should return the state dimensions", function() {
                 expect(dimensioner.getState().width).toBe(73);
-                expect(dimensioner.getState().height).toBe(18);
+                expect(dimensioner.getState().height).toBe(19);
             });
 
         });
@@ -178,7 +190,7 @@ describe("Selector", function() {
         describe("getFontSize", function() {
 
             it("should return the calculated font size by fitting the text in", function() {
-                expect(dimensioner.getFontSize()).toBe(18);
+                expect(dimensioner.getFontSize()).toBe(19);
             });
 
             it("should return the calculated font size by using the control height", function() {

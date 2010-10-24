@@ -13,55 +13,8 @@ var Spinner = generateClass({
         keyStep: 1                  // a value of 1 means, that the spinner increases step index by one
                                     // on each key stroke
     },
-/*
-    defaultStyle: {
-        width: 100,
-        height: 100,
-        font: "sans-serif",
-        fontSize: undefined,
-        fontColor: "black",
-        marginTop: 5,
-        marginLeft: 5,
-        marginBottom: 5,
-        marginRight: 5,
-        borderColor: "black",
-        borderSize: 0,
-        borderTopWidth: 0,
-        paddingTop: 2,
-        paddingLeft: 2,
-        paddingBottom: 2,
-        paddingRight: 2,
-        backgroundColor: "white",
 
-        lineWidth: 3,
-        radiusDifference: 0,
-        lowArcColor: "red",
-        highArcColor: "black",
-        cursorWidth: 1,
-        cursorColor: "black",
-        focusColor: "blue",
-        disabledColor: "gray"
-    },
-*/
     defaultStyle: {
-        width: 100,
-        height: 100,
-        font: "sans-serif",
-        fontSize: undefined,
-        fontColor: "black",
-        marginTop: 5,
-        marginLeft: 5,
-        marginBottom: 5,
-        marginRight: 5,
-        borderColor: "black",
-        borderSize: 0,
-        borderTopWidth: 0,
-        paddingTop: 2,
-        paddingLeft: 2,
-        paddingBottom: 2,
-        paddingRight: 2,
-        backgroundColor: "white",
-
         lineWidth: 3,
         radiusDifference: 0,
         lowArcColor: "red",
@@ -72,8 +25,8 @@ var Spinner = generateClass({
         disabledColor: "gray"
     },
 
-    initialize: function(element_or_id, options) {
-        this._super_initialize(element_or_id, options);
+    initialize: function(element_or_id, options, style) {
+        this._super_initialize(element_or_id, options, style);
 
         this._dimensioner = new this.Dimensioner(this);
         this._positioner = new this.Positioner(this, this._dimensioner);
@@ -81,10 +34,6 @@ var Spinner = generateClass({
 
         this._mouseHandler = new StateChangingMouseHandler(this);
         this._keyHandler = new StateChangingKeyHandler(this);
-    },
-
-    getClass: function() {
-        return "spinner";
     },
 
     setState: function(value) {
@@ -262,8 +211,8 @@ var Spinner = generateClass({
                 text = this._control.getExternalValue();
             }
 
-            this._context.fillStyle = this._getColor("fontColor");
-            this._context.font = this._style.fontSize + "px " + this._style.font;
+            this._context.fillStyle = this._getColor("color");
+            this._context.font = this._style.fontSize + "px " + this._style.fontFamily;
             this._context.textBaseline = "middle";
             this._context.fillText(text, valuePosition.x, valuePosition.y);
         },

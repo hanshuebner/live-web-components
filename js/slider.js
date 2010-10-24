@@ -10,30 +10,12 @@ var Slider = generateClass({
     },
 
     defaultStyle: {
-        width: 100,
-        height: 40,
-        font: "sans-serif",
-        fontSize: undefined,
-        fontColor: "black",
-        marginTop: 5,
-        marginLeft: 5,
-        marginBottom: 5,
-        marginRight: 5,
-        borderColor: "black",
-        borderSize: 2,
-        borderTopWidth: 2,
-        paddingTop: 2,
-        paddingLeft: 2,
-        paddingBottom: 2,
-        paddingRight: 2,
-        backgroundColor: "white",
-
         barColor: "green",
         disabledColor: "gray"
     },
 
-    initialize: function(element_or_id, options) {
-        this._super_initialize(element_or_id, options);
+    initialize: function(element_or_id, options, style) {
+        this._super_initialize(element_or_id, options, style);
 
         this._dimensioner = new this.Dimensioner(this);
         this._positioner = new this.Positioner(this, this._dimensioner);
@@ -41,10 +23,6 @@ var Slider = generateClass({
 
         this._mouseHandler = new StateChangingMouseHandler(this);
         this._keyHandler = new StateChangingKeyHandler(this);
-    },
-
-    getClass: function() {
-        return "slider";
     },
 
     setStateCount: function(value) {
@@ -130,8 +108,8 @@ var Slider = generateClass({
 
         _drawState: function() {
             var statePosition = this._positioner.getState();
-            this._context.fillStyle = this._getColor("fontColor");
-            this._context.font = this._dimensioner.getFontSize() + "px " + this._style.font;
+            this._context.fillStyle = this._getColor("color");
+            this._context.font = this._dimensioner.getFontSize() + "px " + this._style.fontFamily;
             this._context.textAlign = "center";
             this._context.textBaseline = "middle";
             this._context.fillText(this._control.getExternalValue(), statePosition.x, statePosition.y);
