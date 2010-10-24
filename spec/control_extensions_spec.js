@@ -363,6 +363,8 @@ describe("StateChagingKeyHandler", function() {
         });
 
         it("should accept string values", function() {
+            keyHandler.setEventFilter(function(event) { return true; });
+
             control.setExternalMapping({
                 toDisplay: function(state) { return state; },
                 fromDisplay: function(display) { return display.charCodeAt(0); }
