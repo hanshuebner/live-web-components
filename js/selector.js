@@ -173,8 +173,8 @@ var Selector = generateClass({
             var borderPosition = this.getBorder();
             var menuDimension = this._dimensioner.getMenu();
             var top = this._control.getButtonElement().offsetTop + borderPosition.y + borderDimension.height;
-            if (top + menuDimension.height > this._getDocumentHeight())
-                top -= top + menuDimension.height - this._getDocumentHeight();
+            if (top + menuDimension.height > this._getWindowHeight())
+                top -= top + menuDimension.height - this._getWindowHeight();
             return {
                 top: top,
                 left: this._control.getButtonElement().offsetLeft + borderPosition.x
@@ -201,8 +201,8 @@ var Selector = generateClass({
             };
         },
 
-        _getDocumentHeight: function() {
-            return document.height;
+        _getWindowHeight: function() {
+            return window.innerHeight;
         }
 
     }),

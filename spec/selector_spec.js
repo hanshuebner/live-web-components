@@ -204,8 +204,8 @@ describe("Selector", function() {
                 expect(positioner.getMenu().left).toBe(5);
             });
 
-            it("should place the menu upwards if document isn't long enough", function() {
-                positioner._getDocumentHeight = function() {
+            it("should place the menu upwards if window isn't height enough", function() {
+                positioner._getWindowHeight = function() {
                     return 50;
                 };
                 expect(positioner.getMenu().top).toBe(12);
