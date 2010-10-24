@@ -295,6 +295,20 @@ describe("StateChagingKeyHandler", function() {
             expect(control.getState()).toBe(oldState);
         });
 
+        it("should drop events that are not passing the filter", function() {
+            keyHandler.setEventFilter(function(event) {
+                return event.keyCode == 49 || event.keyCode == 13;
+            });
+
+            controlDriver.enterKey(49); // "1"
+            controlDriver.enterKey(13); // enter
+            expect(control.getState()).toBe(1);
+
+            controlDriver.enterKey(50); // "2"
+            controlDriver.enterKey(13); // enter
+            expect(control.getState()).toBe(1);
+        });
+
         it("should add a keyStep if up arrow is pressed", function() {
             var oldState = control.getState();
             controlDriver.enterKey(38); // up arrow

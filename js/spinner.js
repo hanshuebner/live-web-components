@@ -34,6 +34,7 @@ var Spinner = generateClass({
 
         this._mouseHandler = new StateChangingMouseHandler(this);
         this._keyHandler = new StateChangingKeyHandler(this);
+        if (this._keyEventFilter) this._keyHandler.setEventFilter(this._keyEventFilter);
     },
 
     setState: function(value) {
@@ -51,6 +52,15 @@ var Spinner = generateClass({
 
     getKeyHandler: function() {
         return this._keyHandler;
+    },
+
+    setKeyEventFilter: function(keyEventFilter) {
+        this._keyEventFilter = keyEventFilter;
+        if (this._keyHandler) this._keyHandler.setEventFilter(this._keyEventFilter);
+    },
+
+    getKeyEventFilter: function() {
+        return this._keyHandler.getEventFilter();
     },
 
     blur: function() {

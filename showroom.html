@@ -20,12 +20,21 @@
             pElement.insertBefore(document.createTextNode(text), pElement.firstChild);
         }
 
-        var spinner;
-
         function initialize() {
-            spinner = new Spinner('spinner_one', {
+            new Spinner('spinner_one', {
                 title: "Small with long title",
                 stateCount: 5,
+                keyEventFilter: function(event) {
+                    return (event.keyCode >= 65 && event.keyCode <= 69) || event.keyCode == 13;
+                },
+                externalMapping: {
+                    toDisplay: function(state) {
+                        return String.fromCharCode(state + 65);
+                    },
+                    fromDisplay: function(display) {
+                        return display.charCodeAt(0) - 65;
+                    }
+                },
                 onchange: function(internalValue, externalValue, state) {
                     printLine("Spinner 1: internal = " + internalValue + " / external = " + externalValue + " / state = " + state);
                 }

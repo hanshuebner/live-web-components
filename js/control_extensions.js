@@ -218,6 +218,8 @@ var StateChangingKeyHandler = generateClass({
 
         this._entering = false;
         this._enteredText = null;
+
+        this.setDefaultEventFilter();
     },
 
     isEnteringEnabled: function() {
@@ -238,8 +240,36 @@ var StateChangingKeyHandler = generateClass({
         return !!this._entering;
     },
 
+    setEventFilter: function(eventFilter) {
+        this._eventFilter = eventFilter;
+    },
+
+    getEventFilter: function() {
+        return this._eventFilter;
+    },
+
+    setDefaultEventFilter: function() {
+        this.setEventFilter(function(event) {
+            if (event.shiftKey || event.altKey || event.ctrlKey) return false;
+            switch (event.keyCode) {
+            case 8: // backspace
+            case 13: // enter
+            case 37: // left arrow
+            case 38: // up arrow
+            case 39: // right arrow
+            case 40: // down arrow
+            case 109: // substract
+            case 189: // "-"
+                return true;
+            default:
+                return event.keyCode >= 48 && event.keyCode <= 57;
+            }
+        });
+    },
+
     _onKeyDownHandler: function(event) {
-        if (this._control.isDisabled()) return;
+        if (this._control.isDisabled()) return true;
+        if (this._eventFilter && !this._eventFilter(event)) return true;
 
         switch (event.keyCode) {
         case 8: // backspace
@@ -259,9 +289,6 @@ var StateChangingKeyHandler = generateClass({
         case 109: // substract
         case 189: // "-"
             this._enterCharacter("-");
-            return false;
-        case 190: // "."
-            this._enterCharacter(".");
             return false;
         default:
             if (event.keyCode >= 48 && event.keyCode <= 90) {
