@@ -48,19 +48,6 @@ var Slider = generateClass({
                 width: Math.round(borderDimension.width / this._control.getStateCount() * this._control.getState()),
                 height: borderDimension.height
             };
-        },
-
-        getFontSize: function() {
-            if (this._style.fontSize) {
-                return this._style.fontSize;
-            } else {
-                if (this._control.hasTitle()) {
-                    return Math.round((this._control.getHeight() - this._style.marginTop * 2 - this._style.marginBottom - this._style.paddingTop - this._style.paddingBottom) / 2);
-                } else {
-                    var areaDimension = this.getArea();
-                    return this.getFittingFontSize(areaDimension.width, areaDimension.height);
-                }
-            }
         }
 
     }),

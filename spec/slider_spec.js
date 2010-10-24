@@ -54,19 +54,6 @@ describe("Slider", function() {
 
         });
 
-        describe("getFontSize", function() {
-
-            it("should return the given font size", function() {
-                dimensioner._style.fontSize = 30;
-                expect(dimensioner.getFontSize()).toBe(30);
-            });
-
-            it("should return a calculated font size if nothing is given", function() {
-                expect(dimensioner.getFontSize()).toBe(25);
-            });
-
-        });
-
     });
 
     describe("Positioner", function() {

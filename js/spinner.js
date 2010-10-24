@@ -89,14 +89,6 @@ var Spinner = generateClass({
             };
         },
 
-        getFontSize: function() {
-            if (this._style.fontSize) {
-                return this._style.fontSize;
-            } else {
-                return Math.round(this._control.getHeight() / 3);
-            }
-        },
-
         getCursor: function() {
             var fontSize = this.getFontSize();
             return {

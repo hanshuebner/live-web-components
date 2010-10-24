@@ -73,7 +73,7 @@ describe("Spinner", function() {
 
             it("should return a smaller high-arc radius if a title is set", function() {
                 spinner.setTitle("Test");
-                expect(dimensioner.getHighArc().radius).toBe(24);
+                expect(dimensioner.getHighArc().radius).toBe(20);
             });
 
             it("should calculate the high-arc radius on the space available", function() {
@@ -102,23 +102,10 @@ describe("Spinner", function() {
 
         });
 
-        describe("getFontSize", function() {
-
-            it("should return the given font size", function() {
-                dimensioner._style.fontSize = 30;
-                expect(dimensioner.getFontSize()).toBe(30);
-            });
-
-            it("should return a calculated font size if nothing is given", function() {
-                expect(dimensioner.getFontSize()).toBe(33);
-            });
-
-        });
-
         describe("getCursor", function() {
 
             it("should return the cursor dimension", function() {
-                expect(dimensioner.getCursor().height).toBe(37);
+                expect(dimensioner.getCursor().height).toBe(33);
             });
 
         });
@@ -174,8 +161,8 @@ describe("Spinner", function() {
             });
 
             it("should return the cursor position", function() {
-                expect(positioner.getCursor().x).toBe(84);
-                expect(positioner.getCursor().y).toBe(53);
+                expect(positioner.getCursor().x).toBe(80);
+                expect(positioner.getCursor().y).toBe(55);
             });
 
         });

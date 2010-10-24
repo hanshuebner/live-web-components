@@ -85,24 +85,6 @@ describe("Toggler", function() {
 
         });
 
-        describe("getFontSize", function() {
-
-            it("should return the calculated font size by fitting the text in", function() {
-                expect(dimensioner.getFontSize()).toBe(25);
-            });
-
-            it("should return the calculated font size by using the control height", function() {
-                toggler.setTitle("Test");
-                expect(dimensioner.getFontSize()).toBe(11);
-            });
-
-            it("should return the given font size", function() {
-                dimensioner._style.fontSize = 30;
-                expect(dimensioner.getFontSize()).toBe(30);
-            });
-
-        });
-
     });
 
     describe("Positioner", function() {
