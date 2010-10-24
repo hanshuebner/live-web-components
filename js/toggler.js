@@ -119,11 +119,11 @@ var Toggler = generateClass({
         },
 
         getState: function() {
-            var areaDimension = this._dimensioner.getArea();
-            var areaPosition = this.getArea();
+            var spaceDimension = this._dimensioner.getSpace();
+            var spacePosition = this.getSpace();
             return {
-                x: areaPosition.x + Math.round(areaDimension.width / 2),
-                y: areaPosition.y + Math.round(areaDimension.height / 2)
+                x: spacePosition.x + Math.round(spaceDimension.width / 2),
+                y: spacePosition.y + Math.round(spaceDimension.height / 2)
             };
         }
 
