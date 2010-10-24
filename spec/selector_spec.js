@@ -160,11 +160,11 @@ describe("Selector", function() {
 
             it("should calculate the menu dimensions", function() {
                 expect(dimensioner.getMenu().width).toBe(90);
-                expect(dimensioner.getMenu().height).toBe(46);
+                expect(dimensioner.getMenu().height).toBe(28);
 
                 selector.setItems([ "one", "two", "three", "long long entry" ]);
                 expect(dimensioner.getMenu().width).toBe(90);
-                expect(dimensioner.getMenu().height).toBe(60);
+                expect(dimensioner.getMenu().height).toBe(48);
             });
 
         });
@@ -173,7 +173,7 @@ describe("Selector", function() {
 
             it("should return the state dimensions", function() {
                 expect(dimensioner.getState().width).toBe(73);
-                expect(dimensioner.getState().height).toBe(19);
+                expect(dimensioner.getState().height).toBe(10);
             });
 
         });
@@ -206,9 +206,9 @@ describe("Selector", function() {
 
             it("should place the menu upwards if document isn't long enough", function() {
                 positioner._getDocumentHeight = function() {
-                    return 100;
+                    return 50;
                 };
-                expect(positioner.getMenu().top).toBe(17);
+                expect(positioner.getMenu().top).toBe(12);
                 expect(positioner.getMenu().left).toBe(5);
             });
 
@@ -289,11 +289,11 @@ describe("Selector", function() {
             describe("_onMouseDownHandler", function() {
 
                 it("should select the correct item", function() {
-                    menuDriver.mouseDown(20);
+                    menuDriver.mouseDown(5);
                     expect(selector.getExternalValue()).toBe("one");
-                    menuDriver.mouseDown(40);
+                    menuDriver.mouseDown(15);
                     expect(selector.getExternalValue()).toBe("two");
-                    menuDriver.mouseDown(60);
+                    menuDriver.mouseDown(25);
                     expect(selector.getExternalValue()).toBe("three");
                 });
 
@@ -307,11 +307,11 @@ describe("Selector", function() {
                 });
 
                 it("should update the highlight index", function() {
-                    menuDriver.mouseMove(20);
+                    menuDriver.mouseMove(5);
                     expect(menu.getHighlightState()).toBe(0);
-                    menuDriver.mouseMove(40);
+                    menuDriver.mouseMove(15);
                     expect(menu.getHighlightState()).toBe(1);
-                    menuDriver.mouseMove(60);
+                    menuDriver.mouseMove(25);
                     expect(menu.getHighlightState()).toBe(2);
                 });
 

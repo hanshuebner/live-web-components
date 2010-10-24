@@ -142,7 +142,7 @@ describe("TitleBorderPositioner", function() {
 
         it("should return the area position", function() {
             expect(positioner.getArea().x).toBe(7);
-            expect(positioner.getArea().y).toBe(22);
+            expect(positioner.getArea().y).toBe(20);
         });
 
     });
@@ -151,7 +151,7 @@ describe("TitleBorderPositioner", function() {
 
         it("should return the border position", function() {
             expect(positioner.getBorder().x).toBe(5);
-            expect(positioner.getBorder().y).toBe(20);
+            expect(positioner.getBorder().y).toBe(18);
         });
 
         it("should return a different position if no title is given", function() {
