@@ -150,11 +150,22 @@ var Toggler = generateClass({
         _drawState: function() {
             var statePosition = this._positioner.getState();
             var fontSize = this._dimensioner.getFontSize();
-            this._context.font = fontSize + "px " + this._style.fontFamily;
-            this._context.fillStyle = this._getColor("color");
-            this._context.textAlign = "center";
-            this._context.textBaseline = "middle";
-            this._context.fillText(this._control.getExternalValue(), statePosition.x, statePosition.y);
+            var externalValue = this._control.getExternalValue();
+            if (typeof(externalValue) === "string" && externalValue.match(/^image:/)) {
+                var image = new Image();
+                image.src = externalValue.substring(6);
+                this._context.drawImage(
+                    image,
+                    statePosition.x - Math.round(image.width / 2),
+                    statePosition.y - Math.round(image.height / 2)
+                );
+            } else {
+                this._context.font = fontSize + "px " + this._style.fontFamily;
+                this._context.fillStyle = this._getColor("color");
+                this._context.textAlign = "center";
+                this._context.textBaseline = "middle";
+                this._context.fillText(externalValue, statePosition.x, statePosition.y);
+            }
         }
 
     })

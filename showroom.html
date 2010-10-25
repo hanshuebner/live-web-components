@@ -84,6 +84,17 @@
                     printLine("Toggler 2: internal = " + internalValue + " / external = " + externalValue + " / state = " + state);
                 }
             });
+            new Toggler("toggler_three", {
+                items: [ "image:image/off.png", "image:image/on.png" ],
+                state: 1,
+                internalMapping: {
+                    toValue: function(state) { return state ? true : false },
+                    fromValue: function(value) { return value ? 1 : 0 }
+                },
+                onchange: function(internalValue, externalValue, state) {
+                    printLine("Toggler 1: internal = " + internalValue + " / external = " + externalValue + " / state = " + state);
+                }
+            });
 
             new Selector("selector_one", {
                 title: "Select 1",
@@ -124,6 +135,7 @@
     <button id="spinner_three" style="display: inline; padding-top: 5px;" class="control spinner"></button>
     <button id="toggler_one" style="display: inline; width: 150px; height: 80px; font-size: 30px;" class="control toggler"></button>
     <button id="toggler_two" style="display: inline; width: 60px; height: 24px;" class="control toggler"></button><br/>
+    <button id="toggler_three" style="display: inline; width: 150px; height: 80px;" class="control toggler"></button>
     <button id="selector_one" style="display: inline;" class="control selector"></button>
     <button id="selector_two" style="display: inline;" class="control selector"></button>
     <button id="slider_one" style="display: inline;" class="control slider"></button>
