@@ -13,7 +13,9 @@ var Spinner = generateClass({
 
         keyStep: 1,                 // a value of 1 means, that the spinner increases step index by one
                                     // on each key stroke
-        alternateKeyStep: 5         // same as keyStep but for input with pressed shift key
+        alternateKeyStep: 5,        // same as keyStep but for input with pressed shift key
+
+        markerVisible: true         // defines if the marker is visible
     },
 
     defaultStyle: {
@@ -21,6 +23,7 @@ var Spinner = generateClass({
         radiusDifference: 0,
         lowArcColor: "red",
         highArcColor: "black",
+        markerColor: "green",
         cursorWidth: 1,
         cursorColor: "black",
         focusColor: "blue",
@@ -50,6 +53,15 @@ var Spinner = generateClass({
 
     getStateCount: function() {
         return this._stateCount;
+    },
+
+    setMarkerVisible: function(value) {
+        this._markerVisible = value;
+        this.draw();
+    },
+
+    isMarkerVisible: function() {
+        return this._markerVisible;
     },
 
     getKeyHandler: function() {
@@ -93,6 +105,15 @@ var Spinner = generateClass({
             };
         },
 
+        getMarker: function() {
+            var highArcDimension = this.getHighArc();
+            var size = Math.max(8, Math.round(highArcDimension.radius * 0.3));
+            return {
+                width: size,
+                height: size
+            };
+        },
+
         getValue: function() {
             var spaceDimension = this.getSpace();
             return {
@@ -127,6 +148,17 @@ var Spinner = generateClass({
             return this.getHighArc();
         },
 
+        getMarker: function() {
+            var highArcDimension = this._dimensioner.getHighArc();
+            var highArcPosition = this.getHighArc();
+            var position = 5 * (Math.PI / 4);
+            var distance = highArcDimension.radius + this._style.lineWidth;
+            return {
+                x: highArcPosition.x + Math.round(Math.sin(position) * distance),
+                y: highArcPosition.y + Math.round(Math.cos(position) * distance)
+            };
+        },
+
         getValue: function() {
             var spaceDimension = this._dimensioner.getSpace();
             var highArcPosition = this.getHighArc();
@@ -157,6 +189,7 @@ var Spinner = generateClass({
             this._drawTitle();
             this._drawBorder();
             this._drawArcs();
+            this._drawMarker();
             this._drawValue();
             this._drawCursor();
         },
@@ -200,6 +233,22 @@ var Spinner = generateClass({
             }
             this._context.lineTo(highArcPosition.x, highArcPosition.y);
             this._context.stroke();
+        },
+
+        _drawMarker: function() {
+            if (!this._control.isMarkerVisible()) return;
+            var markerDimension = this._dimensioner.getMarker();
+            var markerPosition = this._positioner.getMarker();
+
+            this._context.fillStyle = this._getColor("markerColor");
+            this._context.lineWidth = this._style.lineWidth;
+            this._context.beginPath();
+            this._context.moveTo(markerPosition.x, markerPosition.y);
+            this._context.lineTo(markerPosition.x, markerPosition.y - markerDimension.height);
+            this._context.lineTo(markerPosition.x - markerDimension.width, markerPosition.y);
+            this._context.lineTo(markerPosition.x, markerPosition.y);
+            this._context.fill();
+
         },
 
         _drawValue: function() {

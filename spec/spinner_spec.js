@@ -92,6 +92,15 @@ describe("Spinner", function() {
 
         });
 
+        describe("getMarker", function() {
+
+            it("should return the marker dimension", function() {
+                expect(dimensioner.getMarker().width).toBe(13);
+                expect(dimensioner.getMarker().height).toBe(13);
+            });
+
+        });
+
         describe("getValue", function() {
 
             it("should return the value dimension", function() {
@@ -134,6 +143,15 @@ describe("Spinner", function() {
             it("should return the high-arc position", function() {
                 expect(positioner.getLowArc().x).toBe(50);
                 expect(positioner.getLowArc().y).toBe(50);
+            });
+
+        });
+
+        describe("getMarker", function() {
+
+            it("should return the marker position", function() {
+                expect(positioner.getMarker().x).toBe(17);
+                expect(positioner.getMarker().y).toBe(17);
             });
 
         });
