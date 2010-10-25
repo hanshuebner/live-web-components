@@ -342,7 +342,8 @@ var Selector = generateClass({
             },
 
             _onMouseMoveHandler: function(event) {
-                this._menu.setHighlightState(this._getStateForMouseEvent(event));
+                var state = this._getStateForMouseEvent(event);
+                if (state !== undefined) this._menu.setHighlightState(state);
                 return false;
             },
 
@@ -353,7 +354,8 @@ var Selector = generateClass({
 
             _getStateForMouseEvent: function(event) {
                 var stateDimension = this._dimensioner.getState();
-                return Math.floor(event.offsetY / stateDimension.height);
+                var state = Math.floor(event.offsetY / stateDimension.height);
+                return state < this._selector.getStateCount() ? state : undefined;
             }
 
         }),
