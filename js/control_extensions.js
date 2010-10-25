@@ -189,7 +189,7 @@ var StateChangingMouseHandler = generateClass({
     },
 
     _onMouseMoveHandler: function(event) {
-        var range = this._control.getHeight() * this._options.mouseScale;
+        var range = this._control.getHeight() * (event.shiftKey ? this._options.alternateMouseScale : this._options.mouseScale);
         var differenceX = event.screenX - this._startX;
         var differenceY = this._startY - event.screenY;
         var difference = Math.abs(differenceX) > Math.abs(differenceY) ? differenceX : differenceY;
@@ -250,7 +250,8 @@ var StateChangingKeyHandler = generateClass({
 
     setDefaultEventFilter: function() {
         this.setEventFilter(function(event) {
-            if (event.shiftKey || event.altKey || event.ctrlKey) return false;
+            if (event.altKey || event.ctrlKey) return false;
+
             switch (event.keyCode) {
             case 8: // backspace
             case 13: // enter
@@ -280,11 +281,11 @@ var StateChangingKeyHandler = generateClass({
             return false;
         case 37: // left arrow
         case 38: // up arrow
-            this._stepUp();
+            this._stepUp(event.shiftKey);
             return false;
         case 39: // right arrow
         case 40: // down arrow
-            this._stepDown();
+            this._stepDown(event.shiftKey);
             return false;
         case 109: // substract
         case 189: // "-"
@@ -300,12 +301,12 @@ var StateChangingKeyHandler = generateClass({
         }
     },
 
-    _stepUp: function() {
-        this._control.setState(this._control.getState() + this._options.keyStep);
+    _stepUp: function(shiftPressed) {
+        this._control.setState(this._control.getState() + (shiftPressed ? this._options.alternateKeyStep : this._options.keyStep));
     },
 
-    _stepDown: function() {
-        this._control.setState(this._control.getState() - this._options.keyStep);
+    _stepDown: function(shiftPressed) {
+        this._control.setState(this._control.getState() - (shiftPressed ? this._options.alternateKeyStep : this._options.keyStep));
     },
 
     _enterCharacter: function(character) {

@@ -8,7 +8,9 @@ beforeEach(function() {
     }
     control = new Control(buttonElement, {
         mouseScale: 1,
+        alternateMouseScale: 5,
         keyStep: 1,
+        alternateKeyStep: 5,
         title: "Test"
     });
     control.getStateCount = function() { return 101; };
@@ -248,6 +250,11 @@ describe("StateChangingMouseHandler", function() {
             expect(control.getState()).toBe(75);
         });
 
+        it("should calculate the new state based on the alternateMouseScale if shift key is pressed", function() {
+            documentDriver.mouseMove(0, -50, true);
+            expect(control.getState()).toBe(60);
+        });
+
     });
 
     describe("_onMouseUpHandler", function() {
@@ -315,10 +322,22 @@ describe("StateChagingKeyHandler", function() {
             expect(control.getState()).toBe(oldState + 1);
         });
 
+        it("should add a alternateKeyStep if shift and up arrow is pressed", function() {
+            var oldState = control.getState();
+            controlDriver.enterKey(38, true); // up arrow and shift
+            expect(control.getState()).toBe(oldState + 5);
+        });
+
         it("should substract a keyStep if down arrow is pressed", function() {
             var oldState = control.getState();
             controlDriver.enterKey(40); // down arrow
             expect(control.getState()).toBe(oldState - 1);
+        });
+
+        it("should substract a alternateKeyStep if shift and down arrow is pressed", function() {
+            var oldState = control.getState();
+            controlDriver.enterKey(40, true); // down arrow and shift
+            expect(control.getState()).toBe(oldState - 5);
         });
 
         it("should go into entering-mode if a digit is pressed", function() {

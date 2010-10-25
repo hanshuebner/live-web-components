@@ -9,9 +9,11 @@ var Spinner = generateClass({
 
         mouseScale: 1,              // a value of 1 means, that the spinner has turned completly around
                                     // if the mouse has been moved 1 time the distance of "size".
+        alternateMouseScale: 5,     // same as mouseScale but for input with pressed shift key
 
-        keyStep: 1                  // a value of 1 means, that the spinner increases step index by one
+        keyStep: 1,                 // a value of 1 means, that the spinner increases step index by one
                                     // on each key stroke
+        alternateKeyStep: 5         // same as keyStep but for input with pressed shift key
     },
 
     defaultStyle: {

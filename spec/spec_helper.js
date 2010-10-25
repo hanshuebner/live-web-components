@@ -11,16 +11,16 @@ var ControlDriver = generateClass({
         this._control.getButtonElement().onmousedown({ screenX: screenX, screenY: screenY });
     },
 
-    enterKey: function(keyCode) {
-        this._control.getButtonElement().onkeydown({ keyCode: keyCode });
+    enterKey: function(keyCode, shiftPressed) {
+        this._control.getButtonElement().onkeydown({ keyCode: keyCode, shiftKey: shiftPressed });
     }
 
 });
 
 var DocumentDriver = generateClass({
 
-    mouseMove: function(screenX, screenY) {
-        document.onmousemove({ screenX: screenX, screenY: screenY });
+    mouseMove: function(screenX, screenY, shiftPressed) {
+        document.onmousemove({ screenX: screenX, screenY: screenY, shiftKey: shiftPressed });
     },
 
     mouseUp: function() {

@@ -6,7 +6,9 @@ var Slider = generateClass({
     defaultOptions: {
         stateCount: 101,
         mouseScale: 1,
-        keyStep: 1
+        alternateMouseScale: 5,
+        keyStep: 1,
+        alternateKeyStep: 5
     },
 
     defaultStyle: {
