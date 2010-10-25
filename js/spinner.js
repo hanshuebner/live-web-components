@@ -130,7 +130,7 @@ var Spinner = generateClass({
             var highArcPosition = this.getHighArc();
             var keyHandler = this._control.getKeyHandler();
             return {
-                x: highArcPosition.x + (keyHandler && keyHandler.isEntering() ? 0 : Math.round(spaceDimension.width / 2)),
+                x: highArcPosition.x + this._style.lineWidth,
                 y: highArcPosition.y + Math.round(spaceDimension.height * 0.25)
             };
         },
@@ -203,18 +203,11 @@ var Spinner = generateClass({
         _drawValue: function() {
             var valuePosition = this._positioner.getValue();
             var keyHandler = this._control.getKeyHandler();
-
-            var text;
-            if (keyHandler && keyHandler.isEntering()) {
-                this._context.textAlign = "left";
-                text = keyHandler.getEnteredText();
-            } else {
-                this._context.textAlign = "right";
-                text = this._control.getExternalValue();
-            }
+            var text = keyHandler && keyHandler.isEntering() ? keyHandler.getEnteredText() : this._control.getExternalValue();
 
             this._context.fillStyle = this._getColor("color");
             this._context.font = this._style.fontSize + "px " + this._style.fontFamily;
+            this._context.textAlign = "left";
             this._context.textBaseline = "middle";
             this._context.fillText(text, valuePosition.x, valuePosition.y);
         },

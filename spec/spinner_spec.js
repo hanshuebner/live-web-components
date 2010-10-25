@@ -141,13 +141,7 @@ describe("Spinner", function() {
         describe("getValue", function() {
 
             it("should return the value position", function() {
-                expect(positioner.getValue().x).toBe(93);
-                expect(positioner.getValue().y).toBe(72);
-            });
-
-            it("should return the value position for a right-aligned text if user is entering a value", function() {
-                spinnerDriver.enterKey(48); // 'a'
-                expect(positioner.getValue().x).toBe(50);
+                expect(positioner.getValue().x).toBe(53);
                 expect(positioner.getValue().y).toBe(72);
             });
 
@@ -161,7 +155,7 @@ describe("Spinner", function() {
             });
 
             it("should return the cursor position", function() {
-                expect(positioner.getCursor().x).toBe(60);
+                expect(positioner.getCursor().x).toBe(63);
                 expect(positioner.getCursor().y).toBe(65);
             });
 
