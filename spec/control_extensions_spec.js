@@ -112,7 +112,7 @@ describe("TitleBorderDimensioner", function() {
     describe("getMaximalTextWidth", function() {
 
         it("should return the width of the longest item", function() {
-            expect(dimensioner.getMaximalTextWidth(26)).toBe(42);
+            expect(dimensioner.getMaximalTextWidth(26)).toBe(39);
         });
 
     });
@@ -120,11 +120,11 @@ describe("TitleBorderDimensioner", function() {
     describe("getTextWidth", function() {
 
         it("should return the width for the given text", function() {
-            expect(dimensioner.getTextWidth("test", 10)).toBe(16);
+            expect(dimensioner.getTextWidth("test", 10)).toBe(14);
         });
 
         it("should return the width for the given text base on the font size", function() {
-            expect(dimensioner.getTextWidth("test", 30)).toBe(48);
+            expect(dimensioner.getTextWidth("test", 30)).toBe(41);
         });
 
     });

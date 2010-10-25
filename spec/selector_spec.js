@@ -4,6 +4,9 @@ describe("Selector", function() {
     var selector, selectorDriver;
 
     beforeEach(function() {
+        // moch document root node
+        document.firstChild.appendChild = function() { };
+
         selector = new Selector(buttonElement, {
             items: [ "one", "two", "three" ]
         }, {

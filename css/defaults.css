@@ -28,6 +28,7 @@ button.selector {
     height: 40px;
     border: 2px solid black;
     background: white;
+    color: black;
 }
 
 button.slider {

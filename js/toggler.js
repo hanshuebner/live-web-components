@@ -152,13 +152,16 @@ var Toggler = generateClass({
             var fontSize = this._dimensioner.getFontSize();
             var externalValue = this._control.getExternalValue();
             if (typeof(externalValue) === "string" && externalValue.match(/^image:/)) {
+                var context = this._context;
                 var image = new Image();
+                image.onload = function() {
+                    context.drawImage(
+                        image,
+                        statePosition.x - Math.round(image.width / 2),
+                        statePosition.y - Math.round(image.height / 2)
+                    );
+                };
                 image.src = externalValue.substring(6);
-                this._context.drawImage(
-                    image,
-                    statePosition.x - Math.round(image.width / 2),
-                    statePosition.y - Math.round(image.height / 2)
-                );
             } else {
                 this._context.font = fontSize + "px " + this._style.fontFamily;
                 this._context.fillStyle = this._getColor("color");

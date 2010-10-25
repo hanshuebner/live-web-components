@@ -184,7 +184,7 @@ var Control = generateClass({
     },
 
     _readStyle: function() {
-        var style = window.getComputedStyle(this.getButtonElement());
+        var style = window.getComputedStyle(this.getButtonElement(), null);
         for (var index = 0; index < style.length; index++) {
             var key = style[index];
             var value = style.getPropertyValue(key);

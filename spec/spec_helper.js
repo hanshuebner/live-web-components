@@ -1,5 +1,6 @@
 
 var buttonElement = document.createElement("button");
+buttonElement.appendChild = function() { };
 
 var ControlDriver = generateClass({
 
@@ -36,15 +37,15 @@ var MenuDriver = generateClass({
     },
 
     mouseDown: function(offsetY) {
-        this._menu.getCanvasElement().onmousedown({ offsetY: offsetY });
+        this._menu.getButtonElement().onmousedown({ offsetY: offsetY });
     },
 
     mouseMove: function(offsetY) {
-        this._menu.getCanvasElement().onmousemove({ offsetY: offsetY });
+        this._menu.getButtonElement().onmousemove({ offsetY: offsetY });
     },
 
     mouseOut: function() {
-        this._menu.getCanvasElement().onmouseout();
+        this._menu.getButtonElement().onmouseout();
     }
 
 });

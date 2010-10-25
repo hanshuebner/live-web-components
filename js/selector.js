@@ -223,7 +223,7 @@ var Selector = generateClass({
             var arrowDimension = this._dimensioner.getArrow();
             var arrowPosition = this._positioner.getArrow();
             this._context.strokeStyle = this._getColor("borderTopColor");
-            this._context.lineWidth = this._style.borderSize;
+            this._context.lineWidth = this._style.borderTopWidth;
             this._context.beginPath();
             this._context.moveTo(arrowPosition.x, arrowPosition.y);
             this._context.lineTo(arrowPosition.x + arrowDimension.width, arrowPosition.y);
@@ -250,6 +250,7 @@ var Selector = generateClass({
             this._dimensioner = dimensioner;
             this._positioner = positioner;
 
+            this._createButtonElement();
             this._createCanvasElement();
             this._mouseHandler = new this.MouseHandler(this._selector, this, this._dimensioner);
             this._drawer = new this.Drawer(this._selector, this, this._dimensioner);
@@ -257,16 +258,23 @@ var Selector = generateClass({
             this.hide();
         },
 
+        getButtonElement: function() {
+            return this._buttonElement;
+        },
+
+        getCanvasElement: function() {
+            return this._canvasElement;
+        },
+
         show: function() {
             this._visible = true;
-            this._setCanvasElementStyle();
+            this._setStyles();
             this.draw();
         },
 
         hide: function() {
             this._visible = false;
-            this._setCanvasElementStyle();
-            // this._selector.draw();
+            this._setStyles();
         },
 
         isVisible: function() {
@@ -297,31 +305,37 @@ var Selector = generateClass({
             return this._highlightState !== undefined;
         },
 
-        getCanvasElement: function() {
-            return this._canvasElement;
-        },
-
         draw: function() {
             this._drawer.draw();
         },
 
-        _setCanvasElementStyle: function() {
-            var menuDimension = this._dimensioner.getMenu();
-            var menuPosition = this._positioner.getMenu();
-            this._canvasElement.setAttribute("width", menuDimension.width);
-            this._canvasElement.setAttribute("height", menuDimension.height);
-            this._canvasElement.setAttribute("style",
-                "position: absolute;" +
-                " top: " + menuPosition.top + "px;" +
-                " left: " + menuPosition.left + "px;" +
-                " visibility: " + (this._visible ? "visible" : "hidden") + ";" +
-                " display: " + (this._visible ? "block" : "none") + ";");
+        _createButtonElement: function() {
+            this._buttonElement = document.createElement("button");
+            document.firstChild.appendChild(this._buttonElement);
         },
 
         _createCanvasElement: function() {
             this._canvasElement = document.createElement("canvas");
-            this._selector.getButtonElement().appendChild(this._canvasElement);
+            this._buttonElement.appendChild(this._canvasElement);
             this._context = this._canvasElement.getContext("2d");
+        },
+
+        _setStyles: function() {
+            var menuDimension = this._dimensioner.getMenu();
+            var menuPosition = this._positioner.getMenu();
+
+            this._buttonElement.setAttribute("width", menuDimension.width);
+            this._buttonElement.setAttribute("height", menuDimension.height);
+            this._buttonElement.setAttribute("style",
+                "position: absolute;" +
+                " top: " + menuPosition.top + "px;" +
+                " left: " + menuPosition.left + "px;" +
+                " visibility: " + (this._visible ? "visible" : "hidden") + ";" +
+                " display: " + (this._visible ? "block" : "none") + ";" +
+                " border: none; margin: 0px; padding: 0px; background: transparent;");
+
+            this._canvasElement.setAttribute("width", menuDimension.width);
+            this._canvasElement.setAttribute("height", menuDimension.height);
         },
 
         MouseHandler: generateClass({
@@ -331,30 +345,30 @@ var Selector = generateClass({
                 this._menu = menu;
                 this._dimensioner = dimensioner;
 
-                this._menu.getCanvasElement().onmousedown = this._onMouseDownHandler.bind(this);
-                this._menu.getCanvasElement().onmousemove = this._onMouseMoveHandler.bind(this);
-                this._menu.getCanvasElement().onmouseout = this._onMouseOutHandler.bind(this);
+                this._menu.getButtonElement().onmousedown = this._onMouseDownHandler.bind(this);
+                this._menu.getButtonElement().onmousemove = this._onMouseMoveHandler.bind(this);
+                this._menu.getButtonElement().onmouseout = this._onMouseOutHandler.bind(this);
             },
 
             _onMouseDownHandler: function(event) {
                 this._selector.setState(this._getStateForMouseEvent(event));
-                return false;
+                return true;
             },
 
             _onMouseMoveHandler: function(event) {
                 var state = this._getStateForMouseEvent(event);
                 if (state !== undefined) this._menu.setHighlightState(state);
-                return false;
+                return true;
             },
 
             _onMouseOutHandler: function() {
                 this._menu.clearHighlightState();
-                return false;
+                return true;
             },
 
             _getStateForMouseEvent: function(event) {
                 var stateDimension = this._dimensioner.getState();
-                var state = Math.floor(event.offsetY / stateDimension.height);
+                var state = Math.floor((event.offsetY || event.layerY) / stateDimension.height);
                 return state < this._selector.getStateCount() ? state : undefined;
             }
 
@@ -412,7 +426,7 @@ var Selector = generateClass({
 
             _drawBorder: function() {
                 var menuDimension = this._dimensioner.getMenu();
-                this._context.strokeStyle = this._style.borderColor;
+                this._context.strokeStyle = this._style.borderTopColor;
                 this._context.lineWidth = this._style.borderTopWidth;
                 this._context.strokeRect(
                     this._context.lineWidth,
