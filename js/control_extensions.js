@@ -20,7 +20,7 @@ var TitleBorderDimensioner = generateClass({
             width: this._control.getWidth() - this._style.marginLeft - this._style.marginRight,
             height: this._control.getHeight() -
                     this._style.marginTop - this._style.marginBottom -
-                    (this._control.hasTitle() ? this.getTitle().height + this._style.marginTop : 0)
+                    (this._control.hasTitle() ? Math.round(this.getTitle().height * 1.25) : 0)
         }
     },
 

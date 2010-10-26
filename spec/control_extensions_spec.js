@@ -43,7 +43,7 @@ describe("TitleBorderDimensioner", function() {
 
         it("should return the area dimension", function() {
             expect(dimensioner.getArea().width).toBe(86);
-            expect(dimensioner.getArea().height).toBe(71);
+            expect(dimensioner.getArea().height).toBe(73);
         });
 
     });
@@ -52,7 +52,7 @@ describe("TitleBorderDimensioner", function() {
 
         it("should return the border dimension", function() {
             expect(dimensioner.getBorder().width).toBe(90);
-            expect(dimensioner.getBorder().height).toBe(75);
+            expect(dimensioner.getBorder().height).toBe(77);
         });
 
         it("should return a bigger border if no title is given", function() {

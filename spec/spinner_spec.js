@@ -73,7 +73,7 @@ describe("Spinner", function() {
 
             it("should return a smaller high-arc radius if a title is set", function() {
                 spinner.setTitle("Test");
-                expect(dimensioner.getHighArc().radius).toBe(36);
+                expect(dimensioner.getHighArc().radius).toBe(37);
             });
 
             it("should calculate the high-arc radius on the space available", function() {
