@@ -224,34 +224,34 @@ describe("StateChangingMouseHandler", function() {
 
         beforeEach(function() {
             control.setState(50);
-            controlDriver.mouseDown(0, 0);
+            controlDriver.mouseDown(100, 100);
         });
 
         it("should calculate the new state if the mouse moves vertically", function() {
-            documentDriver.mouseMove(0, -25);
+            documentDriver.mouseMove(100, 75);
             expect(control.getState()).toBe(75);
 
-            documentDriver.mouseMove(0, 25);
-            expect(control.getState()).toBe(25);
+            documentDriver.mouseMove(100, 100);
+            expect(control.getState()).toBe(50);
         });
 
         it("should calculate the new state if the mouse moves horizontally", function() {
-            documentDriver.mouseMove(25, 0);
+            documentDriver.mouseMove(125, 100);
             expect(control.getState()).toBe(75);
 
-            documentDriver.mouseMove(-25, 0);
-            expect(control.getState()).toBe(25);
+            documentDriver.mouseMove(100, 100);
+            expect(control.getState()).toBe(50);
         });
 
         it("should calculate the new state based on the mouseScale", function() {
             mouseHandler._options.mouseScale = 2;
 
-            documentDriver.mouseMove(0, -50);
+            documentDriver.mouseMove(100, 50);
             expect(control.getState()).toBe(75);
         });
 
         it("should calculate the new state based on the alternateMouseScale if shift key is pressed", function() {
-            documentDriver.mouseMove(0, -50, true);
+            documentDriver.mouseMove(100, 50, true);
             expect(control.getState()).toBe(60);
         });
 

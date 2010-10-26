@@ -177,9 +177,8 @@ var StateChangingMouseHandler = generateClass({
 
         this._control.getButtonElement().focus();
 
-        this._startX = event.screenX;
-        this._startY = event.screenY;
-        this._startState = this._control.getState();
+        this._lastX = event.screenX;
+        this._lastY = event.screenY;
 
         document.onmousemove = this._onMouseMoveHandler.bind(this);
         document.onmouseup = this._onMouseUpHandler.bind(this);
@@ -188,13 +187,20 @@ var StateChangingMouseHandler = generateClass({
     },
 
     _onMouseMoveHandler: function(event) {
-        var range = this._control.getHeight() * (event.shiftKey ? this._options.alternateMouseScale : this._options.mouseScale);
-        var differenceX = event.screenX - this._startX;
-        var differenceY = this._startY - event.screenY;
+        var key = event.shiftKey ? this._options.alternateMouseScale : this._options.mouseScale;
+        var differenceX = event.screenX - this._lastX;
+        var differenceY = this._lastY - event.screenY;
         var difference = Math.abs(differenceX) > Math.abs(differenceY) ? differenceX : differenceY;
+        var range = key * (Math.abs(differenceX) > Math.abs(differenceY) ? this._control.getWidth() : this._control.getHeight());
         var stateDifference = Math.round((difference / range) * this._control.getStateCount());
+        var newState = this._control.getState() + stateDifference;
 
-        this._control.setState(this._startState + stateDifference);
+        if (this._control.getState() != newState) {
+            this._lastX = event.screenX;
+            this._lastY = event.screenY;
+        }
+
+        this._control.setState(newState);
 
         return false;
     },
