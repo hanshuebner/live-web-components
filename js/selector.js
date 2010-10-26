@@ -177,7 +177,9 @@ var Selector = generateClass({
                 top -= top + menuDimension.height - this._getWindowHeight();
             return {
                 top: top,
-                left: this._control.getButtonElement().offsetLeft + borderPosition.x
+                left: this._control.getButtonElement().offsetLeft + borderPosition.x,
+                x: this._style.borderTopWidth * 2,
+                y: this._style.borderTopWidth * 2
             };
         },
 
@@ -252,8 +254,8 @@ var Selector = generateClass({
 
             this._createButtonElement();
             this._createCanvasElement();
-            this._mouseHandler = new this.MouseHandler(this._selector, this, this._dimensioner);
-            this._drawer = new this.Drawer(this._selector, this, this._dimensioner);
+            this._mouseHandler = new this.MouseHandler(this._selector, this, this._dimensioner, this._positioner);
+            this._drawer = new this.Drawer(this._selector, this, this._dimensioner, this._positioner);
 
             this.hide();
         },
@@ -340,10 +342,11 @@ var Selector = generateClass({
 
         MouseHandler: generateClass({
 
-            initialize: function(selector, menu, dimensioner) {
+            initialize: function(selector, menu, dimensioner, positioner) {
                 this._selector = selector;
                 this._menu = menu;
                 this._dimensioner = dimensioner;
+                this._positioner = positioner;
 
                 this._menu.getButtonElement().onmousedown = this._onMouseDownHandler.bind(this);
                 this._menu.getButtonElement().onmousemove = this._onMouseMoveHandler.bind(this);
@@ -368,18 +371,22 @@ var Selector = generateClass({
 
             _getStateForMouseEvent: function(event) {
                 var stateDimension = this._dimensioner.getState();
-                var state = Math.floor((event.offsetY || event.layerY) / stateDimension.height);
-                return state < this._selector.getStateCount() ? state : undefined;
+                var menuPosition = this._positioner.getMenu();
+
+                var y = event.offsetY || event.layerY;
+                var state = Math.floor((y - menuPosition.y) / stateDimension.height);
+                return state >= 0 && state < this._selector.getStateCount() ? state : undefined;
             }
 
         }),
 
         Drawer: generateClass({
 
-            initialize: function(selector, menu, dimensioner) {
+            initialize: function(selector, menu, dimensioner, positioner) {
                 this._selector = selector;
                 this._menu = menu;
                 this._dimensioner = dimensioner;
+                this._positioner = positioner;
                 this._style = this._selector.getStyle();
 
                 this._context = this._menu.getCanvasElement().getContext("2d");
@@ -393,14 +400,16 @@ var Selector = generateClass({
 
             drawState: function(index) {
                 var menuDimension = this._dimensioner.getMenu();
+                var menuPosition = this._positioner.getMenu();
                 var stateDimension = this._dimensioner.getState();
-                var y = index * stateDimension.height + this._style.borderTopWidth * 2;
+
+                var y = menuPosition.y + index * stateDimension.height;
 
                 this._context.fillStyle = (index === this._menu.getHighlightState()) ?
                     this._style.highlightColor :
                     this._style.backgroundColor;
                 this._context.fillRect(
-                        this._style.borderTopWidth * 2,
+                        menuPosition.x,
                         y,
                         menuDimension.width - this._style.borderTopWidth * 4,
                         stateDimension.height);
@@ -414,14 +423,18 @@ var Selector = generateClass({
                 y += stateDimension.height / 2;
 
                 this._context.fillText(this._selector.getExternalValueFor(index), x, y);
-
-                // this._drawBorder();
             },
 
             _drawBackground: function() {
                 var menuDimension = this._dimensioner.getMenu();
                 this._context.fillStyle = this._style.backgroundColor;
                 this._context.fillRect(0, 0, menuDimension.width, menuDimension.height);
+            },
+
+            _drawStates: function() {
+                for (var index = 0; index < this._selector.getStateCount(); index++) {
+                    this.drawState(index);
+                }
             },
 
             _drawBorder: function() {
@@ -433,12 +446,6 @@ var Selector = generateClass({
                     this._context.lineWidth,
                     menuDimension.width - this._context.lineWidth * 2,
                     menuDimension.height - this._context.lineWidth * 2);
-            },
-
-            _drawStates: function() {
-                for (var index = 0; index < this._selector.getStateCount(); index++) {
-                    this.drawState(index);
-                }
             }
 
         })

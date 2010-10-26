@@ -205,6 +205,8 @@ describe("Selector", function() {
             it("should return the menu position", function() {
                 expect(positioner.getMenu().top).toBe(35);
                 expect(positioner.getMenu().left).toBe(5);
+                expect(positioner.getMenu().x).toBe(4);
+                expect(positioner.getMenu().y).toBe(4);
             });
 
             it("should place the menu upwards if window isn't height enough", function() {
@@ -292,11 +294,11 @@ describe("Selector", function() {
             describe("_onMouseDownHandler", function() {
 
                 it("should select the correct item", function() {
-                    menuDriver.mouseDown(5);
+                    menuDriver.mouseDown(9);
                     expect(selector.getExternalValue()).toBe("one");
-                    menuDriver.mouseDown(15);
+                    menuDriver.mouseDown(19);
                     expect(selector.getExternalValue()).toBe("two");
-                    menuDriver.mouseDown(25);
+                    menuDriver.mouseDown(29);
                     expect(selector.getExternalValue()).toBe("three");
                 });
 
@@ -305,16 +307,19 @@ describe("Selector", function() {
             describe("_onMouseMoveHandler", function() {
 
                 it("should set a highlight", function() {
-                    menuDriver.mouseMove(20);
+                    menuDriver.mouseMove(3);
+                    expect(menu.hasHighlight()).toBeFalsy();
+
+                    menuDriver.mouseMove(4);
                     expect(menu.hasHighlight()).toBeTruthy();
                 });
 
                 it("should update the highlight index", function() {
-                    menuDriver.mouseMove(5);
+                    menuDriver.mouseMove(9);
                     expect(menu.getHighlightState()).toBe(0);
-                    menuDriver.mouseMove(15);
+                    menuDriver.mouseMove(19);
                     expect(menu.getHighlightState()).toBe(1);
-                    menuDriver.mouseMove(25);
+                    menuDriver.mouseMove(29);
                     expect(menu.getHighlightState()).toBe(2);
                 });
 
