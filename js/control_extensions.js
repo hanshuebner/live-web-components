@@ -284,12 +284,12 @@ var StateChangingKeyHandler = generateClass({
         case 13: // enter
             this._enter();
             return false;
-        case 37: // left arrow
         case 38: // up arrow
+        case 39: // right arrow
             this._stepUp(event.shiftKey);
             return false;
-        case 39: // right arrow
         case 40: // down arrow
+        case 37: // left arrow
             this._stepDown(event.shiftKey);
             return false;
         case 109: // substract

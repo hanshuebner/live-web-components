@@ -316,28 +316,36 @@ describe("StateChagingKeyHandler", function() {
             expect(control.getState()).toBe(1);
         });
 
-        it("should add a keyStep if up arrow is pressed", function() {
+        it("should add a keyStep if up/right arrow is pressed", function() {
             var oldState = control.getState();
             controlDriver.enterKey(38); // up arrow
             expect(control.getState()).toBe(oldState + 1);
+            controlDriver.enterKey(39); // right arrow
+            expect(control.getState()).toBe(oldState + 2);
         });
 
-        it("should add a alternateKeyStep if shift and up arrow is pressed", function() {
+        it("should add a alternateKeyStep if shift and up/right arrow is pressed", function() {
             var oldState = control.getState();
             controlDriver.enterKey(38, true); // up arrow and shift
             expect(control.getState()).toBe(oldState + 5);
+            controlDriver.enterKey(39, true); // right arrow and shift
+            expect(control.getState()).toBe(oldState + 10);
         });
 
-        it("should substract a keyStep if down arrow is pressed", function() {
+        it("should substract a keyStep if down/left arrow is pressed", function() {
             var oldState = control.getState();
             controlDriver.enterKey(40); // down arrow
             expect(control.getState()).toBe(oldState - 1);
+            controlDriver.enterKey(37); // left arrow
+            expect(control.getState()).toBe(oldState - 2);
         });
 
-        it("should substract a alternateKeyStep if shift and down arrow is pressed", function() {
+        it("should substract a alternateKeyStep if shift and down/left arrow is pressed", function() {
             var oldState = control.getState();
             controlDriver.enterKey(40, true); // down arrow and shift
             expect(control.getState()).toBe(oldState - 5);
+            controlDriver.enterKey(37, true); // left arrow and shift
+            expect(control.getState()).toBe(oldState - 10);
         });
 
         it("should go into entering-mode if a digit is pressed", function() {
