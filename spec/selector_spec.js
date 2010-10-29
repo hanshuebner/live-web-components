@@ -163,11 +163,11 @@ describe("Selector", function() {
 
             it("should calculate the menu dimensions", function() {
                 expect(dimensioner.getMenu().width).toBe(90);
-                expect(dimensioner.getMenu().height).toBe(28);
+                expect(dimensioner.getMenu().height).toBe(34);
 
                 selector.setItems([ "one", "two", "three", "long long entry" ]);
                 expect(dimensioner.getMenu().width).toBe(90);
-                expect(dimensioner.getMenu().height).toBe(48);
+                expect(dimensioner.getMenu().height).toBe(60);
             });
 
         });
@@ -176,7 +176,7 @@ describe("Selector", function() {
 
             it("should return the state dimensions", function() {
                 expect(dimensioner.getState().width).toBe(73);
-                expect(dimensioner.getState().height).toBe(10);
+                expect(dimensioner.getState().height).toBe(13);
             });
 
         });
@@ -213,7 +213,7 @@ describe("Selector", function() {
                 positioner._getWindowHeight = function() {
                     return 50;
                 };
-                expect(positioner.getMenu().top).toBe(12);
+                expect(positioner.getMenu().top).toBe(3);
                 expect(positioner.getMenu().left).toBe(5);
             });
 
@@ -294,11 +294,11 @@ describe("Selector", function() {
             describe("_onMouseDownHandler", function() {
 
                 it("should select the correct item", function() {
-                    menuDriver.mouseDown(9);
+                    menuDriver.mouseDown(10);
                     expect(selector.getExternalValue()).toBe("one");
-                    menuDriver.mouseDown(19);
+                    menuDriver.mouseDown(23);
                     expect(selector.getExternalValue()).toBe("two");
-                    menuDriver.mouseDown(29);
+                    menuDriver.mouseDown(36);
                     expect(selector.getExternalValue()).toBe("three");
                 });
 
@@ -315,11 +315,11 @@ describe("Selector", function() {
                 });
 
                 it("should update the highlight index", function() {
-                    menuDriver.mouseMove(9);
+                    menuDriver.mouseMove(10);
                     expect(menu.getHighlightState()).toBe(0);
-                    menuDriver.mouseMove(19);
+                    menuDriver.mouseMove(23);
                     expect(menu.getHighlightState()).toBe(1);
-                    menuDriver.mouseMove(29);
+                    menuDriver.mouseMove(36);
                     expect(menu.getHighlightState()).toBe(2);
                 });
 

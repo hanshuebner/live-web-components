@@ -149,7 +149,7 @@ var Selector = generateClass({
             var arrowDimension = this.getArrow();
             return {
                 width: spaceDimension.width - arrowDimension.width - this._style.paddingRight * 2,
-                height: this.getFontSize()
+                height: Math.round(this.getFontSize() * 1.3)
             };
         },
 
