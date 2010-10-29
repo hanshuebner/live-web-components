@@ -94,7 +94,7 @@ var Spinner = generateClass({
         getHighArc: function() {
             var spaceDimension = this.getSpace();
             return {
-                radius: Math.round(Math.min(spaceDimension.width, spaceDimension.height) / 2)
+                radius: Math.round(Math.min(spaceDimension.width, spaceDimension.height) / 2) - this._style.lineWidth
             };
         },
 
