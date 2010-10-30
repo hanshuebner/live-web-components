@@ -15,7 +15,8 @@ var Spinner = generateClass({
                                     // on each key stroke
         alternateKeyStep: 5,        // same as keyStep but for input with pressed shift key
 
-        markerVisible: true         // defines if the marker is visible
+        markerVisible: true,        // defines if the marker is visible
+        markerPosition: 50
     },
 
     defaultStyle: {
@@ -60,6 +61,15 @@ var Spinner = generateClass({
         this.draw();
     },
 
+    setMarkerPosition: function(value) {
+        this._markerPosition = value;
+        this.draw();
+    },
+
+    getMarkerPosition: function() {
+        return this._markerPosition;
+    },
+
     isMarkerVisible: function() {
         return this._markerVisible;
     },
@@ -91,10 +101,19 @@ var Spinner = generateClass({
 
         extendClass: TitleBorderDimensioner,
 
-        getHighArc: function() {
+        getMarker: function() {
             var spaceDimension = this.getSpace();
+            var outterRadius = Math.round(Math.min(spaceDimension.width, spaceDimension.height) / 2);
             return {
-                radius: Math.round(Math.min(spaceDimension.width, spaceDimension.height) / 2) - this._style.lineWidth
+                outterRadius: outterRadius,
+                innerRadius: Math.min(outterRadius - 4, Math.round(outterRadius * 0.85))
+            };
+        },
+
+        getHighArc: function() {
+            var markerDimension = this.getMarker();
+            return {
+                radius: markerDimension.innerRadius - this._style.lineWidth
             };
         },
 
@@ -102,15 +121,6 @@ var Spinner = generateClass({
             var highArcDimension = this.getHighArc();
             return {
                 radius: highArcDimension.radius - this._style.radiusDifference
-            };
-        },
-
-        getMarker: function() {
-            var highArcDimension = this.getHighArc();
-            var size = Math.max(8, Math.round(highArcDimension.radius * 0.3));
-            return {
-                width: size,
-                height: size
             };
         },
 
@@ -135,6 +145,23 @@ var Spinner = generateClass({
 
         extendClass: TitleBorderPositioner,
 
+        getMarker: function() {
+            var markerDimension = this._dimensioner.getMarker();
+            var spaceDimension = this._dimensioner.getSpace();
+            var spacePosition = this.getSpace();
+            var centerX = spacePosition.x + Math.round(spaceDimension.width / 2);
+            var centerY = spacePosition.y + Math.round(spaceDimension.height / 2);
+            var angle = this.getAngleForState(this._control.getMarkerPosition() || 0);
+            return {
+                x1: centerX + Math.round(Math.cos(angle) * markerDimension.innerRadius),
+                y1: centerY + Math.round(Math.sin(angle) * markerDimension.innerRadius),
+                x2: centerX + Math.round(Math.cos(angle - 0.13) * markerDimension.outterRadius),
+                y2: centerY + Math.round(Math.sin(angle - 0.13) * markerDimension.outterRadius),
+                x3: centerX + Math.round(Math.cos(angle + 0.13) * markerDimension.outterRadius),
+                y3: centerY + Math.round(Math.sin(angle + 0.13) * markerDimension.outterRadius)
+            };
+        },
+
         getHighArc: function() {
             var spaceDimension = this._dimensioner.getSpace();
             var spacePosition = this.getSpace();
@@ -146,17 +173,6 @@ var Spinner = generateClass({
 
         getLowArc: function() {
             return this.getHighArc();
-        },
-
-        getMarker: function() {
-            var highArcDimension = this._dimensioner.getHighArc();
-            var highArcPosition = this.getHighArc();
-            var position = 5 * (Math.PI / 4);
-            var distance = highArcDimension.radius + this._style.lineWidth;
-            return {
-                x: highArcPosition.x + Math.round(Math.sin(position) * distance),
-                y: highArcPosition.y + Math.round(Math.cos(position) * distance)
-            };
         },
 
         getValue: function() {
@@ -177,6 +193,10 @@ var Spinner = generateClass({
                 x: valuePosition.x + this._dimensioner.getTextWidth(this._control.getKeyHandler().getEnteredText(), fontSize),
                 y: valuePosition.y - Math.round(cursorDimension.height / 2)
             };
+        },
+
+        getAngleForState: function(state) {
+            return (Math.PI / 2) + (3 * (Math.PI / 2) * (state / (this._control.getStateCount() - 1)));
         }
 
     }),
@@ -194,13 +214,27 @@ var Spinner = generateClass({
             this._drawCursor();
         },
 
+        _drawMarker: function() {
+            if (!this._control.isMarkerVisible()) return;
+            var markerPosition = this._positioner.getMarker();
+
+            this._context.fillStyle = this._getColor("markerColor");
+            this._context.lineWidth = this._style.lineWidth;
+            this._context.beginPath();
+            this._context.moveTo(markerPosition.x1, markerPosition.y1);
+            this._context.lineTo(markerPosition.x2, markerPosition.y2);
+            this._context.lineTo(markerPosition.x3, markerPosition.y3);
+            this._context.lineTo(markerPosition.x1, markerPosition.y1);
+            this._context.fill();
+        },
+
         _drawArcs: function() {
             var highArcDimension = this._dimensioner.getHighArc();
             var lowArcDimension = this._dimensioner.getLowArc();
             var highArcPosition = this._positioner.getHighArc();
             var lowArcPosition = this._positioner.getLowArc();
 
-            var angle = (Math.PI / 2) + (3 * (Math.PI / 2) * (this._control.getState() / (this._control.getStateCount() - 1)));
+            var angle = this._positioner.getAngleForState(this._control.getState());
 
             this._context.lineWidth = (this._style.lineWidth || 1);
             this._context.lineCap = "round";
@@ -233,22 +267,6 @@ var Spinner = generateClass({
             }
             this._context.lineTo(highArcPosition.x, highArcPosition.y);
             this._context.stroke();
-        },
-
-        _drawMarker: function() {
-            if (!this._control.isMarkerVisible()) return;
-            var markerDimension = this._dimensioner.getMarker();
-            var markerPosition = this._positioner.getMarker();
-
-            this._context.fillStyle = this._getColor("markerColor");
-            this._context.lineWidth = this._style.lineWidth;
-            this._context.beginPath();
-            this._context.moveTo(markerPosition.x, markerPosition.y);
-            this._context.lineTo(markerPosition.x, markerPosition.y - markerDimension.height);
-            this._context.lineTo(markerPosition.x - markerDimension.width, markerPosition.y);
-            this._context.lineTo(markerPosition.x, markerPosition.y);
-            this._context.fill();
-
         },
 
         _drawValue: function() {

@@ -65,20 +65,29 @@ describe("Spinner", function() {
             dimensioner = spinner._dimensioner;
         });
 
+        describe("getMarker", function() {
+
+            it("should return the marker dimension", function() {
+                expect(dimensioner.getMarker().outterRadius).toBe(43);
+                expect(dimensioner.getMarker().innerRadius).toBe(37);
+            });
+
+            it("should return a smaller marker radius if a title is set", function() {
+                spinner.setTitle("Test");
+                expect(dimensioner.getMarker().outterRadius).toBe(37);
+            });
+
+            it("should calculate the marker radius on the space available", function() {
+                spinner.setWidth(50);
+                expect(dimensioner.getMarker().outterRadius).toBe(18);
+            });
+
+        });
+
         describe("getHighArc", function() {
 
             it("should return the high-arc radius", function() {
-                expect(dimensioner.getHighArc().radius).toBe(40);
-            });
-
-            it("should return a smaller high-arc radius if a title is set", function() {
-                spinner.setTitle("Test");
                 expect(dimensioner.getHighArc().radius).toBe(34);
-            });
-
-            it("should calculate the high-arc radius on the space available", function() {
-                spinner.setWidth(50);
-                expect(dimensioner.getHighArc().radius).toBe(15);
             });
 
         });
@@ -87,16 +96,7 @@ describe("Spinner", function() {
 
             it("should return the high-arc radius minus the given difference", function() {
                 dimensioner._style.radiusDifference = 4;
-                expect(dimensioner.getLowArc().radius).toBe(36);
-            });
-
-        });
-
-        describe("getMarker", function() {
-
-            it("should return the marker dimension", function() {
-                expect(dimensioner.getMarker().width).toBe(12);
-                expect(dimensioner.getMarker().height).toBe(12);
+                expect(dimensioner.getLowArc().radius).toBe(30);
             });
 
         });
@@ -129,6 +129,19 @@ describe("Spinner", function() {
             positioner = spinner._positioner;
         });
 
+        describe("getMarker", function() {
+
+            it("should return the marker position", function() {
+                expect(positioner.getMarker().x1).toBe(24);
+                expect(positioner.getMarker().y1).toBe(24);
+                expect(positioner.getMarker().x2).toBe(16);
+                expect(positioner.getMarker().y2).toBe(24);
+                expect(positioner.getMarker().x3).toBe(24);
+                expect(positioner.getMarker().y3).toBe(16);
+            });
+
+        });
+
         describe("getHighArc", function() {
 
             it("should return the high-arc position", function() {
@@ -143,15 +156,6 @@ describe("Spinner", function() {
             it("should return the high-arc position", function() {
                 expect(positioner.getLowArc().x).toBe(50);
                 expect(positioner.getLowArc().y).toBe(50);
-            });
-
-        });
-
-        describe("getMarker", function() {
-
-            it("should return the marker position", function() {
-                expect(positioner.getMarker().x).toBe(20);
-                expect(positioner.getMarker().y).toBe(20);
             });
 
         });
@@ -175,6 +179,22 @@ describe("Spinner", function() {
             it("should return the cursor position", function() {
                 expect(positioner.getCursor().x).toBe(63);
                 expect(positioner.getCursor().y).toBe(65);
+            });
+
+        });
+
+        describe("getAngleForState", function() {
+
+            it("should return PI / 2 for state 0", function() {
+                expect(positioner.getAngleForState(0)).toBe(Math.PI / 2);
+            });
+
+            it("should return 5 * PI / 4 for state 50", function() {
+                expect(positioner.getAngleForState(50)).toBe(5 * Math.PI / 4);
+            });
+
+            it("should return 2 * PI for state 100", function() {
+                expect(positioner.getAngleForState(100)).toBe(2 * Math.PI);
             });
 
         });
