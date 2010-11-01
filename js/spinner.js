@@ -24,6 +24,7 @@ var Spinner = generateClass({
         radiusDifference: 0,
         lowArcColor: "red",
         highArcColor: "black",
+        highArcRadius: undefined,
         markerColor: "green",
         cursorWidth: 1,
         cursorColor: "black",
@@ -101,28 +102,35 @@ var Spinner = generateClass({
 
         extendClass: TitleBorderDimensioner,
 
-        getMarker: function() {
-            var spaceDimension = this.getSpace();
-            var outterRadius = Math.round(Math.min(spaceDimension.width, spaceDimension.height) / 2);
-            return {
-                outterRadius: outterRadius,
-                innerRadius: Math.min(outterRadius - 4, Math.round(outterRadius * 0.85))
-            };
-        },
-
         getHighArc: function() {
-            var markerDimension = this.getMarker();
-            return {
-                radius: this._control.isMarkerVisible() ?
-                            (markerDimension.innerRadius - this._style.lineWidth) :
-                            markerDimension.outterRadius
-            };
+            if (this._style.highArcRadius === undefined) {
+                var spaceDimension = this.getSpace();
+                var radius = Math.round(Math.min(spaceDimension.width, spaceDimension.height) / 2);
+                if (this._control.isMarkerVisible())
+                    radius = Math.min(radius - 4, Math.round(radius * 0.85)) - this._style.lineWidth;
+                return {
+                    radius: radius
+                };
+            } else {
+                return {
+                    radius: this._style.highArcRadius
+                };
+            }
         },
 
         getLowArc: function() {
             var highArcDimension = this.getHighArc();
             return {
                 radius: highArcDimension.radius - this._style.radiusDifference
+            };
+        },
+
+        getMarker: function() {
+            var highArcDimension = this.getHighArc();
+            var innerRadius = highArcDimension.radius + this._style.lineWidth;
+            return {
+                outterRadius: Math.max(innerRadius + 4, Math.round(innerRadius * 1.15)),
+                innerRadius: innerRadius
             };
         },
 

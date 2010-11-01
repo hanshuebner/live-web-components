@@ -65,29 +65,15 @@ describe("Spinner", function() {
             dimensioner = spinner._dimensioner;
         });
 
-        describe("getMarker", function() {
-
-            it("should return the marker dimension", function() {
-                expect(dimensioner.getMarker().outterRadius).toBe(43);
-                expect(dimensioner.getMarker().innerRadius).toBe(37);
-            });
-
-            it("should return a smaller marker radius if a title is set", function() {
-                spinner.setTitle("Test");
-                expect(dimensioner.getMarker().outterRadius).toBe(37);
-            });
-
-            it("should calculate the marker radius on the space available", function() {
-                spinner.setWidth(50);
-                expect(dimensioner.getMarker().outterRadius).toBe(18);
-            });
-
-        });
-
         describe("getHighArc", function() {
 
             beforeEach(function() {
                 spinner.setMarkerVisible(false);
+            });
+
+            it("should return the given high-arc radius if set", function() {
+                spinner._style.highArcRadius = 40;
+                expect(dimensioner.getHighArc().radius).toBe(40);
             });
 
             it("should return the high-arc radius", function() {
@@ -99,6 +85,16 @@ describe("Spinner", function() {
                 expect(dimensioner.getHighArc().radius).toBe(34);
             });
 
+            it("should return a smaller hgih-arc radius if a title is set", function() {
+                spinner.setTitle("Test");
+                expect(dimensioner.getHighArc().radius).toBe(37);
+            });
+
+            it("should calculate the high-arc radius on the space available", function() {
+                spinner.setWidth(50);
+                expect(dimensioner.getHighArc().radius).toBe(18);
+            });
+
         });
 
         describe("getLowArc", function() {
@@ -106,6 +102,15 @@ describe("Spinner", function() {
             it("should return the high-arc radius minus the given difference", function() {
                 dimensioner._style.radiusDifference = 4;
                 expect(dimensioner.getLowArc().radius).toBe(30);
+            });
+
+        });
+
+        describe("getMarker", function() {
+
+            it("should return the marker dimension", function() {
+                expect(dimensioner.getMarker().outterRadius).toBe(43);
+                expect(dimensioner.getMarker().innerRadius).toBe(37);
             });
 
         });
