@@ -113,7 +113,9 @@ var Spinner = generateClass({
         getHighArc: function() {
             var markerDimension = this.getMarker();
             return {
-                radius: markerDimension.innerRadius - this._style.lineWidth
+                radius: this._control.isMarkerVisible() ?
+                            (markerDimension.innerRadius - this._style.lineWidth) :
+                            markerDimension.outterRadius
             };
         },
 

@@ -86,7 +86,16 @@ describe("Spinner", function() {
 
         describe("getHighArc", function() {
 
+            beforeEach(function() {
+                spinner.setMarkerVisible(false);
+            });
+
             it("should return the high-arc radius", function() {
+                expect(dimensioner.getHighArc().radius).toBe(43);
+            });
+
+            it("should return a lower high-arc radius if the marker is visible", function() {
+                spinner.setMarkerVisible(true);
                 expect(dimensioner.getHighArc().radius).toBe(34);
             });
 
