@@ -243,7 +243,7 @@ var Control = generateClass({
 
     _triggerOnChange: function() {
         if (this.getOptions().onchange)
-            this.getOptions().onchange(this.getInternalValue(), this.getExternalValue(), this.getState());
+            this.getOptions().onchange.call(this, this.getInternalValue(), this.getExternalValue(), this.getState());
     },
 
     ControlDrawer: generateClass({
