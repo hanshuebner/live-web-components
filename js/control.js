@@ -11,6 +11,7 @@ var Control = generateClass({
         this._setStyle(style);
 
         this._controlDrawer = new this.ControlDrawer(this, this.getOptions());
+        this._initialized = true;                           // prevent generation of onchange events as a result to setter invocation
     },
 
     getButtonElement: function() {
@@ -122,7 +123,7 @@ var Control = generateClass({
         var changed = this._state != value;
         this._state = value;
         this.draw();
-        if (changed) this._triggerOnChange();
+        if (this._initialized && changed) this._triggerOnChange();
     },
 
     getState: function() {
