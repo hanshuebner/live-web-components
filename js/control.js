@@ -120,10 +120,13 @@ var Control = generateClass({
 
     setState: function(value) {
         value = Math.max(0, Math.min(this.getStateCount() - 1, value));
-        var changed = this._state != value;
-        this._state = value;
-        this.draw();
-        if (this._initialized && changed) this._triggerOnChange();
+        if (!isNaN(value)) {
+            var changed = this._state != value;
+            console.log('changed', changed, 'this._state', this._state, 'value', value);
+            this._state = value;
+            this.draw();
+            if (this._initialized && changed) this._triggerOnChange();
+        }
     },
 
     getState: function() {
