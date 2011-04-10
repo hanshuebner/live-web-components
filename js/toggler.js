@@ -28,8 +28,8 @@ var Toggler = generateClass({
         backgroundColor: "white",
         */
 
-        onColor: "green",
-        offColor: "white",
+        onColor: "orange",
+        offColor: "#ddd",
         disabledColor: "gray"
     },
 

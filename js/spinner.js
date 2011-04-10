@@ -22,13 +22,13 @@ var Spinner = generateClass({
     defaultStyle: {
         lineWidth: 3,
         radiusDifference: 0,
-        lowArcColor: "red",
+        lowArcColor: "orange",
         highArcColor: "black",
         highArcRadius: undefined,
-        markerColor: "green",
+        markerColor: "#333",
         cursorWidth: 1,
         cursorColor: "black",
-        focusColor: "blue",
+        focusColor: "#888",
         disabledColor: "gray"
     },
 
