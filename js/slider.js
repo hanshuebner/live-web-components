@@ -12,7 +12,7 @@ var Slider = generateClass({
     },
 
     defaultStyle: {
-        barColor: "green",
+        barColor: "orange",
         disabledColor: "gray"
     },
 

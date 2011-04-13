@@ -4,7 +4,7 @@ var Selector = generateClass({
     extendClass: Control,
 
     defaultStyle: {
-        highlightColor: "green",
+        highlightColor: "orange",
         disabledColor: "gray"
     },
 
