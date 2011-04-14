@@ -158,6 +158,7 @@ var Control = generateClass({
         element = typeof(element_or_id) === "string" ? document.getElementById(element_or_id) : element_or_id;
         if (element && element.nodeName == "BUTTON") {
             this._buttonElement = element;
+            element.control = this;
             this._buttonElement.onfocus = function() { this.focus(); }.bind(this);
             this._buttonElement.onblur = function() { this.blur(); }.bind(this);
         } else {
@@ -244,8 +245,9 @@ var Control = generateClass({
     },
 
     _triggerOnChange: function() {
-        if (this.getOptions().onchange)
-            this.getOptions().onchange.call(this, this.getInternalValue(), this.getExternalValue(), this.getState());
+        if (this._initialized) {
+            $(this._buttonElement).trigger('change');
+        }
     },
 
     ControlDrawer: generateClass({
