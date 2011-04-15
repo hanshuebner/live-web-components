@@ -45,8 +45,9 @@ var Spinner = generateClass({
     },
 
     setState: function(value) {
-        this._super_setState(value);
+        var changed = this._super_setState(value);
         if (this._keyHandler) this._keyHandler.abortEntering();
+        return changed;
     },
 
     setStateCount: function(value) {

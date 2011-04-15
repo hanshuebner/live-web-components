@@ -200,7 +200,9 @@ var StateChangingMouseHandler = generateClass({
             this._lastY = event.screenY;
         }
 
-        this._control.setState(newState);
+        this._control.setState(newState)
+            && this._control._triggerOnChange();
+
 
         return false;
     },
@@ -307,11 +309,13 @@ var StateChangingKeyHandler = generateClass({
     },
 
     _stepUp: function(shiftPressed) {
-        this._control.setState(this._control.getState() + (shiftPressed ? this._options.alternateKeyStep : this._options.keyStep));
+        this._control.setState(this._control.getState() + (shiftPressed ? this._options.alternateKeyStep : this._options.keyStep))
+            && this._control._triggerOnChange();
     },
 
     _stepDown: function(shiftPressed) {
-        this._control.setState(this._control.getState() - (shiftPressed ? this._options.alternateKeyStep : this._options.keyStep));
+        this._control.setState(this._control.getState() - (shiftPressed ? this._options.alternateKeyStep : this._options.keyStep))
+            && this._control._triggerOnChange();
     },
 
     _enterCharacter: function(character) {

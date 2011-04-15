@@ -124,7 +124,7 @@ var Control = generateClass({
             var changed = this._state != value;
             this._state = value;
             this.draw();
-            if (this._initialized && changed) this._triggerOnChange();
+            return changed;
         }
     },
 

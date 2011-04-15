@@ -56,7 +56,8 @@ var Toggler = generateClass({
     },
 
     toggleState: function() {
-        this.setState(this.getState() ? 0 : 1);
+        this.setState(this.getState() ? 0 : 1)
+            && this._triggerOnChange();
     },
 
     draw: function() {

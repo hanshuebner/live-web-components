@@ -112,7 +112,8 @@ var Selector = generateClass({
         _handleMenuKey: function(keyCode) {
             switch(keyCode) {
             case 13: // enter
-                this._selector.setState(this._menu.getHighlightState());
+                this._selector.setState(this._menu.getHighlightState())
+                    && this._selector._triggerOnChange();
                 this._menu.hide();
                 return false;
             case 38: // up arrow
@@ -354,7 +355,8 @@ var Selector = generateClass({
             },
 
             _onMouseDownHandler: function(event) {
-                this._selector.setState(this._getStateForMouseEvent(event));
+                this._selector.setState(this._getStateForMouseEvent(event))
+                    && this._selector._triggerOnChange();
                 return true;
             },
 
